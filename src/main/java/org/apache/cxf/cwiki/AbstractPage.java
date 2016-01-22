@@ -65,7 +65,7 @@ public class AbstractPage implements Serializable {
         return getDirectory() + createFileName();
     }
     
-    public String createFileName() {
+    public String createFileNameNoExtension() {
         StringBuffer buffer = new StringBuffer();
         char array[] = title.toLowerCase().toCharArray();
         boolean separated = true;
@@ -81,10 +81,15 @@ public class AbstractPage implements Serializable {
                 separated = true;
             }
         }
+        return buffer.toString();
+    }
+
+    public String createFileName() {
+        String buffer = createFileNameNoExtension();
         if (buffer.length() == 0) {
             return id + ".html";
         }
-        return buffer.append(".html").toString();
+        return buffer + ".html";
     }
     
     public String getId() {

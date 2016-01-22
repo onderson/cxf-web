@@ -19,6 +19,7 @@
 
 package org.apache.cxf.cwiki;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -52,6 +53,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Pattern;
 
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -143,6 +145,7 @@ public class SiteExporter implements Runnable {
     String templateName = "template/template.vm";
     String mainDivClass;
     boolean forceAll;
+    private String format = "html";
     String breadCrumbRoot;
     
     File outputDir = rootOutputDir;
@@ -153,7 +156,7 @@ public class SiteExporter implements Runnable {
 
     public SiteExporter(String fileName, boolean force) throws Exception {
         forceAll = force;
-        
+
         Properties props = new Properties();
         props.load(new FileInputStream(fileName));
         
@@ -175,6 +178,9 @@ public class SiteExporter implements Runnable {
         if (props.containsKey("breadCrumbRoot")) {
             breadCrumbRoot = props.getProperty("breadCrumbRoot");
         }
+        if (props.containsKey("format")) {
+            format = props.getProperty("format");
+        }
         if (props.containsKey("globalPages")) {
             String globals = props.getProperty("globalPages");
             String[] pgs = globals.split(",");
@@ -189,16 +195,18 @@ public class SiteExporter implements Runnable {
         
         VelocityEngine engine = new VelocityEngine();
         engine.init(props);
-            
-        URL url = ClassLoaderUtils.getResource(templateName, this.getClass());
-        if (url == null) {
-            File file = new File(templateName);
-            if (file.exists()) {
-                url = file.toURI().toURL();
+
+        if( format.equals("html") ) {
+            URL url = ClassLoaderUtils.getResource(templateName, this.getClass());
+            if (url == null) {
+                File file = new File(templateName);
+                if (file.exists()) {
+                    url = file.toURI().toURL();
+                }
             }
+            template = engine.getTemplate(url.toURI().toString());
         }
-        template = engine.getTemplate(url.toURI().toString());
-               
+
         outputDir.mkdirs();
     }
     
@@ -266,7 +274,7 @@ public class SiteExporter implements Runnable {
         }
         
         // debug stuff, force regen of a page
-        //forcePage("Navigation");
+        forcePage("File2");
         //forcePage("Index");
         //forcePage("JavaDocs");
         //forcePage("DOSGi Architecture");
@@ -287,7 +295,7 @@ public class SiteExporter implements Runnable {
         if ("-space-".equals(breadCrumbRoot)) {
             breadCrumbRoot = space.getName();
         }
-        loadBlog();
+        // loadBlog();
         loadPages();
         
         return true;
@@ -420,31 +428,59 @@ public class SiteExporter implements Runnable {
             
             try {
                 loadPageContent(p, null, null);
-                
-                VelocityContext ctx = new VelocityContext();
-                ctx.put("autoexport", this);
-                ctx.put("page", p);
-                ctx.put("body", p.getContent());
-                ctx.put("confluenceUri", ROOT);
-                ctx.put("pageManager", pageManager);
-                ctx.put("renderer", renderer);
-                ctx.put("exporter", this);
-                
-                File file = new File(outputDir, p.createFileName());
-                boolean isNew = !file.exists();
-                
-                FileWriter writer = new FileWriter(file);
-                ctx.put("out", writer);
-                template.merge(ctx, writer);
-                writer.close();
-                if (isNew) {
-                    //call "svn add"
-                    callSvn("add", file.getAbsolutePath());
-                    svnCommitMessage.append("Adding: " + file.getName() + "\n");
+
+                if( format.equals("html") ) {
+                    VelocityContext ctx = new VelocityContext();
+                    ctx.put("autoexport", this);
+                    ctx.put("page", p);
+                    ctx.put("body", p.getContent());
+                    ctx.put("confluenceUri", ROOT);
+                    ctx.put("pageManager", pageManager);
+                    ctx.put("renderer", renderer);
+                    ctx.put("exporter", this);
+
+                    File file = new File(outputDir, p.createFileName());
+                    boolean isNew = !file.exists();
+
+                    FileWriter writer = new FileWriter(file);
+                    ctx.put("out", writer);
+                    template.merge(ctx, writer);
+                    writer.close();
+                    if (isNew) {
+                        //call "svn add"
+                        callSvn("add", file.getAbsolutePath());
+                        svnCommitMessage.append("Adding: " + file.getName() + "\n");
+                    } else {
+                        svnCommitMessage.append("Modified: " + file.getName() + "\n");
+                    }
                 } else {
-                    svnCommitMessage.append("Modified: " + file.getName() + "\n");                
+                    File file = new File(outputDir, p.createFileName());
+                    FileWriter writer = new FileWriter(file);
+                    writer.write(p.getContent());
+                    writer.close();
+
+
+                    Process process = Runtime.getRuntime().exec(new String[]{
+                        "pandoc", "--from", "html", "--to", format, file.getCanonicalPath()
+                    });
+
+                    String converted = systemOutput(process);
+
+                    String extension=format;
+                    if ( "asciidoc".equals(extension) ) {
+                        extension = "adoc";
+
+                        // This fixes up the header on the code listings.
+                        converted = converted.replaceAll("code,brush:,([^;]+);,gutter:,false;,theme:,Default(-+)\\ncode,brush:,[^;]+;,gutter:,false;,theme:,Default", "[source,$1]\n$2");
+                    }
+
+                    file.delete();
+                    file = new File(outputDir, p.createFileNameNoExtension()+"."+extension);
+                    writer = new FileWriter(file);
+                    writer.write(converted);
+                    writer.close();
                 }
-                
+
                 p.setContent(null);
             } catch (Exception e) {
                 System.out.println("Could not render page " + p.getTitle() + " due to " + e.getMessage());
@@ -453,8 +489,35 @@ public class SiteExporter implements Runnable {
 
         }
     }
-    
+
+    private String systemOutput(Process process) throws IOException, InterruptedException {
+        String result;
+        InputStream is = process.getInputStream();
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            byte data[] = new byte[1024*4];
+            for( int c=is.read(data) ; c > 0 ; c=is.read(data) ) {
+                baos.write(data, 0, c);
+            }
+            result = new String(baos.toByteArray());
+        } finally {
+            is.close();
+        }
+        int rc = process.waitFor();
+        if( rc == 0 ) {
+            return result;
+        } else {
+            throw new IOException("Process failed with exit code: "+rc);
+        }
+
+    }
+
     private void renderBlog() throws Exception {
+
+        if( !format.equals("html") ) {
+            return;
+        }
+
         PageManager pageManager = new PageManager(this);
         Renderer renderer = new Renderer(this);
         
