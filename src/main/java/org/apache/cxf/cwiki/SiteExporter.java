@@ -456,7 +456,23 @@ public class SiteExporter implements Runnable {
                 } else {
                     File file = new File(outputDir, p.createFileName());
                     FileWriter writer = new FileWriter(file);
-                    writer.write(p.getContent());
+                    String content = p.getContent();
+
+                    if ( "asciidoc".equals(format) ) {
+                        if( content.contains("confluence-information-macro") ) {
+                            System.out.println("confluence-information-macro in "+file);
+                        }
+                        // pandoc does not work with admonition blocks well....
+                        content = content.replaceAll("<p class=\"title\">(.*?)</p>", "<strong>$1</strong>");
+                        content = content.replaceAll("<div class=\"confluence-information-macro confluence-information-macro-information\">(.*?)</div>", "\n[Info]====\n$1\n====\n");
+                        content = content.replaceAll("<div class=\"confluence-information-macro confluence-information-macro-tip\">(.*?)</div>", "\n[Tip]====\n$1\n====\n");
+                        content = content.replaceAll("<div class=\"confluence-information-macro confluence-information-macro-warning\">(.*?)</div>", "\n[Warning]====\n$1\n====\n");
+                        content = content.replaceAll("<div class=\"confluence-information-macro confluence-information-macro-note\">(.*?)</div>", "\n[Note]====\n$1\n====\n");
+
+
+                    }
+
+                    writer.write(content);
                     writer.close();
 
 
@@ -467,11 +483,15 @@ public class SiteExporter implements Runnable {
                     String converted = systemOutput(process);
 
                     String extension=format;
-                    if ( "asciidoc".equals(extension) ) {
+                    if ( "asciidoc".equals(format) ) {
                         extension = "adoc";
 
                         // This fixes up the header on the code listings.
                         converted = converted.replaceAll("code,brush:,([^;]+);,gutter:,false;,theme:,Default(-+)\\ncode,brush:,[^;]+;,gutter:,false;,theme:,Default", "[source,$1]\n$2");
+                        converted = converted.replaceAll(Pattern.quote("[Info]===="), "[Info]\n====\n");
+                        converted = converted.replaceAll(Pattern.quote("[Tip]===="), "[Tip]\n====\n");
+                        converted = converted.replaceAll(Pattern.quote("[Warning]===="), "[Warning]\n====\n");
+                        converted = converted.replaceAll(Pattern.quote("[Note]===="), "[Note]\n====\n");
                     }
 
                     file.delete();
