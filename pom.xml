@@ -120,7 +120,7 @@
                             <argument>${svn.arg2}</argument>
                             <!--argument>-force</argument-->
                             <argument>${basedir}/template/main.cfg</argument>
-                            <argument>${basedir}/template/docs.cfg</argument>
+                            <!--<argument>${basedir}/template/docs.cfg</argument>-->
                         </arguments>
                     </configuration>
                 </plugin>

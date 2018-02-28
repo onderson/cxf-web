@@ -144,14 +144,12 @@ public class SiteExporter implements Runnable {
     String pageCacheFile = "pagesConfig.obj";
     String templateName = "template/template.vm";
     String mainDivClass;
-    boolean forceAll;
-    private String format = "html";
     String breadCrumbRoot;
-    
-    File outputDir = rootOutputDir;
-
     Template template;
     Space space;
+    File outputDir = rootOutputDir;
+    boolean forceAll;
+    private String format = "html";
     
 
     public SiteExporter(String fileName, boolean force) throws Exception {
@@ -196,7 +194,7 @@ public class SiteExporter implements Runnable {
         VelocityEngine engine = new VelocityEngine();
         engine.init(props);
 
-        if( format.equals("html") ) {
+        if ("html".equals(format)) {
             URL url = ClassLoaderUtils.getResource(templateName, this.getClass());
             if (url == null) {
                 File file = new File(templateName);
@@ -429,7 +427,7 @@ public class SiteExporter implements Runnable {
             try {
                 loadPageContent(p, null, null);
 
-                if( format.equals("html") ) {
+                if ("html".equals(format)) {
                     VelocityContext ctx = new VelocityContext();
                     ctx.put("autoexport", this);
                     ctx.put("page", p);
@@ -458,16 +456,20 @@ public class SiteExporter implements Runnable {
                     FileWriter writer = new FileWriter(file);
                     String content = p.getContent();
 
-                    if ( "asciidoc".equals(format) ) {
-                        if( content.contains("confluence-information-macro") ) {
-                            System.out.println("confluence-information-macro in "+file);
+                    if ("asciidoc".equals(format)) {
+                        if (content.contains("confluence-information-macro")) {
+                            System.out.println("confluence-information-macro in " + file);
                         }
                         // pandoc does not work with admonition blocks well....
                         content = content.replaceAll("<p class=\"title\">(.*?)</p>", "<strong>$1</strong>");
-                        content = content.replaceAll("<div class=\"confluence-information-macro confluence-information-macro-information\">(.*?)</div>", "\n[Info]====\n$1\n====\n");
-                        content = content.replaceAll("<div class=\"confluence-information-macro confluence-information-macro-tip\">(.*?)</div>", "\n[Tip]====\n$1\n====\n");
-                        content = content.replaceAll("<div class=\"confluence-information-macro confluence-information-macro-warning\">(.*?)</div>", "\n[Warning]====\n$1\n====\n");
-                        content = content.replaceAll("<div class=\"confluence-information-macro confluence-information-macro-note\">(.*?)</div>", "\n[Note]====\n$1\n====\n");
+                        content = content.replaceAll("<div class=\"confluence-information-macro "
+                                + "confluence-information-macro-information\">(.*?)</div>", "\n[Info]====\n$1\n====\n");
+                        content = content.replaceAll("<div class=\"confluence-information-macro "
+                                + "confluence-information-macro-tip\">(.*?)</div>", "\n[Tip]====\n$1\n====\n");
+                        content = content.replaceAll("<div class=\"confluence-information-macro "
+                                + "confluence-information-macro-warning\">(.*?)</div>", "\n[Warning]====\n$1\n====\n");
+                        content = content.replaceAll("<div class=\"confluence-information-macro "
+                                + "confluence-information-macro-note\">(.*?)</div>", "\n[Note]====\n$1\n====\n");
 
 
                     }
@@ -482,12 +484,13 @@ public class SiteExporter implements Runnable {
 
                     String converted = systemOutput(process);
 
-                    String extension=format;
-                    if ( "asciidoc".equals(format) ) {
+                    String extension = format;
+                    if ("asciidoc".equals(format)) {
                         extension = "adoc";
 
                         // This fixes up the header on the code listings.
-                        converted = converted.replaceAll("code,brush:,([^;]+);,gutter:,false;,theme:,Default(-+)\\ncode,brush:,[^;]+;,gutter:,false;,theme:,Default", "[source,$1]\n$2");
+                        converted = converted.replaceAll("code,brush:,([^;]+);,gutter:,false;,theme:,"
+                                + "Default(-+)\\ncode,brush:,[^;]+;,gutter:,false;,theme:,Default", "[source,$1]\n$2");
                         converted = converted.replaceAll(Pattern.quote("[Info]===="), "[Info]\n====\n");
                         converted = converted.replaceAll(Pattern.quote("[Tip]===="), "[Tip]\n====\n");
                         converted = converted.replaceAll(Pattern.quote("[Warning]===="), "[Warning]\n====\n");
@@ -495,7 +498,7 @@ public class SiteExporter implements Runnable {
                     }
 
                     file.delete();
-                    file = new File(outputDir, p.createFileNameNoExtension()+"."+extension);
+                    file = new File(outputDir, p.createFileNameNoExtension() + "." + extension);
                     writer = new FileWriter(file);
                     writer.write(converted);
                     writer.close();
@@ -515,8 +518,9 @@ public class SiteExporter implements Runnable {
         InputStream is = process.getInputStream();
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            byte data[] = new byte[1024*4];
-            for( int c=is.read(data) ; c > 0 ; c=is.read(data) ) {
+            byte data[] = new byte[1024 * 4];
+            int c;
+            for (c = is.read(data); c > 0; c = is.read(data)) {
                 baos.write(data, 0, c);
             }
             result = new String(baos.toByteArray());
@@ -524,17 +528,17 @@ public class SiteExporter implements Runnable {
             is.close();
         }
         int rc = process.waitFor();
-        if( rc == 0 ) {
+        if (rc == 0) {
             return result;
         } else {
-            throw new IOException("Process failed with exit code: "+rc);
+            throw new IOException("Process failed with exit code: " + rc);
         }
 
     }
 
     private void renderBlog() throws Exception {
 
-        if( !format.equals("html") ) {
+        if (!"html".equals(format)) {
             return;
         }
 
