@@ -1,0 +1,82 @@
+[[ConfluenceContent]]
+[[MSV-MSVComponent]]
+MSV Component
+~~~~~~~~~~~~~
+
+The MSV component performs XML validation of the message body using the
+https://msv.dev.java.net/[MSV Library] and any of the supported XML
+schema languages, such as http://www.w3.org/XML/Schema[XML Schema] or
+http://relaxng.org/[RelaxNG XML Syntax].
+
+Maven users will need to add the following dependency to their `pom.xml`
+for this component:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<dependency>
+    <groupId>org.apache.camel</groupId>
+    <artifactId>camel-msv</artifactId>
+    <version>x.x.x</version>
+    <!-- use the same version as your Camel core version -->
+</dependency>
+----
+
+Note that the link:jing.html[Jing] component also supports
+http://relaxng.org/compact-tutorial-20030326.html[RelaxNG Compact
+Syntax]
+
+[[MSV-URIformat]]
+URI format
+^^^^^^^^^^
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+msv:someLocalOrRemoteResource[?options]
+----
+
+Where *someLocalOrRemoteResource* is some URL to a local resource on the
+classpath or a full URL to a remote resource or resource on the file
+system. For example
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+msv:org/foo/bar.rng
+msv:file:../foo/bar.rng
+msv:http://acme.com/cheese.rng
+----
+
+You can append query options to the URI in the following format,
+`?option=value&option=value&...`
+
+[[MSV-Options]]
+Options
+^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Option |Default |Description
+|`useDom` |`true` |Whether DOMSource/DOMResult or SaxSource/SaxResult
+should be used by the validator. *Note:* DOM must be used by the
+link:msv.html[MSV] component.
+|=======================================================================
+
+[[MSV-Example]]
+Example
+^^^^^^^
+
+The following
+http://svn.apache.org/repos/asf/camel/trunk/components/camel-msv/src/test/resources/org/apache/camel/component/validator/msv/camelContext.xml[example]
+shows how to configure a route from endpoint *direct:start* which then
+goes to one of two endpoints, either *mock:valid* or *mock:invalid*
+based on whether or not the XML matches the given
+http://relaxng.org/[RelaxNG XML Schema] (which is supplied on the
+classpath).
+
+[[MSV-SeeAlso]]
+See Also
+^^^^^^^^
+
+* link:configuring-camel.html[Configuring Camel]
+* link:component.html[Component]
+* link:endpoint.html[Endpoint]
+* link:getting-started.html[Getting Started]

@@ -1,0 +1,87 @@
+[[ConfluenceContent]]
+[[HL7DataFormat-HL7DataFormat]]
+HL7 DataFormat
+^^^^^^^^^^^^^^
+
+The link:hl7.html[HL7] component ships with a HL7 data format that can
+be used to marshal or unmarshal HL7 model objects.
+
+* `marshal` = from Message to byte stream (can be used when responding
+using the HL7 MLLP codec)
+* `unmarshal` = from byte stream to Message (can be used when receiving
+streamed data from the HL7 MLLP
+
+To use the data format, simply instantiate an instance and invoke the
+marshal or unmarshal operation in the route builder:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+  DataFormat hl7 = new HL7DataFormat();
+  ...
+  from("direct:hl7in").marshal(hl7).to("jms:queue:hl7out");
+----
+
+In the sample above, the HL7 is marshalled from a HAPI Message object to
+a byte stream and put on a JMS queue. +
+The next example is the opposite:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+  DataFormat hl7 = new HL7DataFormat();
+  ...
+  from("jms:queue:hl7out").unmarshal(hl7).to("patientLookupService");
+----
+
+Here we unmarshal the byte stream into a HAPI Message object that is
+passed to our patient lookup service.
+
+[Tip]
+====
+ **Serializable messages**
+
+As of HAPI 2.0 (used by *Camel 2.11*), the HL7v2 model classes are fully
+serializable. So you can put HL7v2 messages directly into a JMS queue
+(i.e. without calling `marshal()` and read them again directly from the
+queue (i.e. without calling `unmarshal()`.
+
+====
+
+[Note]
+====
+ **Segment separators**
+
+As of *Camel 2.11*, `unmarshal` does not automatically fix segment
+separators anymore by converting `\n` to `\r`. If you +
+need this conversion, `org.apache.camel.component.hl7.HL7#convertLFToCR`
+provides a handy `Expression` for this purpose.
+
+====
+
+[Note]
+====
+ **Charset**
+
+As of *Camel 2.14.1*, both `marshal and unmarshal` evaluate the charset
+provided in the field `MSH-18`. If this field is empty, by default the
+charset contained in the corresponding Camel charset property/header is
+assumed. You can even change this default behavior by overriding the
+`guessCharsetName` method when inheriting from the `HL7DataFormat`
+class.
+
+====
+
+ 
+
+There is a shorthand syntax in Camel for well-known data formats that
+are commonly used. +
+Then you don't need to create an instance of the `HL7DataFormat` object:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+  from("direct:hl7in").marshal().hl7().to("jms:queue:hl7out");
+  from("jms:queue:hl7out").unmarshal().hl7().to("patientLookupService");
+----
+
+ 
+
+ 

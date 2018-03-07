@@ -1,0 +1,3 @@
+[[ConfluenceContent]]
+* link:eip.html[EIP]
+* link:manual-downloads.html[Manual Downloads]

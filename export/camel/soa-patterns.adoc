@@ -1,0 +1,21 @@
+[[ConfluenceContent]]
+There is a pattern directory called http://www.soapatterns.org/[SOA
+Patterns] which lists a whole bunch of useful patterns.
+
+This experimental wiki page allows us over time to build up a list of
+http://www.soapatterns.org/[SOA Patterns] which Camel does implement
+rather like we do for the
+link:enterprise-integration-patterns.html[Enterprise Integration
+Patterns]
+
+[[SOAPatterns-SOAPatterns]]
+SOA Patterns
+~~~~~~~~~~~~
+
+[width="100%",cols="34%,33%,33%",]
+|=======================================================================
+|image:http://www.soapatterns.org/asynchronous_queuing.png[image]
+|link:asynchronous-queueing.html[Asynchronous Queueing] |When a service
+capability requires that consumers interact with it synchronously, it
+can inhibit performance and compromise reliability.
+|=======================================================================

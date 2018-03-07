@@ -1,0 +1,426 @@
+[[ConfluenceContent]]
+[[CXFRS-CXFRSComponent]]
+CXFRS Component
+~~~~~~~~~~~~~~~
+
+When using CXF as a consumer, the link:cxf-bean-component.html[CXF Bean
+Component] allows you to factor out how message payloads are received
+from their processing as a RESTful or SOAP web service. This has the
+potential of using a multitude of transports to consume web services.
+The bean component's configuration is also simpler and provides the
+fastest method to implement web services using Camel and CXF.
+
+The *cxfrs:* component provides integration with
+http://cxf.apache.org[Apache CXF] for connecting to JAX-RS 1.1 and 2.0
+services hosted in CXF.
+
+Maven users will need to add the following dependency to their pom.xml
+for this component:
+
+xml<dependency> <groupId>org.apache.camel</groupId>
+<artifactId>camel-cxf</artifactId> <version>x.x.x</version> <!-- use the
+same version as your Camel core version --> </dependency>
+
+[[CXFRS-URIformat]]
+URI format
+^^^^^^^^^^
+
+javacxfrs://address?options
+
+Where *address* represents the CXF endpoint's address
+
+javacxfrs:bean:rsEndpoint
+
+Where *rsEndpoint* represents the spring bean's name which presents the
+CXFRS client or server
+
+For either style above, you can append options to the URI as follows:
+
+javacxfrs:bean:cxfEndpoint?resourceClasses=org.apache.camel.rs.Example
+
+[[CXFRS-Options]]
+Options
+^^^^^^^
+
+[width="100%",cols="20%,20%,20%,20%,20%",options="header",]
+|=======================================================================
+|Name |Description |Example |Required? |default value
+|`resourceClasses` |The resource classes which you want to export as
+REST service. Multiple classes can be separated by comma.
+|`resourceClasses=org.apache.camel.rs.Example1,` +
+`org.apache.camel.rs.Exchange2` |No |_None_
+
+|`resourceClass` |*Deprecated*: Use `resourceClasses` The resource class
+which you want to export as REST service.
+|`resourceClass =org.apache.camel.rs.Example1` |No |_None_
+
+|`httpClientAPI` |*new to Camel 2.1* If it is true, the CxfRsProducer
+will use the HttpClientAPI to invoke the service +
+If it is false, the CxfRsProducer will use the ProxyClientAPI to invoke
+the service |httpClientAPI=true |No |_true_
+
+|`synchronous` a|
+This option will let you decide to use sync or async API to do the
+underlying work. The default value is false which means it will try to
+use async API by default.
+
+This option is available as of *2.5* for CxfRsConsumer and as of *2.19*
+for CxfRsProducer.
+
+ |synchronous=true |No |false
+
+|`throwExceptionOnFailure` |New in 2.6, this option tells the
+CxfRsProducer to inspect return codes and will generate an Exception if
+the return code is larger than 207. |throwExceptionOnFailure=true |No
+|true
+
+|`maxClientCacheSize` |New in 2.6, you can set a IN message header
+CamelDestinationOverrideUrl to dynamically override the target
+destination Web Service or REST Service defined in your routes.  The
+implementation caches CXF clients or ClientFactoryBean in CxfProvider
+and CxfRsProvider.  This option allows you to configure the maximum size
+of the cache. |maxClientCacheSize=5 |No |10
+
+|`setDefaultBus` |New in 2.9.0. *deprecated* use defaultBus option from
+Camel 2.16 onwards. Will set the default bus when CXF endpoint create a
+bus by itself |`setDefaultBus=true` |No |_false_
+
+|`defaultBus` |*Camel 2.16:* Will set the default bus when CXF endpoint
+create a bus by itself |`defaultBus=true` |No |_false_
+
+|`bus` |New in 2.9.0. A default bus created by CXF Bus Factory. Use `#`
+notation to reference a bus object from the registry. The referenced
+object must be an instance of `org.apache.cxf.Bus`. |`bus=#busName` |No
+|_None_
+
+|`bindingStyle` a|
+*As of 2.11*. Sets how requests and responses will be mapped to/from
+Camel. Two values are possible:
+
+* `SimpleConsumer` => see the link:cxfrs.html[Consuming a REST Request
+with the Simple Binding Style] below.
+* `Default` => the default style. For consumers this passes on a
+`MessageContentsList` to the route, requiring low-level processing in
+the route.
+* Custom => allows you to specify a custom binding through the `binding`
+option.
+
+ |`bindingStyle=SimpleConsumer` |No |_Default_
+
+|`binding` |Allows you to specify a custom `CxfRsBinding` implementation
+to perform low-level processing of the raw CXF request and response
+objects. The implementation must be bound in the Camel registry, and you
+must use the hash (#) notation to refer to it. |`binding=#myBinding` |No
+|`DefaultCxfRsBinding`
+
+|`providers` |**Since Camel 2.12.2** set custom JAX-RS providers list to
+the CxfRs endpoint. |`providers=#MyProviders` |No |_None_
+
+|`schemaLocations` |**Since Camel 2.12.2** Sets the locations of the
+schemas which can be used to validate the incoming XML or JAXB-driven
+JSON. |`schemaLocations=#MySchemaLocations` |No |_None_
+
+|`features` |**Since Camel 2.12.3** Set the feature list to the CxfRs
+endpoint. |`features=#MyFeatures` |No |_None_
+
+|`properties` |**Since Camel 2.12.4** Set the properties to the CxfRs
+endpoint. |`properties=#MyProperties` |No |_None_
+
+|`inInterceptors` |**Since Camel 2.12.4** Set the inInterceptors to the
+CxfRs endpoint. |`inInterceptors=#MyInterceptors` |No |_None_
+
+|`outInterceptors` |**Since Camel 2.12.4** Set the outInterceptor to the
+CxfRs endpoint. |`outInterceptors=#MyInterceptors` |No |_None_
+
+|`inFaultInterceptors` |**Since Camel 2.12.4** Set the
+inFaultInterceptors to the CxfRs endpoint.
+|`inFaultInterceptors=#MyInterceptors` |No |_None_
+
+|`outFaultIntercetpros` |**Since Camel 2.12.4** Set the
+outFaultInterceptors to the CxfRs endpoint.
+|`outFaultInterceptors=#MyInterceptors` |No |_None_
+
+|`continuationTimeout` |*Since* **Camel 2.14.0 **This option is used to
+set the CXF continuation timeout which could be used in CxfConsumer by
+default when the CXF server is using Jetty or Servlet transport.
+(Before **Camel 2.14.0**, CxfConsumer just set the continuation timeout
+to be 0, which means the continuation suspend operation never timeout.)
+|`continuationTimeout=800000` |No |_30000_
+
+|`ignoreDeleteMethodMessageBody` |*Since Camel 2.14.1* This option is
+used to tell CxfRsProducer to ignore the message body of the DELETE
+method when using HTTP API. |`ignoreDeleteMethodMessageBody=true` |No
+|_false_
+
+|`modelRef` a|
+*Since Camel 2.14.2* This option is used to specify the
+http://cxf.apache.org/docs/jax-rs-advanced-features.html#JAX-RSAdvancedFeatures-RESTfulserviceswithoutannotations[model
+file] which is useful for the resource class without annotation.
+
+*Since Camel 2.15* This option can point to a model file without
+specifying a service class for emulating document-only endpoints
+
+
+|`modelRef=`http://classpath/org/apache/camel/component/cxf/jaxrs/CustomerServiceModel.xml[classpath:/CustomerServiceModel.xml]
+|No |_None_
+
+|`performInvocation` |*Since Camel 2.15* When the option is true, camel
+will perform the invocation of the resource class instance and put the
+response object into the exchange for further processing.
+|`performInvocation= true` |No |_false_
+
+|`propagateContexts` |*Since Camel 2.15* When the option is true, JAXRS
+https://jax-rs-spec.java.net/nonav/2.0-rev-a/apidocs/javax/ws/rs/core/UriInfo.html[UriInfo],
+https://jax-rs-spec.java.net/nonav/2.0-rev-a/apidocs/javax/ws/rs/core/HttpHeaders.html[HttpHeaders],
+https://jax-rs-spec.java.net/nonav/2.0-rev-a/apidocs/javax/ws/rs/core/Request.html[Request]
+and
+https://jax-rs-spec.java.net/nonav/2.0-rev-a/apidocs/javax/ws/rs/core/SecurityContext.html[SecurityContext]
+contexts will be available to custom CXFRS processors as typed Camel
+exchange properties. These contexts can be used to analyze the current
+requests using JAX-RS API. |  |  | 
+
+|`loggingFeatureEnabled` |This option enables CXF Logging Feature which
+writes inbound and outbound REST messages to log. |  |No |_false_
+
+|`skipFaultLogging` |This option controls whether the
+`PhaseInterceptorChain` skips logging the Fault that it catches. |  |No
+|_false_
+
+|`loggingSizeLimit` |To limit the total size of number of bytes the
+logger will output when logging feature has been enabled. |  |No |`0`
+
+|`cookieHandler` |Since *Camel 2.19.0* Configure a cookie handler to
+maintain a HTTP session |`cookieHandler=#exchangeCookieHandler` |No
+|_None_
+|=======================================================================
+
+You can also configure the CXF REST endpoint through the spring
+configuration. Since there are lots of difference between the CXF REST
+client and CXF REST Server, we provide different configuration for
+them. +
+Please check out the
+http://svn.apache.org/repos/asf/camel/trunk/components/camel-cxf/src/main/resources/schema/cxfEndpoint.xsd[schema
+file] and https://cwiki.apache.org/CXF20DOC/JAX-RS[CXF JAX-RS
+documentation] for more information.
+
+[[CXFRS-HowtoconfiguretheRESTendpointinCamel]]
+How to configure the REST endpoint in Camel
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In
+http://svn.apache.org/repos/asf/camel/trunk/components/camel-cxf/src/main/resources/schema/cxfEndpoint.xsd[camel-cxf
+schema file], there are two elements for the REST endpoint definition.
+*cxf:rsServer* for REST consumer, *cxf:rsClient* for REST producer. +
+You can find a Camel REST service route configuration example
+here.\{snippet:id=cxfRsExample|lang=xml|url=camel/trunk/components/camel-cxf/src/test/resources/org/apache/camel/component/cxf/jaxrs/CxfRsSpringRouter.xml}
+
+[[CXFRS-HowtooverridetheCXFproduceraddressfrommessageheader]]
+How to override the CXF producer address from message header
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The `camel-cxfrs` producer supports to override the services address by
+setting the message with the key of "CamelDestinationOverrideUrl".
+
+// set up the service address from the message header to override the
+setting of CXF endpoint
+exchange.getIn().setHeader(Exchange.DESTINATION_OVERRIDE_URL,
+constant(getServiceAddress()));
+
+[[CXFRS-ConsumingaRESTRequest-SimpleBindingStyle]]
+Consuming a REST Request - Simple Binding Style
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available as of Camel 2.11*
+
+The `Default` binding style is rather low-level, requiring the user to
+manually process the `MessageContentsList` object coming into the route.
+Thus, it tightly couples the route logic with the method signature and
+parameter indices of the JAX-RS operation. Somewhat inelegant, difficult
+and error-prone.
+
+In contrast, the `SimpleConsumer` binding style performs the following
+mappings, in order to *make the request data more accessible* to you
+within the Camel Message:
+
+* JAX-RS Parameters (@HeaderParam, @QueryParam, etc.) are injected as IN
+message headers. The header name matches the value of the annotation.
+* The request entity (POJO or other type) becomes the IN message body.
+If a single entity cannot be identified in the JAX-RS method signature,
+it falls back to the original `MessageContentsList`.
+* Binary `@Multipart` body parts become IN message attachments,
+supporting `DataHandler`, `InputStream`, `DataSource` and CXF's
+`Attachment` class.
+* Non-binary `@Multipart` body parts are mapped as IN message headers.
+The header name matches the Body Part name.
+
+Additionally, the following rules apply to the *Response mapping*:
+
+* If the message body type is different to `javax.ws.rs.core.Response`
+(user-built response), a new `Response` is created and the message body
+is set as the entity (so long it's not null). The response status code
+is taken from the `Exchange.HTTP_RESPONSE_CODE` header, or defaults to
+200 OK if not present.
+* If the message body type is equal to `javax.ws.rs.core.Response`, it
+means that the user has built a custom response, and therefore it is
+respected and it becomes the final response.
+* In all cases, Camel headers permitted by custom or default
+`HeaderFilterStrategy` are added to the HTTP response.
+
+[[CXFRS-EnablingtheSimpleBindingStyle]]
+Enabling the Simple Binding Style
++++++++++++++++++++++++++++++++++
+
+This binding style can be activated by setting the `bindingStyle`
+parameter in the consumer endpoint to value `SimpleConsumer`:
+
+java from("cxfrs:bean:rsServer?bindingStyle=SimpleConsumer")
+.to("log:TEST?showAll=true");
+
+[[CXFRS-Examplesofrequestbindingwithdifferentmethodsignatures]]
+Examples of request binding with different method signatures
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Below is a list of method signatures along with the expected result from
+the Simple binding.
+
+*`public Response doAction(BusinessObject request);`* +
+Request payload is placed in IN message body, replacing the original
+MessageContentsList.
+
+*`public Response doAction(BusinessObject request, @HeaderParam("abcd") String abcd, @QueryParam("defg") String defg);`* +
+Request payload placed in IN message body, replacing the original
+MessageContentsList. Both request params mapped as IN message headers
+with names abcd and defg.
+
+*`public Response doAction(@HeaderParam("abcd") String abcd, @QueryParam("defg") String defg);`* +
+Both request params mapped as IN message headers with names abcd and
+defg. The original MessageContentsList is preserved, even though it only
+contains the 2 parameters.
+
+*`public Response doAction(@Multipart(value="body1") BusinessObject request, @Multipart(value="body2") BusinessObject request2);`* +
+The first parameter is transferred as a header with name body1, and the
+second one is mapped as header body2. The original MessageContentsList
+is preserved as the IN message body.
+
+*`public Response doAction(InputStream abcd);`* +
+The InputStream is unwrapped from the MessageContentsList and preserved
+as the IN message body.
+
+*`public Response doAction(DataHandler abcd);`* +
+The DataHandler is unwrapped from the MessageContentsList and preserved
+as the IN message body.
+
+[[CXFRS-MoreexamplesoftheSimpleBindingStyle]]
+More examples of the Simple Binding Style
++++++++++++++++++++++++++++++++++++++++++
+
+Given a JAX-RS resource class with this method:
+
+java @POST @Path("/customers/\{type}") public Response
+newCustomer(Customer customer, @PathParam("type") String type,
+@QueryParam("active") @DefaultValue("true") boolean active) \{ return
+null; }
+
+Serviced by the following route:
+
+java from("cxfrs:bean:rsServer?bindingStyle=SimpleConsumer")
+.recipientList(simple("direct:$\{header.operationName}"));
+from("direct:newCustomer") .log("Request: type=$\{header.type},
+active=$\{header.active}, customerData=$\{body}");
+
+The following HTTP request with XML payload (given that the Customer DTO
+is JAXB-annotated):
+
+xmlPOST /customers/gold?active=true Payload: <Customer> <fullName>Raul
+Kripalani</fullName> <country>Spain</country> <project>Apache
+Camel</project> </Customer>
+
+Will print the message:
+
+xmlRequest: type=gold, active=true, customerData=<Customer.toString()
+representation>
+
+For more examples on how to process requests and write responses can be
+found
+https://svn.apache.org/repos/asf/camel/trunk/components/camel-cxf/src/test/java/org/apache/camel/component/cxf/jaxrs/simplebinding/[here].
+
+[[CXFRS-ConsumingaRESTRequest-DefaultBindingStyle]]
+Consuming a REST Request - Default Binding Style
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The https://cwiki.apache.org/CXF20DOC/JAX-RS[CXF JAXRS front end]
+implements the https://jsr311.java.net/[JAX-RS (JSR-311) API], so we can
+export the resources classes as a REST service. And we leverage the
+http://cwiki.apache.org/confluence/display/CXF20DOC/Invokers[CXF Invoker
+API] to turn a REST request into a normal Java object method
+invocation. +
+Unlike the link:restlet.html[Camel Restlet] component, you don't need to
+specify the URI template within your endpoint, CXF takes care of the
+REST request URI to resource class method mapping according to the
+JSR-311 specification. All you need to do in Camel is delegate this
+method request to a right processor or endpoint.
+
+Here is an example of a CXFRS
+route...\{snippet:id=example|lang=java|url=camel/trunk/components/camel-cxf/src/test/java/org/apache/camel/component/cxf/jaxrs/CxfRsConsumerTest.java}And
+the corresponding resource class used to configure the endpoint...
+
+Note about resource classes
+
+By default, JAX-RS resource classes are *only* used to configure JAX-RS
+properties. Methods will *not* be executed during routing of messages to
+the endpoint. Instead, it is the responsibility of the route to do all
+processing.
+
+Note that starting from Camel 2.15 it is also sufficient to provide an
+interface only as opposed to a no-op service implementation class for
+the default mode.
+
+Starting from Camel 2.15, if a *performInvocation* option is enabled,
+the service implementation will be invoked first, the response will be
+set on the Camel exchange and the route execution will continue as
+usual. This can be useful for
+
+integrating the existing JAX-RS implementations into Camel routes and
+for post-processing JAX-RS Responses in custom processors.
+
+ 
+
+\{snippet:id=example|lang=java|url=camel/trunk/components/camel-cxf/src/test/java/org/apache/camel/component/cxf/jaxrs/testbean/CustomerServiceResource.java}
+
+[[CXFRS-HowtoinvoketheRESTservicethroughcamel-cxfrsproducer]]
+How to invoke the REST service through camel-cxfrs producer
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The https://cwiki.apache.org/CXF20DOC/JAX-RS[CXF JAXRS front end]
+implements
+https://cwiki.apache.org/CXF20DOC/JAX-RS+Client+API#JAX-RSClientAPI-Proxy-basedAPI[a
+proxy-based client API], with this API you can invoke the remote REST
+service through a proxy. The `camel-cxfrs` producer is based on this
+https://cwiki.apache.org/CXF20DOC/JAX-RS+Client+API#JAX-RSClientAPI-Proxy-basedAPI[proxy
+API]. +
+You just need to specify the operation name in the message header and
+prepare the parameter in the message body, the camel-cxfrs producer will
+generate right REST request for you.
+
+Here is an
+example:\{snippet:id=ProxyExample|lang=java|url=camel/trunk/components/camel-cxf/src/test/java/org/apache/camel/component/cxf/jaxrs/CxfRsProducerTest.java}The https://cwiki.apache.org/CXF20DOC/JAX-RS[CXF
+JAXRS front end] also provides
+https://cwiki.apache.org/confluence/display/CXF20DOC/JAX-RS+Client+API#JAX-RSClientAPI-CXFWebClientAPI[a
+http centric client API]. You can also invoke this API from
+`camel-cxfrs` producer. You need to specify the
+http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/Exchange.html#HTTP_PATH[HTTP_PATH]
+and
+the http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/Exchange.html#HTTP_METHOD[HTTP_METHOD] and
+let the producer use the http centric client API by using the URI option
+*httpClientAPI* or by setting the message header
+http://camel.apache.org/maven/current/camel-cxf/apidocs/org/apache/camel/component/cxf/CxfConstants.html#CAMEL_CXF_RS_USING_HTTP_API[CxfConstants.CAMEL_CXF_RS_USING_HTTP_API].
+You can turn the response object to the type class specified with the
+message
+header http://camel.apache.org/maven/current/camel-cxf/apidocs/org/apache/camel/component/cxf/CxfConstants.html#CAMEL_CXF_RS_RESPONSE_CLASS[CxfConstants.CAMEL_CXF_RS_RESPONSE_CLASS].\{snippet:id=HttpExample|lang=java|url=camel/trunk/components/camel-cxf/src/test/java/org/apache/camel/component/cxf/jaxrs/CxfRsProducerTest.java}From
+Camel 2.1, we also support to specify the query parameters from cxfrs
+URI for the CXFRS http centric
+client.\{snippet:id=QueryExample|lang=java|url=camel/trunk/components/camel-cxf/src/test/java/org/apache/camel/component/cxf/jaxrs/CxfRsProducerTest.java}To
+support the Dynamical routing, you can override the URI's query
+parameters by using the CxfConstants.CAMEL_CXF_RS_QUERY_MAP header to
+set the parameter map for
+it.\{snippet:id=QueryMapExample|lang=java|url=camel/trunk/components/camel-cxf/src/test/java/org/apache/camel/component/cxf/jaxrs/CxfRsProducerTest.java}

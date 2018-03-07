@@ -1,0 +1,60 @@
+[[ConfluenceContent]]
+[[SpringBootExample-SpringBootExample]]
+Spring Boot Example
+~~~~~~~~~~~~~~~~~~~
+
+The
+https://github.com/apache/camel/tree/master/examples/camel-example-spring-boot[Spring
+Boot example] shows how to work with the simple Camel application based
+on link:spring-boot.html[Spring Boot].
+
+The example generates messages using timer trigger, writes them to
+standard output and the mock endpoint (for testing purposes).
+
+This example exposes Jolokia API and Spring Boot actuators endpoints
+(like metrics) via the webmvc endpoint. We consider this as best
+practice - Spring Boot applications with these APIs exposed can be
+easily monitored and managed by 3rd party tools. We also recommend to
+package your application as a fat WAR. Fat WARs can be executed just as
+regular fat jars, but you can also deploy them to the servlet containers
+like Tomcat. The "_Fat WAR approach_" offers you deployment flexibility,
+so we highly recommend it.
+
+You will need to compile this example first:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+  mvn install
+----
+
+To run the example type:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+mvn spring-boot:run
+----
+
+You can also execute the fat WAR directly:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+java -jar target/camel-example-spring-boot.war
+----
+
+You will see the message printed to the console every second. To stop
+the example hit *`Ctrl + C`*.
+
+From *Camel 2.17* the example ships with remote shell enabled which
+includes the Camel commands as well, so you can SSH into the running
+Camel application and use the camel commands to list / stop routes etc.
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+ssh -p 2000 user@localhost
+ 
+# use the password that spring-boot logs when it startup
+> camel route-list camel-1
+ Context        Route          Status              Total #       Failed #     Inflight #   Uptime
+ -------        -----          ------              -------       --------     ----------   ------
+ camel-1        route1         Started                  71              0              0   1 minute
+----

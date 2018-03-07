@@ -1,0 +1,124 @@
+[[ConfluenceContent]]
+image:http://activemq.apache.org/camel/download.data/camel-box-v1.0-150x200.png[image]
+
+[[Camel1.2.0Release-NewandNoteworthy]]
+New and Noteworthy
+~~~~~~~~~~~~~~~~~~
+
+Welcome to the 1.2.0 release which includes 61 new features,
+improvements and bug fixes such as...
+
+* link:data-format.html[Data Format] to support pluggable marshalling
+and unmarshalling of data in various formats like link:jaxb.html[JAXB],
+link:xmlbeans.html[XMLBeans], link:serialization.html[Serialization] or
+https://cwiki.apache.org/confluence/pages/createpage.action?spaceKey=CAMEL&title=Artix+Data+Services&linkCreation=true&fromPageId=67969[Artix
+Data Services]
+* hugely improved link:cxf.html[CXF] integration for working with JAX-WS
+and http://incubator.apache.org/cxf[Apache CXF] while reusing powerful
+Camel routing.
+* improved support for link:asynchronous-processing.html[Asynchronous
+Processing] within components such as for link:http.html[HTTP] and
+link:seda.html[SEDA]
+* improved OSGi support with both component discovery using the OSGi
+registry and turning Camel into OSGi bundles.
+* improved link:visualisation.html[Visualisation]
+* support for the full WSDL Message Exchange Patterns
+* more powerful link:bean-integration.html[Bean Integration]
+
+[[Camel1.2.0Release-NewComponents]]
+New Components
+^^^^^^^^^^^^^^
+
+* link:ibatis.html[iBatis] for easy integration with JDBC in addition to
+the link:jpa.html[JPA] component
+* link:stringtemplate.html[StringTemplate] for template based services
+* link:velocity.html[Velocity] for template based services
+
+[[Camel1.2.0Release-KnownIssues]]
+Known Issues
+~~~~~~~~~~~~
+
+[[Camel1.2.0Release-GettingtheBinaryDistributions]]
+Getting the Binary Distributions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Description |Download Link |PGP Signature file of download
+|Windows Distribution
+|http://archive.apache.org/dist/activemq/apache-camel/1.2.0/apache-camel-1.2.0.zip[apache-camel-1.2.0.zip]
+|http://archive.apache.org/dist/activemq/apache-camel/1.2.0/apache-camel-1.2.0.zip.asc[apache-camel-1.2.0.zip.asc]
+
+|Unix/Linux/Cygwin Distribution
+|http://archive.apache.org/dist/activemq/apache-camel/1.2.0/apache-camel-1.2.0.tar.gz[apache-camel-1.2.0.tar.gz]
+- this link does not work in Safari - please use FireFox
+|http://archive.apache.org/dist/activemq/apache-camel/1.2.0/apache-camel-1.2.0.tar.gz.asc[apache-camel-1.2.0.tar.gz.asc]
+|=======================================================================
+
+[Info]
+====
+ **The above URLs use redirection**
+
+The above URLs use the Apache Mirror system to redirect you to a
+suitable mirror for your download. Some users have experienced issues
+with some versions of browsers (e.g. some Safari browsers). If the
+download doesn't seem to work for you from the above URL then try using
+http://www.mozilla.com/en-US/firefox/[FireFox]
+
+====
+
+[[Camel1.2.0Release-GettingtheBinariesusingMaven2]]
+Getting the Binaries using Maven 2
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To use this release in your maven project, the proper dependency
+configuration that you should use in your
+http://maven.apache.org/guides/introduction/introduction-to-the-pom.html[Maven
+POM] is:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<dependency>
+  <groupId>org.apache.camel</groupId>
+  <artifactId>camel-core</artifactId>
+  <version>1.2.0</version>
+</dependency>
+----
+
+[[Camel1.2.0Release-GettingtheSourceCode]]
+Getting the Source Code
+~~~~~~~~~~~~~~~~~~~~~~~
+
+[[Camel1.2.0Release-SourceDistributions]]
+Source Distributions
+^^^^^^^^^^^^^^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Description |Download Link |PGP Signature file of download
+|Source for Windows
+|http://archive.apache.org/dist/activemq/apache-camel/1.2.0/apache-camel-1.2.0-src.zip[apache-camel-1.2.0-src.zip]
+|http://archive.apache.org/dist/activemq/apache-camel/1.2.0/apache-camel-1.2.0-src.zip.asc[apache-camel-1.2.0-src.zip.asc]
+
+|Source for Unix/Linux/Cygwin
+|http://archive.apache.org/dist/activemq/apache-camel/1.2.0/apache-camel-1.2.0-src.tar.gz[apache-camel-1.2.0-src.tar.gz]
+|http://archive.apache.org/dist/activemq/apache-camel/1.2.0/apache-camel-1.2.0-src.tar.gz.asc[apache-camel-1.2.0-src.tar.gz.asc]
+|=======================================================================
+
+[[Camel1.2.0Release-SVNTagCheckout]]
+SVN Tag Checkout
+^^^^^^^^^^^^^^^^
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+svn co https://svn.apache.org/repos/asf/activemq/camel/tags/camel-1.2.0
+----
+
+[[Camel1.2.0Release-Changelog]]
+Changelog
+~~~~~~~~~
+
+For a more detailed view of new features and bug fixes, see:
+
+* https://issues.apache.org/jira/secure/ReleaseNote.jspa?projectId=12311211&styleName=Html&version=12315672[JIRA
+Release notes for 1.2.0]

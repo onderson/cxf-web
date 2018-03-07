@@ -1,0 +1,35 @@
+[[ConfluenceContent]]
+[[SelectiveConsumer-SelectiveConsumer]]
+Selective Consumer
+^^^^^^^^^^^^^^^^^^
+
+The
+http://www.enterpriseintegrationpatterns.com/MessageSelector.html[Selective
+Consumer] from the link:enterprise-integration-patterns.html[EIP
+patterns] can be implemented in two ways
+
+image:http://www.enterpriseintegrationpatterns.com/img/MessageSelectorSolution.gif[image]
+
+The first solution is to provide a Message Selector to the underlying
+link:uris.html[URIs] when creating your consumer. For example when using
+link:jms.html[JMS] you can specify a selector parameter so that the
+message broker will only deliver messages matching your criteria.
+
+The other approach is to use a link:message-filter.html[Message Filter]
+which is applied; then if the filter matches the message your consumer
+is invoked as shown in the following example
+
+*Using the link:fluent-builders.html[Fluent Builders]*
+
+*Using the link:spring-xml-extensions.html[Spring XML Extensions]*
+
+[[SelectiveConsumer-UsingThisPattern]]
+Using This Pattern
+++++++++++++++++++
+
+If you would like to use this EIP Pattern then please read the
+link:getting-started.html[Getting Started], you may also find the
+link:architecture.html[Architecture] useful particularly the description
+of link:endpoint.html[Endpoint] and link:uris.html[URIs]. Then you could
+try out some of the link:examples.html[Examples] first before trying
+this pattern out.

@@ -1,0 +1,33 @@
+[[ConfluenceContent]]
+[[SpringEvent-SpringEventComponent]]
+Spring Event Component
+~~~~~~~~~~~~~~~~~~~~~~
+
+The *spring-event:* component provides access to the Spring
+`ApplicationEvent` objects. This allows you to publish
+`ApplicationEvent` objects to a Spring `ApplicationContext` or to
+consume them. You can then use
+link:enterprise-integration-patterns.html[Enterprise Integration
+Patterns] to process them such as link:message-filter.html[Message
+Filter].
+
+[[SpringEvent-URIformat]]
+URI format
+^^^^^^^^^^
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+spring-event://default[?options]
+----
+
+Note, at the moment there are no options for this component. That can
+easily change in future releases, so please check back.
+
+[[SpringEvent-SeeAlso]]
+See Also
+^^^^^^^^
+
+* link:configuring-camel.html[Configuring Camel]
+* link:component.html[Component]
+* link:endpoint.html[Endpoint]
+* link:getting-started.html[Getting Started]

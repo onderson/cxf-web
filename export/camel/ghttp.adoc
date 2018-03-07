@@ -1,0 +1,241 @@
+[[ConfluenceContent]]
+[[ghttp-ghttpComponent]]
+`ghttp` Component
+~~~~~~~~~~~~~~~~~
+
+*Available as of Camel 2.1* +
+The `ghttp` component contributes to the link:gae.html[Camel Components
+for Google App Engine] (GAE). It provides connectivity to the GAE
+http://code.google.com/appengine/docs/java/urlfetch/[URL fetch service]
+but can also be used to receive messages from servlets (the only way to
+receive HTTP requests on GAE). This is achieved by extending the
+`Servlet component`. As a consequence, `ghttp` URI formats and options
+sets differ on the consumer-side (`from`) and producer-side (`to`).
+
+[[ghttp-URIformat]]
+URI format
+^^^^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|========================================================
+|Format |Context |Comment
+a|
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+ghttp:///path[?options]
+----
+
+ |Consumer |See also link:servlet.html[Servlet component]
+a|
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+ghttp://hostname[:port][/path][?options]
+ghttps://hostname[:port][/path][?options]
+----
+
+ |Producer |See also link:http.html[Http component]
+|========================================================
+
+[[ghttp-Options]]
+Options
+^^^^^^^
+
+[width="100%",cols="25%,25%,25%,25%",options="header",]
+|=======================================================================
+|Name |Default Value |Context |Description
+|`bridgeEndpoint` |`true` |Producer |If set to `true` the
+`Exchange.HTTP_URI` header will be ignored. To override the default
+endpoint URI with the `Exchange.HTTP_URI` header set this option to
+`false`.
+
+|`throwExceptionOnFailure` |`true` |Producer |Throw a
+`org.apache.camel.component.gae.http` if the response code is >= 400. To
+disable throwing an exception set this option to `false`.
+
+|`inboundBindingRef` |reference to `GHttpBinding` |Consumer |Reference
+to an
+`InboundBinding<GHttpEndpoint, HttpServletRequest, HttpServletResponse>`
+in the link:registry.html[Registry] for customizing the binding of an
+`Exchange` to the Servlet API. The referenced binding is used as
+post-processor to `org.apache.camel.component.http.HttpBinding`.
+
+|`outboundBindingRef` |reference to `GHttpBinding` |Producer |Reference
+to an `OutboundBinding<GHttpEndpoint, HTTPRequest, HTTPResponse>` in the
+link:registry.html[Registry] for customizing the binding of an
+`Exchange` to the `URLFetchService`.
+|=======================================================================
+
+On the consumer-side, all options of the link:servlet.html[Servlet
+component] are supported.
+
+[[ghttp-Messageheaders]]
+Message headers
+^^^^^^^^^^^^^^^
+
+On the producer-side the following headers of the link:http.html[Http
+component] are supported.
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Name |Type |Description
+|`Exchange.CONTENT_TYPE` |`String` |The HTTP content type. Is set on
+both the `in` and `out` message to provide a content type, such as
+`text/html`.
+
+|`Exchange.CONTENT_ENCODING` |`String` |The HTTP content encoding. Is
+set on both the `in` and `out` message to provide a content encoding,
+such as `gzip`.
+
+|`Exchange.HTTP_METHOD` |`String` |The HTTP method to execute. One of
+`GET`, `POST`, `PUT` and `DELETE`. If not set, `POST` will be used if
+the message body is not `null`, `GET` otherwise.
+
+|`Exchange.HTTP_QUERY` |`String` |Overrides the query part of the
+endpoint URI or the the query part of `Exchange.HTTP_URI` (if defined).
+The query string must be in decoded form.
+
+|`Exchange.HTTP_URI` |`String` |Overrides the default endpoint URI if
+the `bridgeEndpoint` option is set to `false`. The URI string must be in
+decoded form.
+
+|`Exchange.RESPONSE_CODE` |`int` |The HTTP response code from URL fetch
+service responses.
+|=======================================================================
+
+On the consumer-side all headers of the link:servlet.html[Servlet
+component] component are supported.
+
+[[ghttp-Messagebody]]
+Message body
+^^^^^^^^^^^^
+
+On the producer side the `in` message body is converted to a `byte[]`.
+The `out` message body is made available as `InputStream`. If the
+reponse size exceeds 1 megabyte a
+http://code.google.com/appengine/docs/java/javadoc/[ResponseTooLargeException]
+is thrown by the URL fetch service (see
+http://code.google.com/appengine/docs/java/urlfetch/overview.html#Quotas_and_Limits[quotas
+and limits]).
+
+[[ghttp-Usage]]
+Usage
+^^^^^
+
+[[ghttp-Receivingmessages]]
+Receiving messages
+++++++++++++++++++
+
+For receiving messages via the `ghttp` component, a
+`CamelHttpTransportServlet` must be link:gae.html[configured and mapped]
+in the application's `web.xml`. For example, to handle requests targeted
+at `http://<appname>.appspot.com/camel/*` or `http://localhost/camel/*`
+(when using a local development server) the following servlet mapping
+must be defined:
+
+*web.xml*
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+    ...
+    <servlet>
+        <servlet-name>CamelServlet</servlet-name>
+        <servlet-class>org.apache.camel.component.servlet.CamelHttpTransportServlet</servlet-class>
+        ...
+    </servlet>
+    ...
+    <servlet-mapping>
+        <servlet-name>CamelServlet</servlet-name>
+        <url-pattern>/camel/*</url-pattern>
+    </servlet-mapping>
+    ...
+----
+
+Endpoint URI path definitions are relative to this servlet mapping e.g.
+the route
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from("ghttp:///greeting").transform().constant("Hello")
+----
+
+processes requests targeted at
+`http://<appname>.appspot.com/camel/greeting`. In this example, the
+request body is ignored and the response body is set to `Hello`.
+Requests targeted at `http://<appname>.appspot.com/camel/greeting/*` are
+not processed by default. This requires setting the option
+`matchOnUriPrefix` to `true`.
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from("ghttp:///greeting?matchOnUriPrefix=true").transform().constant("Hello")
+----
+
+[[ghttp-Sendingmessages]]
+Sending messages
+++++++++++++++++
+
+For sending resquests to external HTTP services the `ghttp` component
+uses the http://code.google.com/appengine/docs/java/urlfetch/[URL fetch
+service]. For example, the Camel homepage can the retrieved with the
+following endpoint definition on the producer-side.
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from(...)
+...
+.to("ghttp://camel.apache.org")
+...
+----
+
+The HTTP method used depends on the `Exchange.HTTP_METHOD` message
+header or on the presence of an in-message body (`GET` if `null`, `POST`
+otherwise). Retrieving the Camel homepage via a GAE application is as
+simple as
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from("ghttp:///home")
+.to("ghttp://camel.apache.org")
+----
+
+Sending a `GET` request to `http://<appname>.appspot.com/camel/home`
+returns the Camel homepage. HTTPS-based communication with external
+services can be enabled with the `ghttps` scheme.
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from(...)
+...
+.to("ghttps://svn.apache.org/repos/asf/camel/trunk/")
+...
+----
+
+[[ghttp-Dependencies]]
+Dependencies
+^^^^^^^^^^^^
+
+Maven users will need to add the following dependency to their
+`pom.xml`.
+
+*pom.xml*
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<dependency>
+    <groupId>org.apache.camel</groupId>
+    <artifactId>camel-gae</artifactId>
+    <version>x.x.x</version>
+</dependency>
+----
+
+[[ghttp-SeeAlso]]
+See Also
+^^^^^^^^
+
+* link:configuring-camel.html[Configuring Camel]
+* link:component.html[Component]
+* link:endpoint.html[Endpoint]
+* link:getting-started.html[Getting Started]
+
+* link:http.html[Http component]
+* link:servlet.html[Servlet Component]

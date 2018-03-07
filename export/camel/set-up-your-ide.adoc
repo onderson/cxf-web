@@ -1,0 +1,23 @@
+[[ConfluenceContent]]
+[[SetupyourIDE-Importsettingsandtemplates]]
+Import settings and templates
+-----------------------------
+
+[[SetupyourIDE-Eclipse]]
+Eclipse
+~~~~~~~
+
+* Install the
+http://marketplace.eclipse.org/content/checkstyle-plug[checkstyle
+plugin] via the Eclipse Marketplace
+* Import checkstyle settings from
+_etc/buildtools/src/main/resources/camel-checkstyle.xml_
+* Import the formatter from _etc/eclipse/CamelCodeFormatter.xml_
+* Import code templates from _etc/eclipse/camel_java_templates.xml_,
+_etc/eclipse/camel_xml_templates.xml_, _etc/eclipse/codetemplates.xml_
+
+[[SetupyourIDE-IntelliJIDEA]]
+IntelliJ IDEA
+~~~~~~~~~~~~~
+
+* Import settings from *etc/idea/settings.jar*

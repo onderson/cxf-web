@@ -1,0 +1,240 @@
+[[ConfluenceContent]]
+[[JBI-JBIComponent]]
+JBI Component
+~~~~~~~~~~~~~
+
+The *jbi* component is implemented by the
+http://servicemix.apache.org/servicemix-camel.html[ServiceMix Camel
+module] and provides integration with a JBI Normalized Message Router,
+such as the one provided by http://servicemix.apache.org/[Apache
+ServiceMix].
+
+See below for information about how to use `StreamSource` types from
+http://servicemix.apache.org/[ServiceMix] in Camel.
+
+The following code:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from("jbi:endpoint:http://foo.bar.org/MyService/MyEndpoint")
+----
+
+Automatically exposes a new endpoint to the bus, where the service QName
+is \{`http://foo.bar.org}MyService` and the endpoint name is
+`MyEndpoint` (see link:jbi.html[#URI-format]).
+
+When a JBI endpoint appears at the end of a route, for example:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+to("jbi:endpoint:http://foo.bar.org/MyService/MyEndpoint")
+----
+
+The messages sent by this producer endpoint are sent to the already
+deployed JBI endpoint.
+
+[[JBI-URI-format]]
+
+[[JBI-URIformat]]
+URI format
+^^^^^^^^^^
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+jbi:service:serviceNamespace[sep]serviceName[?options]
+jbi:endpoint:serviceNamespace[sep]serviceName[sep]endpointName[?options]
+jbi:name:endpointName[?options]
+----
+
+The separator that should be used in the endpoint URL is:
+
+* `/` (forward slash), if `serviceNamespace` starts with `http://`, or
+* `:` (colon), if `serviceNamespace` starts with `urn:foo:bar`.
+
+For more details of valid JBI URIs see the
+http://servicemix.apache.org/uris.html[ServiceMix URI Guide].
+
+Using the `jbi:service:` or `jbi:endpoint:` URI formats sets the service
+QName on the JBI endpoint to the one specified. Otherwise, the default
+Camel JBI Service QName is used, which is:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+{http://activemq.apache.org/camel/schema/jbi}endpoint
+----
+
+You can append query options to the URI in the following format,
+`?option=value&option=value&...`
+
+[[JBI-Examples]]
+Examples
+++++++++
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+jbi:service:http://foo.bar.org/MyService
+jbi:endpoint:urn:foo:bar:MyService:MyEndpoint
+jbi:endpoint:http://foo.bar.org/MyService/MyEndpoint
+jbi:name:cheese
+----
+
+[[JBI-URIoptions]]
+URI options
+^^^^^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Name |Default value |Description
+|`mep` |MEP of the Camel Exchange |Allows users to override the MEP set
+on the Exchange object. Valid values for this option are `in-only`,
+`in-out`, `robust-in-out` and `in-optional-out`.
+
+|`operation` |Value of the `jbi.operation` header property |Specifies
+the JBI operation for the `MessageExchange`. If no value is supplied,
+the JBI binding will use the value of the `jbi.operation` header
+property.
+
+|`serialization` |`basic` |Default value (`basic`) will check if headers
+are serializable by looking at the type, setting this option to `strict`
+will detect objects that can not be serialized although they implement
+the `Serializable` interface. Set to `nocheck` to disable this check
+altogether, note that this should only be used for in-memory transports
+like SEDAFlow, otherwise you can expect to get
+`NotSerializableException` thrown at runtime.
+
+|`convertException` |`false` |`false`: send any exceptions thrown from
+the Camel route back unmodified +
+`true`: convert all exceptions to a JBI FaultException (can be used to
+avoid non-serializable exceptions or to implement generic error handling
+|=======================================================================
+
+[[JBI-Examples.1]]
+Examples
+++++++++
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+jbi:service:http://foo.bar.org/MyService?mep=in-out       (override the MEP, use InOut JBI MessageExchanges)
+jbi:endpoint:urn:foo:bar:MyService:MyEndpoint?mep=in      (override the MEP, use InOnly JBI MessageExchanges)  
+jbi:endpoint:urn:foo:bar:MyService:MyEndpoint?operation={http://www.mycompany.org}AddNumbers 
+ (overide the operation for the JBI Exchange to {http://www.mycompany.org}AddNumbers)
+----
+
+[[JBI-UsingStreambodies]]
+Using Stream bodies
+^^^^^^^^^^^^^^^^^^^
+
+If you are using a stream type as the message body, you should be aware
+that a stream is only capable of being read once. So if you enable
+`DEBUG` logging, the body is usually logged and thus read. To deal with
+this, Camel has a `streamCaching` option that can cache the stream,
+enabling you to read it multiple times.
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from("jbi:endpoint:http://foo.bar.org/MyService/MyEndpoint").streamCaching().to("xslt:transform.xsl", "bean:doSomething");
+----
+
+The stream caching is default enabled, so it is not necessary to set the
+`streamCaching()` option. +
+We store big input streams (by default, over 64K) in a `temp` file using
+`CachedOutputStream`. When you close the input stream, the temp file
+will be deleted.
+
+[[JBI-CreatingaJBIServiceUnit]]
+Creating a JBI Service Unit
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+If you have some Camel routes that you want to deploy inside JBI as a
+Service Unit, you can use the link:jbi-service-unit-archetype.html[JBI
+Service Unit Archetype] to create a new Maven project for the Service
+Unit.
+
+If you have an existing Maven project that you need to convert into a
+JBI Service Unit, you may want to consult
+http://servicemix.apache.org/maven-jbi-plugin.html[ServiceMix Maven JBI
+Plugins] for further help. The key steps are as follows:
+
+* Create a Spring XML file at `src/main/resources/camel-context.xml` to
+bootstrap your routes inside the JBI Service Unit.
+* Change the POM file's packaging to `jbi-service-unit`.
+
+Your `pom.xml` should look something like this to enable the
+`jbi-service-unit` packaging:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>myGroupId</groupId>
+  <artifactId>myArtifactId</artifactId>
+  <packaging>jbi-service-unit</packaging>
+  <version>1.0-SNAPSHOT</version>
+
+  <name>A Camel based JBI Service Unit</name>
+
+  <url>http://www.myorganization.org</url>
+
+  <properties>
+    <camel-version>x.x.x</camel-version>
+    <servicemix-version>3.3</servicemix-version>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.servicemix</groupId>
+      <artifactId>servicemix-camel</artifactId>
+      <version>${servicemix-version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.servicemix</groupId>
+      <artifactId>servicemix-core</artifactId>
+      <version>${servicemix-version}</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <defaultGoal>install</defaultGoal>
+
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.5</source>
+          <target>1.5</target>
+        </configuration>
+      </plugin>
+
+      <!-- creates the JBI deployment unit -->
+      <plugin>
+        <groupId>org.apache.servicemix.tooling</groupId>
+        <artifactId>jbi-maven-plugin</artifactId>
+        <version>${servicemix-version}</version>
+        <extensions>true</extensions>
+      </plugin>
+    </plugins>
+  </build>
+</project>
+----
+
+[[JBI-SeeAlso]]
+See Also
+^^^^^^^^
+
+* link:configuring-camel.html[Configuring Camel]
+* link:component.html[Component]
+* link:endpoint.html[Endpoint]
+* link:getting-started.html[Getting Started]
+
+* http://servicemix.apache.org/servicemix-camel.html[ServiceMix Camel
+module]
+* http://servicemix.apache.org/3-beginner-using-apache-camel-inside-servicemix.html[Using
+Camel with ServiceMix]
+* http://servicemix.apache.org/order-file-processing.html[Cookbook on
+using Camel with ServiceMix]

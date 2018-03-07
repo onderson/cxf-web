@@ -1,0 +1,175 @@
+[[ConfluenceContent]]
+[[BeanLanguage-BeanLanguage]]
+Bean Language
+~~~~~~~~~~~~~
+
+The purpose of the Bean Language is to be able to implement an
+link:expression.html[Expression] or link:predicate.html[Predicate] using
+a simple method on a bean. The bean name is resolved using a
+link:registry.html[Registry], such as the
+link:spring.html[Spring] *`ApplicationContext`*, then a method is
+invoked to evaluate the link:expression.html[Expression] or
+link:predicate.html[Predicate]. If no method name is provided then one
+is chosen using the rules for link:bean-binding.html[Bean Binding];
+using the type of the message body and using any annotations on the bean
+methods.
+
+The link:bean-binding.html[Bean Binding] rules are used to bind the
+link:message.html[Message] Exchange to the method parameters; so you can
+annotate the bean to extract headers or other expressions such as
+link:xpath.html[XPath] or link:xquery.html[XQuery] from the message.
+
+[[BeanLanguage-UsingBeanExpressionsinJava]]
+Using Bean Expressions in Java
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from("activemq:topic:OrdersTopic")
+  .filter().method("myBean", "isGoldCustomer")
+    .to("activemq:BigSpendersQueue");
+----
+
+[[BeanLanguage-UsingBeanExpressionsinSpringXML]]
+Using Bean Expressions in Spring XML
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+[source,brush:,xml;,gutter:,false;,theme:,Default]
+----
+<route>
+  <from uri="activemq:topic:OrdersTopic"/>
+  <filter>
+    <method ref="myBean" method="isGoldCustomer"/>
+    <to uri="activemq:BigSpendersQueue"/>
+  </filter>
+</route>
+----
+
+[Warning]
+====
+ **Bean Attribute Now Deprecated**
+
+The *`bean`* attribute of the method expression element is now
+deprecated. Use the *`ref`* attribute instead.
+
+====
+
+[[BeanLanguage-WritingtheExpressionBean]]
+Writing the Expression Bean
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The bean in the above examples is just any old Java Bean with a method
+called *`isGoldCustomer()`* that returns some object that is easily
+converted to a *`boolean`* value in this case, as its used as a
+predicate.
+
+Example:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+public class MyBean {
+  public boolean isGoldCustomer(Exchange exchange) {
+     // ...
+  }
+}
+----
+
+We can also use the link:bean-integration.html[Bean Integration]
+annotations.
+
+Example:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+public boolean isGoldCustomer(String body) {...}
+----
+
+or
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+public boolean isGoldCustomer(@Header(name = "foo") Integer fooHeader) {...}
+----
+
+So you can bind parameters of the method to the Exchange, the
+link:message.html[Message] or individual headers, properties, the body
+or other expressions.
+
+[[BeanLanguage-Non-RegistryBeans]]
+Non-Registry Beans
+^^^^^^^^^^^^^^^^^^
+
+The link:bean-language.html[Bean Language] also supports invoking beans
+that isn't registered in the link:registry.html[Registry]. This is
+usable for quickly to invoke a bean from Java DSL where you don't need
+to register the bean in the link:registry.html[Registry] such as the
+link:spring.html[Spring] *`ApplicationContext`*. Camel can instantiate
+the bean and invoke the method if given a class or invoke an already
+existing instance.
+
+Example:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from("activemq:topic:OrdersTopic")
+  .filter().expression(BeanLanguage(MyBean.class, "isGoldCustomer"))
+  .to("activemq:BigSpendersQueue");
+----
+
+The 2nd parameter *`isGoldCustomer`* is an optional parameter to
+explicit set the method name to invoke. If not provided Camel will try
+to invoke the most suitable method. If case of ambiguity Camel will
+thrown an Exception. In these situations the 2nd parameter can solve
+this problem. Also the code is more readable if the method name is
+provided. The 1st parameter can also be an existing instance of a Bean
+such as:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+private MyBean my;
+
+from("activemq:topic:OrdersTopic")
+  .filter().expression(BeanLanguage.bean(my, "isGoldCustomer"))
+  .to("activemq:BigSpendersQueue");
+----
+
+In *Camel 2.2*: you can avoid the *`BeanLanguage`* and have it just as:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+private MyBean my;
+
+from("activemq:topic:OrdersTopic")
+  .filter().expression(bean(my, "isGoldCustomer"))
+  .to("activemq:BigSpendersQueue");
+----
+
+Which also can be done in a bit shorter and nice way:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+private MyBean my;
+
+from("activemq:topic:OrdersTopic")
+  .filter().method(my, "isGoldCustomer")
+  .to("activemq:BigSpendersQueue");
+----
+
+[[BeanLanguage-OtherExamples]]
+Other Examples
+^^^^^^^^^^^^^^
+
+We have some test cases you can look at if it'll help
+
+* http://svn.apache.org/repos/asf/camel/trunk/camel-core/src/test/java/org/apache/camel/processor/MethodFilterTest.java[MethodFilterTest]
+is a JUnit test case showing the Java link:dsl.html[DSL] use of the bean
+expression being used in a filter
+* http://svn.apache.org/repos/asf/camel/trunk/components/camel-spring/src/test/resources/org/apache/camel/spring/processor/aggregator.xml[aggregator.xml]
+is a Spring XML test case for the link:aggregator.html[Aggregator] which
+uses a bean method call to test for the completion of the aggregation.
+
+[[BeanLanguage-Dependencies]]
+Dependencies
+^^^^^^^^^^^^
+
+The Bean language is part of *`camel-core`*.

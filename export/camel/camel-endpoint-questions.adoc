@@ -1,0 +1,14 @@
+[[ConfluenceContent]]
+Questions on using the various Camel link:components.html[Components]
+and link:endpoint.html[Endpoint] implementations
+
+* link:how-do-i-invoke-camel-routes-from-jbi.html[How do I invoke Camel
+routes from JBI]
+* link:how-do-i-make-my-jms-endpoint-transactional.html[How Do I Make My
+JMS Endpoint Transactional?]
+* link:how-do-i-set-the-mep-when-interacting-with-jbi.html[How do I set
+the MEP when interacting with JBI?]
+* link:how-do-the-direct-event-seda-and-vm-endpoints-compare.html[How do
+the direct, event, seda and vm endpoints compare]
+* link:how-do-the-timer-and-quartz-endpoints-compare.html[How do the
+Timer and Quartz endpoints compare]

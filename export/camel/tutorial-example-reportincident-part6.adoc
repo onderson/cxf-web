@@ -1,0 +1,47 @@
+[[ConfluenceContent]]
+[[Tutorial-Example-ReportIncident-Part6-Part6]]
+Part 6
+~~~~~~
+
+[[Tutorial-Example-ReportIncident-Part6-...ContinuedfromPart5]]
+... Continued from Part 5
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+We continue from part 5 where we ended up with a complete solution using
+routes defined in Java code. In this last part of this tutorial we will
+define the route in XML instead.
+
+**Sidebar**
+
+As I am writing this, its been 4.5 years since I wrote the first 5 parts
+of this tutorial. Recently an user on stackoverflow praised this
+tutorial said it helped him get onboard Camel. Though he was looking for
+part 6 with the routes in XML. Frankly I have forgot all about adding
+this part. So lets close the book and get this part into the Camel docs.
+
+The XML code below is included in the example in
+`camel-example-report-incident` in the directory
+`src/main/resources/META-INF/spring/`. The file is named
+`camel-context.xml`
+
+*camel-config.xml*
+
+[[Tutorial-Example-ReportIncident-Part6-After5yearsweareattheend]]
+After 5 years we are at the end
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+So finally we managed to add part 6 to this tutorial. Yes we have used a
+lot of time to write this tutorial, so we hope that it helps you ride
+the Camel.
+
+[[Tutorial-Example-ReportIncident-Part6-Links]]
+Links
+~~~~~
+
+* link:tutorial-example-reportincident.html[Introduction]
+* link:tutorial-example-reportincident-part1.html[Part 1]
+* link:tutorial-example-reportincident-part2.html[Part 2]
+* link:tutorial-example-reportincident-part3.html[Part 3]
+* link:tutorial-example-reportincident-part4.html[Part 4]
+* link:tutorial-example-reportincident-part5.html[Part 5]
+* link:tutorial-example-reportincident-part6.html[Part 6]

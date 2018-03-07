@@ -1,0 +1,291 @@
+[[ConfluenceContent]]
+ 
+
+Karaf Support
+
+Apache Camel is designed to work nicely
+inside http://karaf.apache.org[Apache Karaf] OSGi container.
+
+It includes:
+
+* Camel features descriptor allowing to easily and quickly install Camel
+in Karaf.
+* Karaf commands allowing you to view, start, stop, get info, about the
+Camel contexts and routes running in the Karaf instance.
+
+It is recommended to use at least Apache Karaf 4.x with current Camel
+versions.
+
+ 
+
+[[Karaf-InstallCamelinKaraf]]
+Install Camel in Karaf
+~~~~~~~~~~~~~~~~~~~~~~
+
+Assuming that you have a running Karaf instance, you can register the
+Camel features descriptor:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+karaf@root> feature:repo-add camel 2.18.4
+----
+
+Now, we have all Camel features available:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+karaf@root> features:list|grep -i camel
+[uninstalled] [2.8.0          ] camel                         repo-0
+[uninstalled] [2.8.0          ] camel-core                    repo-0
+[uninstalled] [2.8.0          ] camel-spring                  repo-0
+[uninstalled] [2.8.0          ] camel-blueprint               repo-0
+[uninstalled] [2.8.0          ] camel-test                    repo-0
+[uninstalled] [2.8.0          ] camel-cxf                     repo-0
+...
+----
+
+It is a good start to at least install camel-blueprint
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+karaf@root> features:install camel-blueprint
+----
+
+You might need other features depending on what components you use in
+your routes. So for example if you use stream:out then you need the
+camel-stream feature.
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+karaf@root> features:install camel-stream
+----
+
+[[Karaf-Karafcommands]]
+Karaf commands
+~~~~~~~~~~~~~~
+
+The camel commands below help managing your integrations. In many cases
+the commands support tab completion for context and route names.
+
+[width="100%",cols="50%,50%",options="header",]
+|=======================================================================
+|Command |Description
+|*camel:context-list* |Lists the camel contexts available in the current
+Karaf instance
+
+|*camel:context-info* |Displays detail information about a given Camel
+context
+
+|*camel:context-start* |Starts the given Camel context
+
+|*camel:context-stop* |Stops the given Camel context (it becomes
+unavailable and it can't be started afterwards)
+
+|*camel:route-list* |Displays the list of Camel routes available in the
+current Karaf instance
+
+|*camel:route-info* |Provides detail information about a Camel route
+
+|*camel:route-show* |Renders the route in XML
+
+|*camel:route-start* |Starts the given route. From Camel *2.10* onwards
+you can use * as wildcard to match multiple routes.
+
+|*camel:route-stop* |Stops the given route. From Camel *2.10* onwards
+you can use * as wildcard to match multiple routes.
+
+|*camel:route-suspend* |Suspends the given route. From Camel *2.10*
+onwards you can use * as wildcard to match multiple routes.
+
+|*camel:route-resume* |Resumes the given route. From Camel *2.10*
+onwards you can use * as wildcard to match multiple routes.
+
+|*camel:endpoint-list* |Lists endpoints fromm all camel contexts
+available in the current Karaf instance
+
+|*camel:route-profile* |To profile route(s)
+
+|*camel:route-reset-stats* |To reset performance stats on the given
+route(s)
+
+|*camel:context-suspend* |Suspends the given Camel context
+
+|*camel:context-resume* |Resumes the given Camel context
+|=======================================================================
+
+ 
+
+[[Karaf-camel:route-list]]
+camel:route-list
+^^^^^^^^^^^^^^^^
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+karaf@root> camel:route-list
+[route1              ]
+----
+
+You can also filter the routes by CamelContext:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+karaf@root> camel:route-list 66-camel-3
+[route1              ]
+----
+
+_Tip: use the TAB key to completion on the CamelContext ID._
+
+[[Karaf-camel:context-info]]
+camel:context-info
+^^^^^^^^^^^^^^^^^^
+
+Displays detailed information about a given CamelContext:
+
+add the **--verbose** option (following the context name) to also list
+the endpoints
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+karaf@root> camel:context-info 66-camel-3
+Camel Context 66-camel-3
+        Name: 66-camel-3
+        Version: 2.8.0
+        Status: Started
+        Uptime: 1 minute
+
+Advanced
+        Auto Startup: true
+        Starting Routes: false
+        Suspended: false
+        Tracing: false
+
+Properties
+
+Components
+        timer
+        properties
+        log
+
+Endpoints
+        timer://test
+        log://test
+
+Routes
+        route1
+
+Used Languages
+----
+
+You can see the current Camel version used by the CamelContext, some
+context attributes, the components involved in the context, and the
+endpoints defined.
+
+_Tip: use TAB key for completion on the CamelContext name._
+
+[[Karaf-camel:route-info]]
+camel:route-info
+^^^^^^^^^^^^^^^^
+
+The **camel:route-info** command provides detail information about a
+Camel route:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+karaf@root> camel:route-info route1
+Camel Route route1
+        Camel Context: 66-camel-3
+
+Properties
+                id = route1
+                parent = 2e7aacc1
+
+Statistics
+        Exchanges Total: 98
+        Exchanges Completed: 98
+        Exchanges Failed: 0
+        Min Processing Time: 1ms
+        Max Processing Time: 2ms
+        Mean Processing Time: 1ms
+        Total Processing Time: 134ms
+        Last Processing Time: 1ms
+        First Exchange Date: 2011-06-29 07:21:57
+        Last Exchange Completed Date: 2011-06-29 07:23:34
+
+Definition
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<route id="route1" xmlns="http://camel.apache.org/schema/spring">
+    <from uri="timer:test"/>
+    <to uri="log:test" id="to1"/>
+</route>
+----
+
+You can see some statistics (the number of processed exchanges, the
+processing time, etc) and a XML rendering of your route (whatever DSL
+used to define the route).
+
+_Tip: use TAB key for completion on the route name._
+
+[[Karaf-camel:route-show]]
+camel:route-show
+^^^^^^^^^^^^^^^^
+
+The **camel:route-show** command renders the route in XML. It's
+independent from the DSL used to define the route:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+karaf@root> camel:route-show route1
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<route id="route1" xmlns="http://camel.apache.org/schema/spring">
+    <from uri="timer:test"/>
+    <to uri="log:test" id="to1"/>
+</route>
+----
+
+_Tip: use TAB key for completion on the route name._
+
+[[Karaf-camel:route-suspend]]
+camel:route-suspend
+^^^^^^^^^^^^^^^^^^^
+
+The **camel:route-suspend** command suspends a Camel route:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+karaf@root> camel:route-suspend route1
+----
+
+_Tip: use TAB key for completion on the route name._
+
+[[Karaf-camel:route-resume]]
+camel:route-resume
+^^^^^^^^^^^^^^^^^^
+
+The **camel:route-resume** command resume a Camel route:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+karaf@root> camel:route-resume route1
+----
+
+_Tip: use TAB key for completion on the route name._
+
+[[Karaf-camel:endpoint-list]]
+camel:endpoint-list
++++++++++++++++++++
+
+The **camel:endpoint-list** command displays the list of the endpoints
+available in all camel contexts of the current Karaf instance:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+karaf@root> camel:endpoint-list 
+camel-id             uri                  Status              
+[test              ] [timer://test      ] [Started           ]
+[test              ] [direct://A        ] [Started           ]
+----
+
+It displays the context name/ID (used in others commands), the URI of
+the endpoint and the current status (started/stopped).
+
+ 

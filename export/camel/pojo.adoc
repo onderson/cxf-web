@@ -1,0 +1,18 @@
+[[ConfluenceContent]]
+[[Pojo-PojoComponent]]
+Pojo Component
+~~~~~~~~~~~~~~
+
+The *pojo:* component is now just an alias for the link:bean.html[Bean]
+component.
+
+*Has been removed in Camel 2.0.*
+
+[[Pojo-SeeAlso]]
+See Also
+^^^^^^^^
+
+* link:configuring-camel.html[Configuring Camel]
+* link:component.html[Component]
+* link:endpoint.html[Endpoint]
+* link:getting-started.html[Getting Started]

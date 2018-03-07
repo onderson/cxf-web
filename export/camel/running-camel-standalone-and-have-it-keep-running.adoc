@@ -1,0 +1,43 @@
+[[ConfluenceContent]]
+[[RunningCamelstandaloneandhaveitkeeprunning-RunningCamelstandaloneandhaveitkeeprunning]]
+Running Camel standalone and have it keep running
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If you are using Camel as a standalone Java application, then Camel
+provides a `Main` class you can reuse to more easily boot up Camel and
+keep it running until the JVM terminates, for example when pressing
+`ctrl + c`.
+
+The `Main` class is provided in the following two components
+
+* `camel-core` JAR in the `org.apache.camel.Main` class (requires Camel
+2.6)
+* `camel-spring` JAR in the `org.apache.camel.spring.Main` class
+
+[[RunningCamelstandaloneandhaveitkeeprunning-Usingcamel-coreJARexample]]
+Using `camel-core` JAR example
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available as of Camel 2.6*
+
+The following example shows how you can create your main class, named
+`MainExample` and use the `Main` class from Camel.
+
+*MainExample*
+
+[[RunningCamelstandaloneandhaveitkeeprunning-Usingcamel-springJARexample]]
+Using `camel-spring` JAR example
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This would be similar to the `camel-core` JAR example, however you would
+use the `Main` class from the `org.apache.camel.spring` package. +
+The `Main` class from `camel-spring` JAR has many more options and is
+prepared for booting Camel from Spring XML files.
+
+[[RunningCamelstandaloneandhaveitkeeprunning-SeeAlso]]
+See Also
+^^^^^^^^
+
+* link:running-camel-standalone.html[Running Camel standalone]
+* Chapter 13 in the link:books.html[Camel in Action book] explains more
+about running Camel

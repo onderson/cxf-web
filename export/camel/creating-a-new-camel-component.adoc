@@ -1,0 +1,66 @@
+[[ConfluenceContent]]
+[[CreatinganewCamelComponent-CreatinganewCamelComponent]]
+Creating a new Camel Component
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If you want to create your own version of the Camel
+link:component.html[Component] you can use the
+link:camel-maven-archetypes.html[Camel Maven Archetypes].
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+mvn archetype:generate                   \
+  -DarchetypeGroupId=org.apache.camel.archetypes  \
+  -DarchetypeArtifactId=camel-archetype-component \
+  -DarchetypeVersion=2.9.0  \
+  -DgroupId=myGroupId                  \
+  -DartifactId=myArtifactId
+----
+
+This will create a maven project which contains a demo component, you
+need to implements your own component by modifying it.You need to move
+the META-INF/services/direct file to META-INF/services/PACKAGE_NAME/FOO
+where FOO is the URI scheme for your component and any related endpoints
+created on the fly and PACKAGE_NAME is your component's package name
+which is replaced the '.' with '/'.
+
+[[CreatinganewCamelComponent-Optionalproperties(availableasofCamel2.9.0)]]
+Optional properties (available as of Camel 2.9.0)
++++++++++++++++++++++++++++++++++++++++++++++++++
+
+By default the camel component archetype will generate a
+HelloWorldComponent that will use the URI scheme helloworld. You can
+further customize the generated component by using some custom
+parameters passed to the component.
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Name |Default |Description
+|name |HelloWorld |The name of the component. It will be used as a
+prefix for all generated classes.
+
+|scheme |helloworld |The default URI scheme the component will use.
+|=======================================================================
+
+[[CreatinganewCamelComponent-UsageExamples:]]
+Usage Examples:
++++++++++++++++
+
+To create the "Awesome" component and all its related classes
+(AwesomeComponent, AwesomeEndpoint, AwesomeProducer etc) that will use
+the awesome URI scheme:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+mvn archetype:generate                   \
+  -DarchetypeGroupId=org.apache.camel.archetypes  \
+  -DarchetypeArtifactId=camel-archetype-component \
+  -DarchetypeVersion=2.9.0  \
+  -DgroupId=myGroupId                  \
+  -DartifactId=myArtifactId  \
+  -Dname=Awesome             \
+  -Dscheme=awsome            \
+  
+----
+
+For more help see link:writing-components.html[Writing Components]

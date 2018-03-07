@@ -1,0 +1,46 @@
+[[ConfluenceContent]]
+[[Developers-Developers]]
+Developers
+~~~~~~~~~~
+
+The following section contains developer related links for Apache Camel
+
+* link:source.html[Source]
+* link:building.html[Building]
+** link:continuous-integration-builds.html[Continuous integration
+builds]
+* link:add-new-component-guide.html[Add New Component Guide]
+* link:code-walkthrough.html[Code Walkthrough]
+* link:customizing-xml.html[Customizing XML]
+* link:design-notes.html[Design Notes]
+** link:camel-20-design.html[Camel 2.0 Design]
+** link:camel-23-overhaul-of-aggregator-eip.html[Camel 2.3 - Overhaul of
+Aggregator EIP]
+** link:camel-23-threadpool-configuration.html[Camel 2.3 - ThreadPool
+Configuration]
+** link:camel-27-roadmap.html[Camel 2.7 - Roadmap]
+** link:camel-29-jmx-and-reducing-spring-dependency.html[Camel 2.9 - JMX
+and reducing Spring dependency]
+** link:camel-2x-debugger-api.html[Camel 2.x - Debugger API]
+** link:camel-2x-speed-optimizations.html[Camel 2.x Speed optimizations]
+** link:camel-30-ideas.html[Camel 3.0 - Ideas]
+** link:camel-30-introduce-an-api-for-components.html[Camel 3.0 -
+Introduce an API for components]
+** link:camel-30-message-store.html[Camel 3.0 - Message Store]
+** link:camel-30-roadmap.html[Camel 3.0 - Roadmap]
+** link:camel-cxf-design.html[Camel CXF Design]
+** link:camel-security.html[Camel Security]
+* link:javadoc.html[JavaDoc]
+* link:merging-commits-from-trunk-to-fixes-branch.html[Merging commits
+from trunk to fixes branch]
+* link:pdf-documentation-guide.html[PDF Documentation Guide]
+* link:release-guide.html[Release Guide]
+** link:testing-a-release-candidate.html[Testing a release candidate]
+* link:running-rat.html[Running RAT]
+* link:running-unit-tests.html[Running Unit Tests]
+* link:upgrade-dependency-guide.html[Upgrade dependency guide]
+* link:writing-components.html[Writing Components]
+* link:xml-reference.html[Xml Reference]
+* link:set-up-your-ide.html[Set up your IDE]
+* link:maven-2-snapshot-repository-in-pom.html[Maven 2 snapshot
+repository in pom]

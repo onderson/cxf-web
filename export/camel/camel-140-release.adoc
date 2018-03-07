@@ -1,0 +1,309 @@
+[[ConfluenceContent]]
+[[Camel1.4.0Release-Camel1.4.0release]]
+Camel 1.4.0 release
+-------------------
+
+image:http://activemq.apache.org/camel/download.data/camel-box-v1.0-150x200.png[image]
+
+[[Camel1.4.0Release-NewandNoteworthy]]
+New and Noteworthy
+~~~~~~~~~~~~~~~~~~
+
+Welcome to the 1.4.0 release which includes 261 new features,
+improvements and bug fixes such as...
+
+* major improvements in link:jms.html[JMS] and link:mail.html[Mail]
+components
+* major improvements in link:camel-jmx.html[Camel JMX] management
+(enabled by default)
+* major improvements in link:transactional-client.html[Transactional
+Client]. Bypassing link:dead-letter-channel.html[Dead Letter Channel]
+redelivery, letting the originator system handle this, resulting in the
+JMSMessage is rolled back to the JMS queue.
+* attachment support for link:message.html[Message]
+* various improvements in link:cxf.html[CXF], link:file2.html[File],
+link:ftp2.html[FTP], link:velocity.html[Velocity],
+link:stream.html[Stream], link:atom.html[Atom] and link:xmpp.html[XMPP]
+components
+* various improvements in the Java and Spring DSL
+* new transaction error handler, see
+link:transactional-client.html[Transactional Client]
+* introduced link:dead-letter-channel.html[ExceptionPolicyStrategy] as
+strategy for exception clause selection during error handling (much
+improved default strategy in Camel)
+* intercept() default behavior changed (see section - important changes)
+* JMS headers now preserve packagename style headers so
+link:bean.html[Bean] and link:file2.html[File] headers is preserved, so
+you can safely send the filename or bean method to invoke over the JMS
+wire
+* introduced link:debugger.html[Debugger] and link:tracer.html[Tracer]
+interceptor to track how exchanges is routed
+* refinements to run in OSGi containers
+* some internal refactorings of package structure to avoid cycle
+dependencies
+* @deprecated some core classes, that will be removed in Camel 2.0
+* improved feedback for misconfiguration of camel routes such as
+mistypes of parameters
+* overall improved wiki documentation
+* improved javadoc for camel-core and camel-spring
+* dependencies is now on the finer grained jars if applicable (e.g.
+Spring)
+* WebSphere 6.1 support
+
+[[Camel1.4.0Release-New]]
+New link:enterprise-integration-patterns.html[Enterprise Integration
+Patterns]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* None
+
+[[Camel1.4.0Release-New.1]]
+New link:components.html[Components]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* link:flatpack.html[Flatpack] for processing fixed width or delimited
+files or messages using the FlatPack library (work in progress)
+* link:springintegration.html[SpringIntegration] for integration with
+Spring Integration
+
+[[Camel1.4.0Release-NewDSL]]
+New DSL
+^^^^^^^
+
+* link:scala-dsl.html[Scala] (work in progress, not fully feature
+complete)
+
+[[Camel1.4.0Release-NewDataFormats]]
+New link:data-format.html[Data Formats]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* None
+
+[[Camel1.4.0Release-New.2]]
+New link:languages.html[Languages]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* None
+
+[[Camel1.4.0Release-NewExamples]]
+New Examples
+^^^^^^^^^^^^
+
+* ANT build files for running the examples
+* link:loan-broker-example.html[camel-example-loan-broker]
+* link:tutorial-jmsremoting.html[camel-example-spring-jms]
+
+[[Camel1.4.0Release-APIbreakings]]
+API breakings
+~~~~~~~~~~~~~
+
+Potentially there can be an API breaking when upgrading from Camel 1.3
+or older. We are sorry for this and will try to refrain from such API
+breakings in the future Camel 1.x releases. An API overhaul is scheduled
+for Camel 2.0.
+
+[[Camel1.4.0Release-KnownIssues]]
+Known Issues
+~~~~~~~~~~~~
+
+* The link:tracer.html[Tracer] and link:log.html[Log] can cause a NPE if
+the Message Body is `null`. A workaround is to configure it with
+`showBody=false`.
+
+[[Camel1.4.0Release-Importantchangestoconsiderwhenupgrading]]
+Important changes to consider when upgrading
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+[[Camel1.4.0Release-CamelTemplatemarkedas@deprecated]]
+CamelTemplate marked as @deprecated
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+CamelTemplate has been marked as @deprecated and you should use
+ProducerTemplate instead. +
+From Camel 1.4.0 on the ProducerTemplate must be retrieved from the
+CamelContext. You can then use it the same way as before.
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+ProducerTemplate camelTemplate = camelContext.createProducerTemplate();
+----
+
+After usage of the template, you must call `stop()` to let it release
+any resources obtained. See this
+link:why-does-camel-use-too-many-threads-with-producertemplate.html[FAQ
+entry].
+
+[[Camel1.4.0Release-componentminorchange]]
+link:bean.html[Bean] component minor change
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Bean component sets a reference to the bean that is being invoked as a
+property on the Exchange. This property has change its key from
+"CamelBean" to "org.apache.camel.bean.BeanHolder" and the type is now a
+BeanHolder.
+
+[[Camel1.4.0Release-Unittestkits]]
+Unit test kits
+^^^^^^^^^^^^^^
+
+The unit test kits camel-core-tests.jar and camel-spring-tests.jar is no
+longer distributed with the binary distribution. These jars can be
+downloaded from maven repositories.
+
+[[Camel1.4.0Release-JMX]]
+JMX
+^^^
+
+In Camel 1.4 the link:camel-jmx.html[Camel JMX] agent has been enabled
+by default. To disable it, as the default in previous versions, you have
+to explicitly disable it. See the link:camel-jmx.html[Camel JMX]
+documentation for details.
+
+[[Camel1.4.0Release-Defaultbehaviorofintercept()changed]]
+Default behavior of intercept() changed
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In Camel 1.4 the DSL for intercept() has changed its default behavior to
+proceed by default.
+
+In Camel 1.3 you had to do this:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+intercept().log("log:orders").proceed();
+from("direct:order").to("seda:verifyOrder");
+...
+----
+
+In Camel 1.4 the proceed is default:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+intercept().log("log:orders");
+from("direct:order").to("seda:verifyOrder");
+...
+----
+
+And in Camel 1.3 stop was default:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+intercept(header("user").isEqualTo("test")).log("log:test");
+from("direct:order").to("seda:verifyOrder");
+...
+----
+
+In Camel 1.4 you have to explicit state the stop:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+intercept(header("user").isEqualTo("test")).log("log:test").stop();
+from("direct:order").to("seda:verifyOrder");
+...
+----
+
+In the last two examples we want to filter out all orders by a test
+user. In Camel 1.4 we need to use the `stop()` to stop the intercept
+chain from proceeding.
+
+[[Camel1.4.0Release-URIvalidation]]
+URI validation
+^^^^^^^^^^^^^^
+
+Camel is now more strict when it comes to validation of URI
+configuration. If a parameter name couldn't be resolved Camel will throw
+an Exception. In this regard the link:file2.html[File] component you
+must change the delay parameters to have the `consumer.` prefix. `delay`
+should be `consumer.delay`.
+
+[[Camel1.4.0Release-DeadLetterChannel]]
+DeadLetterChannel
+^^^^^^^^^^^^^^^^^
+
+link:dead-letter-channel.html[DeadLetterChannel] is now disabled if in
+transacted mode. Use the new transaction error handler instread, see
+link:transactional-client.html[Transactional Client].
+
+[[Camel1.4.0Release-GettingtheDistributions]]
+Getting the Distributions
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+[[Camel1.4.0Release-BinaryDistributions]]
+Binary Distributions
+^^^^^^^^^^^^^^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Description |Download Link |PGP Signature file of download
+|Windows Distribution
+|http://archive.apache.org/dist/activemq/apache-camel/1.4.0/apache-camel-1.4.0.zip[apache-camel-1.4.0.zip]
+|http://archive.apache.org/dist/activemq/apache-camel/1.4.0/apache-camel-1.4.0.zip.asc[apache-camel-1.4.0.zip.asc]
+
+|Unix/Linux/Cygwin Distribution
+|http://archive.apache.org/dist/activemq/apache-camel/1.4.0/apache-camel-1.4.0.tar.gz[apache-camel-1.4.0.tar.gz]
+|http://archive.apache.org/dist/activemq/apache-camel/1.4.0/apache-camel-1.4.0.tar.gz.asc[apache-camel-1.4.0.tar.gz.asc]
+|=======================================================================
+
+[Info]
+====
+ **The above URLs use redirection**
+
+The above URLs use the Apache Mirror system to redirect you to a
+suitable mirror for your download. Some users have experienced issues
+with some versions of browsers (e.g. some Safari browsers). If the
+download doesn't seem to work for you from the above URL then try using
+http://www.mozilla.com/en-US/firefox/[FireFox]
+
+====
+
+[[Camel1.4.0Release-SourceDistributions]]
+Source Distributions
+^^^^^^^^^^^^^^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Description |Download Link |PGP Signature file of download
+|Source for Windows
+|http://archive.apache.org/dist/activemq/apache-camel/1.4.0/apache-camel-1.4.0-src.zip[apache-camel-1.4.0-src.zip]
+|http://archive.apache.org/dist/activemq/apache-camel/1.4.0/apache-camel-1.4.0-src.zip.asc[apache-camel-1.4.0-src.zip.asc]
+
+|Source for Unix/Linux/Cygwin
+|http://archive.apache.org/dist/activemq/apache-camel/1.4.0/apache-camel-1.4.0-src.tar.gz[apache-camel-1.4.0-src.tar.gz]
+|http://archive.apache.org/dist/activemq/apache-camel/1.4.0/apache-camel-1.4.0-src.tar.gz.asc[apache-camel-1.4.0-src.tar.gz.asc]
+|=======================================================================
+
+[[Camel1.4.0Release-GettingtheBinariesusingMaven2]]
+Getting the Binaries using Maven 2
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To use this release in your maven project, the proper dependency
+configuration that you should use in your
+http://maven.apache.org/guides/introduction/introduction-to-the-pom.html[Maven
+POM] is:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<dependency>
+  <groupId>org.apache.camel</groupId>
+  <artifactId>camel-core</artifactId>
+  <version>1.4.0</version>
+</dependency>
+----
+
+[[Camel1.4.0Release-SVNTagCheckout]]
+SVN Tag Checkout
+^^^^^^^^^^^^^^^^
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+svn co http://svn.apache.org/repos/asf/activemq/camel/tags/camel-1.4.0
+----
+
+[[Camel1.4.0Release-Changelog]]
+Changelog
+~~~~~~~~~
+
+For a more detailed view of new features and bug fixes, see:
+
+* http://issues.apache.org/jira/secure/ReleaseNote.jspa?projectId=12311211&styleName=Html&version=12315674[JIRA
+Release notes for 1.4.0]

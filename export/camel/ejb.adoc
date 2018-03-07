@@ -1,0 +1,126 @@
+[[ConfluenceContent]]
+[[EJB-EJBComponent]]
+EJB Component
+~~~~~~~~~~~~~
+
+*Available as of Camel 2.4*
+
+The *ejb:* component binds EJBs to Camel message exchanges.
+
+Maven users will need to add the following dependency to their `pom.xml`
+for this component:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<dependency>
+    <groupId>org.apache.camel</groupId>
+    <artifactId>camel-ejb</artifactId>
+    <version>x.x.x</version>
+    <!-- use the same version as your Camel core version -->
+</dependency>
+----
+
+[[EJB-URIformat]]
+URI format
+^^^^^^^^^^
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+ejb:ejbName[?options]
+----
+
+Where *ejbName* can be any string which is used to look up the EJB in
+the Application Server JNDI link:registry.html[Registry]
+
+[[EJB-Options]]
+Options
+^^^^^^^
+
+[width="100%",cols="25%,25%,25%,25%",options="header",]
+|=======================================================================
+|Name |Type |Default |Description
+|`method` |`String` |`null` |The method name that bean will be invoked.
+If not provided, Camel will try to pick the method itself. In case of
+ambiguity an exception is thrown. See link:bean-binding.html[Bean
+Binding] for more details.
+
+|`multiParameterArray` |`boolean` |`false` |How to treat the parameters
+which are passed from the message body; if it is `true`, the In message
+body should be an array of parameters.
+|=======================================================================
+
+You can append query options to the URI in the following format,
+`?option=value&option=value&...`
+
+The link:ejb.html[EJB] component extends the link:bean.html[Bean]
+component in which most of the details from the link:bean.html[Bean]
+component applies to this component as well.
+
+[[EJB-BeanBinding]]
+Bean Binding
+^^^^^^^^^^^^
+
+How bean methods to be invoked are chosen (if they are not specified
+explicitly through the *method* parameter) and how parameter values are
+constructed from the link:message.html[Message] are all defined by the
+link:bean-binding.html[Bean Binding] mechanism which is used throughout
+all of the various link:bean-integration.html[Bean Integration]
+mechanisms in Camel.
+
+[[EJB-Examples]]
+Examples
+^^^^^^^^
+
+In the following examples we use the Greater EJB which is defined as
+follows:
+
+*GreaterLocal.java*
+
+And the implementation
+
+*GreaterImpl.java*
+
+[[EJB-UsingJavaDSL]]
+Using Java DSL
+++++++++++++++
+
+In this example we want to invoke the `hello` method on the EJB. Since
+this example is based on an unit test using Apache OpenEJB we have to
+set a `JndiContext` on the link:ejb.html[EJB] component with the OpenEJB
+settings.
+
+Then we are ready to use the EJB in the Camel route:
+
+**In a real application server**
+
+In a real application server you most likely do not have to setup a
+`JndiContext` on the link:ejb.html[EJB] component as it will create a
+default `JndiContext` on the same JVM as the application server, which
+usually allows it to access the JNDI registry and lookup the
+link:ejb.html[EJB]s. +
+However if you need to access a application server on a remote JVM or
+the likes, you have to prepare the properties beforehand.
+
+[[EJB-UsingSpringXML]]
+Using Spring XML
+++++++++++++++++
+
+And this is the same example using Spring XML instead:
+
+Again since this is based on an unit test we need to setup the
+link:ejb.html[EJB] component:
+
+Before we are ready to use link:ejb.html[EJB] in the Camel routes:
+
+[[EJB-SeeAlso]]
+See Also
+^^^^^^^^
+
+* link:configuring-camel.html[Configuring Camel]
+* link:component.html[Component]
+* link:endpoint.html[Endpoint]
+* link:getting-started.html[Getting Started]
+
+* link:bean.html[Bean]
+* link:bean-binding.html[Bean Binding]
+* link:bean-integration.html[Bean Integration]

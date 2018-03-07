@@ -1,0 +1,54 @@
+[[ConfluenceContent]]
+[[EventNotifiertologdetailsaboutallsentExchanges-EventNotifiertologdetailsaboutallsentExchanges]]
+`EventNotifier` to log details about all sent Exchanges
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If you want to log information all time taken to send and receive
+replies when sending to external endpoints, then you can leverage the
+*`EventNotifier`* in Camel. It allows you to subscribe to events and
+react upon them.
+
+For example we want to log the time it takes to send to endpoints which
+can be done by implementing a class which this logic as follows:
+
+*MyLoggingSentEventNotifier*
+
+Then in Java DSL you can tell Camel to use your custom `EventNotifier`
+simply by adding it:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+context.getManagementStrategy().addEventNotifier(new MyLoggingSentEventNotifer());
+----
+
+And in Spring XML you declare a Spring bean and Camel will automatically
+pick it up:
+
+If you run this example you will notice how Camel logs this now:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+INFO  CamelContextFactoryBean        - Using custom EventNotifier with id: myLoggingEventNotifier and implementation: org.apache.camel.processor.MyLoggingSentEventNotifer@76bf9e
+INFO  MyLoggingSentEventNotifer      - Took 1001 millis to send to: Endpoint[direct://bar]
+INFO  MyLoggingSentEventNotifer      - Took 0 millis to send to: Endpoint[mock://result]
+INFO  MyLoggingSentEventNotifer      - Took 1013 millis to send to: Endpoint[direct://start]
+----
+
+You can implement logic to filter which endpoints to log, and maybe also
+thresholds to skip logging if it was fast, e.g. < 1 sec. Then you have a
+logger which logs all _slow_ events.
+
+[Info]
+====
+
+
+Tip you can use the *`EndpointHelper.matchEndpoint`* method to leverage
+the same filtering capabilities that for example the
+link:intercept.html[Intercept] uses in Camel. ====
+
+You can see which *`EventObject`* Camel provides from the
+http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/management/event/package-summary.html[javadoc].
+
+From *Camel 2.10*: there is also a *`ExchangeSendingEvent`* which is an
+event triggered before sending the message to the endpoint. Then we have
+an even for both before and after sending the message.

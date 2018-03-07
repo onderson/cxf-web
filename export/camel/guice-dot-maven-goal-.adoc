@@ -1,0 +1,73 @@
+[[ConfluenceContent]]
+[[GuiceDotMavenGoal-guice:dot]]
+guice:dot
+~~~~~~~~~
+
+The *guice:dot* goal of the link:guice-maven-plugin.html[Guice Maven
+Plugin] is used to generate link:visualisation.html[Visualisation]
+diagrams for your link:enterprise-integration-patterns.html[Enterprise
+Integration Patterns] which use link:guice.html[Guice] for their
+link:dependency-injection.html[Dependency Injection] framework. +
+It works like link:guice-embedded-maven-goal.html[guice:embedded], it
+will boot up your link:guice.html[Guice] configuration but it will only
+keep up for a few seconds. This will then generate a
+http://graphviz.org[GraphViz] DOT file in _target/site/cameldoc_.
+
+The plugin will then try and convert the DOT file into a HTML, PNG and
+SVG representation. To do this an installation of
+http://graphviz.org[GraphViz] is required to be on your PATH.
+
+So to use this plugin, please http://graphviz.org/Download..php[download
+Graphviz] then put it on your PATH.
+
+By default the plugin will evaluate the _dot_ executable, but you can
+overload this by configuring the plugin's executable property. e.g.
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<configuration>
+ <executable>DOT.EXE</executable>
+</configuration>
+----
+
+[[GuiceDotMavenGoal-Tryingoutguice:dot]]
+Trying out guice:dot
+^^^^^^^^^^^^^^^^^^^^
+
+A good example application to get you started is the
+link:guice-jms-example.html[Guice JMS Example].
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+cd examples/camel-example-guice-jms
+mvn compile guice:dot
+----
+
+Your generated PNG/SVG files will then be in the _target/site/cameldoc_
+directory - assuming Maven could find your DOT executable.
+
+Note that you do not need to explicitly run this goal; you could just
+link:guice-maven-plugin.html[integrate this plugin into the normal Maven
+report generation].
+
+[[GuiceDotMavenGoal-DisablingexecutionofDOTexecutable]]
+Disabling execution of DOT executable
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In Camel 1.4 you can disable the execution of DOT by setting the useDot
+configuration parameter to false.
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.camel</groupId>
+        <artifactId>guice-maven-plugin</artifactId>
+        <configuration>
+          <useDot>false</useDot>
+        </configuration>
+      </plugin>
+    </plugins>
+</reporting>
+----

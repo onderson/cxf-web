@@ -1,0 +1,162 @@
+[[ConfluenceContent]]
+[[Weather-WeatherComponent]]
+Weather Component
+~~~~~~~~~~~~~~~~~
+
+*Available as of Camel 2.12*
+
+The *weather:* component is used for polling weather information from
+http://openweathermap.org[Open Weather Map] - a site that provides free
+global weather and forecast information. The information is returned as
+a json String object.
+
+Camel will poll for updates to the current weather and forecasts once
+per hour by default. It can also be used to query the weather api based
+on the parameters defined on the endpoint which is used as producer.
+
+Maven users will need to add the following dependency to their `pom.xml`
+for this component:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<dependency>
+    <groupId>org.apache.camel</groupId>
+    <artifactId>camel-weather</artifactId>
+    <version>x.x.x</version>
+    <!-- use the same version as your Camel core version -->
+</dependency>
+----
+
+[[Weather-URIformat]]
+URI format
+^^^^^^^^^^
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+weather://<unused name>[?options]
+----
+
+[[Weather-REMARK]]
+REMARK
+^^^^^^
+
+Since the 9th of October, an Api Key is required to access the
+openweather service. This key is passed as parameter to the URI
+definition of the weather endpoint using the appid param !
+
+[[Weather-Options]]
+Options
+^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Property |Default |Description
+|`appid` |null |*Camel 2.16.1/2.15.5:* APPID ID used to authenticate the
+user connected to the API Server. This key is required.
+
+|`location` |`null` |If null Camel will try and determine your current
+location using the geolocation of your ip address, else specify the
+city,country. For well known city names, Open Weather Map will determine
+the best fit, but multiple results may be returned. Hence specifying and
+country as well will return more accurate data. If you specify "current"
+as the location then the component will try to get the current latitude
+and longitude and use that to get the weather details. You can use lat
+and lon options instead of location.
+
+|`lat` |`null` |Latitude of location. You can use lat and lon options
+instead of location.
+
+|`lon` |`null` |Longitude of location. You can use lat and lon options
+instead of location.
+
+|`period` |`null` |If null, the current weather will be returned, else
+use values of 5, 7, 14 days. Only the numeric value for the forecast
+period is actually parsed, so spelling, capitalisation of the time
+period is up to you (its ignored)
+
+|`headerName` |`null` |To store the weather result in this header
+instead of the message body. This is useable if you want to keep current
+message body as-is.
+
+|`mode` |`JSON` |The output format of the weather data. The possible
+values are `HTML`, `JSON` or `XML`
+
+|`units` |`METRIC` |The units for temperature measurement. The possible
+values are `IMPERIAL` or `METRIC`
+
+|`consumer.delay` |`3600000` |Delay in millis between each poll (default
+is 1 hour)
+
+|`consumer.initialDelay` |`1000` |Millis before polling starts.
+
+|`consumer.userFixedDelay` |`false` |If `true`, use fixed delay between
+polls, otherwise fixed rate is used. See
+http://java.sun.com/j2se/1.5.0/docs/api/java/util/concurrent/ScheduledExecutorService.html[ScheduledExecutorService]
+in JDK for details.
+|=======================================================================
+
+You can append query options to the URI in the following format,
+`?option=value&option=value&...`
+
+[[Weather-Exchangedataformat]]
+Exchange data format
+^^^^^^^^^^^^^^^^^^^^
+
+Camel will deliver the body as a json formatted java.lang.String (see
+the `mode` option above).
+
+[[Weather-MessageHeaders]]
+Message Headers
+^^^^^^^^^^^^^^^
+
+[width="100%",cols="50%,50%",options="header",]
+|=======================================================================
+|Header |Description
+|`CamelWeatherQuery` |The original query URL sent to the Open Weather
+Map site
+
+|`CamelWeatherLocation` |Used by the producer to override the endpoint
+location and use the location from this header instead.
+|=======================================================================
+
+[[Weather-Samples]]
+Samples
+^^^^^^^
+
+In this sample we find the 7 day weather forecast for Madrid, Spain:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from("weather:foo?location=Madrid,Spain&period=7 days&appid=APIKEY").to("jms:queue:weather");
+----
+
+To just find the current weather for your current location you can use
+this:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from("weather:foo?appid=APIKEY").to("jms:queue:weather");
+----
+
+And to find the weather using the producer we do:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from("direct:start")
+  .to("weather:foo?location=Madrid,Spain&appid=APIKEY");
+----
+
+And we can send in a message with a header to get the weather for any
+location as shown:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+  String json = template.requestBodyAndHeader("direct:start", "", "CamelWeatherLocation", "Paris,France&appid=APIKEY", String.class);
+----
+
+And to get the weather at the current location, then:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+  String json = template.requestBodyAndHeader("direct:start", "", "CamelWeatherLocation", "current&appid=APIKEY", String.class);
+----

@@ -1,0 +1,81 @@
+[[ConfluenceContent]]
+[[FTPExample-FTPExample]]
+FTP Example
+~~~~~~~~~~~
+
+*Available as of Camel 2.11*
+
+This example is located in the `examples/camel-example-ftp` directory of
+the Camel distribution. +
+There is a `README.txt` file with instructions how to run it.
+
+[[FTPExample-About]]
+About
+^^^^^
+
+This example demonstrates how Camel can upload and download files
+to/from an existing FTP server.
+
+[[FTPExample-Prerequisites]]
+Prerequisites
+^^^^^^^^^^^^^
+
+An existing FTP server should be running.
+
+[[FTPExample-Implementation]]
+Implementation
+^^^^^^^^^^^^^^
+
+This example is implemented in Java code, and there is a client and a
+server application.
+
+The client is used for uploading files from the local file system (from
+target/upload) to the FTP server. +
+The server is used for downloading files from the FTP server to the
+local file system (to target/download).
+
+You can see the Java implementation by opening the
+`src/main/java/org/apache/camel/example/ftp/MyFtpClientRouteBuilder.java`
+for the client Java route. +
+And the server example is implemented in the
+`src/main/java/org/apache/camel/example/ftp/MyFtpClientRouteBuilder.java`
+file.
+
+[[FTPExample-Runningtheexample]]
+Running the example
+^^^^^^^^^^^^^^^^^^^
+
+You would need to configure the location and credential for the FTP
+server. This is done by editing the `src/main/resources/ftp.properties`
+file. +
+Byt default it connects to a non existing domain name, which you
+therefore *must* change.
+
+Then you can either run the example as client or server by running from
+command line with Maven
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+mvn compile exec:java -Pclient
+----
+
+Or for the server
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+mvn compile exec:java -Pserver
+----
+
+Instructions is also printed to the console. And you can use ctrl + c to
+stop the Camel application.
+
+If you encounter any problems you can enable verbose logging by
+following the instructions in the `src/main/resources/log4j.properties`
+file.
+
+[[FTPExample-SeeAlso]]
+See Also
+^^^^^^^^
+
+* link:examples.html[Examples]
+* link:ftp2.html[FTP]

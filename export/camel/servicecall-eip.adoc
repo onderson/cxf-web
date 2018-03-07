@@ -1,0 +1,272 @@
+[[ConfluenceContent]]
+[[ServiceCallEIP-ServiceCallEIP]]
+ServiceCall EIP
+~~~~~~~~~~~~~~~
+
+*Available as of Camel 2.18*
+
+The *`serviceCall`* EIP allows to call remote services in a distributed
+system. The service to call is looked up in a service registry of some
+sorts such as Kubernetes, Consul, etcd, Zookeeper. The EIP separates the
+configuration of the service registry from the calling of the service. 
+
+Maven users will need to add the dependency for the service registry
+supported from the following:
+
+* `camel-consul`
+* `camel-etcd`
+* `camel-kubernetes`
+* `camel-ribbon`
+
+Each implementation has their own set of configuration.
+
+[[ServiceCallEIP-Syntax]]
+Syntax
+^^^^^^
+
+When calling a service you may just refer to the name of the service in
+the EIP as shown below:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from("direct:start")
+    .serviceCall("foo")
+    .to("mock:result");
+----
+
+And in XML DSL:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<camelContext xmlns="http://camel.apache.org/schema/spring">
+  <route>
+    <from uri="direct:start"/>
+    <serviceCall name="foo"/>
+    <to uri="mock:result"/>
+  </route>
+</camelContext>
+----
+
+Camel will then lookup a service with the name *`foo`* from the chosen
+Camel component that integrates with the service registry. The lookup
+returns a set of *`IP:PORT`* pairs that refer to a list of active
+servers that host the remote service. Camel will then select a server at
+random from the list to use and then build a Camel URI with the chosen
+IP and PORT number.
+
+By default Camel uses the HTTP component, so the example above will
+resolve into a Camel URI that is called by a dynamic *`toD`* endpoint as
+shown:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+toD("http://IP:PORT")
+ 
+<toD uri="http:IP:port"/>
+----
+
+You can also call the service using URI parameters such as *`beer=yes`*:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+serviceCall("foo?beer=yes")
+ 
+<serviceCall name="foo?beer=yes"/>
+----
+
+You can also provide a context-path such as shown:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+serviceCall("foo/beverage?beer=yes")
+ 
+<serviceCall name="foo/beverage?beer=yes"/>
+----
+
+[[ServiceCallEIP-ServiceNametoCamelURIExamples]]
+Service Name to Camel URI Examples
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+So as you can see above the service name is resolved as a Camel endpoint
+URI, and here is a few more examples (where *`->`* shows the resolution
+of the Camel URI):
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+serviceCall("myService") -> http://hostname:port
+serviceCall("myService/foo") -> http://hostname:port/foo
+serviceCall("http:myService/foo") -> http:hostname:port/foo
+ 
+<serviceCall name="myService"/> -> http://hostname:port
+<serviceCall name="myService/foo"/> -> http://hostname:port/foo
+<serviceCall name="http:myService/foo"/> -> http:hostname:port/foo
+----
+
+If you want full control of the resolved URI you can provide an
+additional URI parameter where you specify the Camel URI as you want. In
+the URI you can use the service name which are then resolved
+to *`IP:PORT`* as shown:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+serviceCall("myService", "http:myService.host:myService.port/foo") -> http:hostname:port/foo
+serviceCall("myService", "netty4:tcp:myService?connectTimeout=1000") -> netty:tcp:hostname:port?connectTimeout=1000
+ 
+<serviceCall name="myService" uri="http:myService.host:myService.port/foo"/> -> http:hostname:port/foo
+<serviceCall name="myService" uri="netty4:tcp:myService?connectTimeout=1000"/> -> netty:tcp:hostname:port?connectTimeout=1000
+----
+
+In the example above we want to call a service named *`myService`* and
+we can control the resolved URI as in the second parameter. Notice how
+in the first example we can use *`serviceName.host`*
+and *`serviceName.port`* to refer to either the `IP` or `PORT`. If you
+just use *`serviceName`* then it's resolved as `IP:PORT`.
+
+[[ServiceCallEIP-ConfiguringServiceCall]]
+Configuring Service Call
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+By default Camel will call the service using the link:http.html[HTTP]
+component, but you can configure to use a different component such
+as link:http4.html[HTTP4], link:netty4-http.html[Netty4 HTTP] as shown:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+KubernetesConfigurationDefinition config = new KubernetesConfigurationDefinition();
+config.setComponent("netty4-http");
+ 
+// register the service call configuration
+context.setServiceCallConfiguration(config);
+ 
+from("direct:start")
+    .serviceCall("foo")
+    .to("mock:result");
+----
+
+In XML DSL:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<camelContext xmlns="http://camel.apache.org/schema/spring">
+  <kubernetesConfiguration id="kubernetes" component="netty4-http"/>
+  <route>
+    <from uri="direct:start"/>
+    <serviceCall name="foo"/>
+    <to uri="mock:result"/>
+  </route>
+</camelContext>
+----
+
+[[ServiceCallEIP-CommonConfiguration]]
+Common Configuration
+^^^^^^^^^^^^^^^^^^^^
+
+These are the common configuration that each implementation is sharing.
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Name |Default +
+Value |Description
+|`clientProperty` |  a|
+These properties are specific to what service call implementation are in
+use.
+
+For example if using ribbon, then the client properties are define in
+*`com.netflix.client.config.CommonClientConfigKey`*.
+
+|`component` |`http` a|
+Sets the default Camel component to use for calling the remote service.
+By default the *`http`* component is used.
+
+You can configure this to use *`netty4-http`*, *`jetty`, `restlet`* or
+some other components of choice. +
+If the service does not use the HTTP protocol then other components such
+as *`mqtt`, `jms`*, *`amqp`* etc can be used. +
+If the service call has been configured using a URI the component
+specified in the URI is used instead of this default component.
+
+|`loadBalancerRef` |  |Sets a reference to a
+custom *`org.apache.camel.spi.ServiceCallLoadBalancer`* to use.
+
+|`serverListStrategyRef` |  |Sets a reference to a
+custom *`org.apache.camel.spi.ServiceCallServerListStrategy`* to use.
+|=======================================================================
+
+ 
+
+[[ServiceCallEIP-KubernetesConfiguration]]
+Kubernetes Configuration
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Name |Default Value |Description
+|`apiVersion` |  |Kubernetes API version when using *`client`* lookup.
+
+|`caCertData` |  |Sets the Certificate Authority data when
+using *`client`* lookup.
+
+|`caCertFile` |  |Sets the Certificate Authority data that are loaded
+from the file when using *`client`* lookup.
+
+|`clientCertData` |  |Sets the Client Certificate data when
+using *`client`* lookup.
+
+|`clientCertFile` |  |Sets the Client Certificate data that are loaded
+from the file when using *`client`* lookup.
+
+|`clientKeyAlgo` |  |Sets the Client Keystore algorithm, such as RSA
+when using *`client`* lookup.
+
+|`clientKeyData` |  |Sets the Client Keystore data when using *`client`*
+lookup.
+
+|`clientKeyFile` |  |Sets the Client Keystore data that are loaded from
+the file when using *`client`* lookup.
+
+|`clientKeyPassphrase` |  |Sets the Client Keystore passphrase when
+using *`client`* lookup.
+
+|`dnsDomain` |  |Sets the DNS domain to use for *`dns`* lookup.
+
+|`lookup` |`environment` a|
+The choice of strategy used to lookup the service.
+
+The list of lookup strategies are:
+
+[width="100%",cols="50%,50%",options="header",]
+|=======================================================================
+|Lookup Strategy |Description
+|*`environment`* |Use environment variables.
+
+|*`dns`* |Use DNS domain names.
+
+|*`client`* |Use Java Client to call the Kubernetes master API and query
+which servers are actively hosting the service.
+|=======================================================================
+
+|`masterUrl` |  |The URL for the Kubernetes master when using *`client`*
+lookup.
+
+|`namespace` |  |The Kubernetes namespace to use. By default the
+namespace's name is taken from the environment variable
+*`KUBERNETES_MASTER`*.
+
+|`oauthToken` |  |Sets the `OAUTH` token for authentication (instead of
+username/password) when using *`client`* lookup.
+
+|`password` |  |Sets the password for authentication when
+using *`client`* lookup.
+
+|`trustCerts` |`false` |Sets whether to turn on trust certificate check
+when using *`client`* lookup.
+
+|`username` |  |Sets the username for authentication when
+using *`client`* lookup.
+|=======================================================================
+
+[[ServiceCallEIP-RibbonConfiguration]]
+Ribbon Configuration
+^^^^^^^^^^^^^^^^^^^^
+
+Currently no ribbon specific options yet.

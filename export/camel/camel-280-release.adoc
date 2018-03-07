@@ -1,0 +1,647 @@
+[[ConfluenceContent]]
+[[Camel2.8.0Release-Camel2.8.0release]]
+Camel 2.8.0 release
+-------------------
+
+image:http://camel.apache.org/download.data/camel-box-v1.0-150x200.png[image]
+
+[[Camel2.8.0Release-NewandNoteworthy]]
+New and Noteworthy
+~~~~~~~~~~~~~~~~~~
+
+Welcome to the 2.8.0 release which approx 422 issues resolved (new
+features, improvements and bug fixes such as...)
+
+* Fixed the OGNL support of link:simple.html[Simple] language to support
+dots in key for map access.
+* Improved OGNL support of link:simple.html[Simple] to support chained
+[] indexes in List/Map so you can do: `body[0][cool]`, to acces a
+`List<Map>` type.
+* You can now configure the `resultType` when using
+link:simple.html[Simple] expressions.
+* You can now specify link:bean-binding.html[type parameters] in
+link:bean.html[Bean] to exact select method to be used when having
+overloaded methods (overloaded methods have same name, but vary in
+parameter types).
+* The link:ftp.html[SFTP] component now allows you to customize keep
+alive settings.
+* Fixed issue if explict setting `JmsMessage` body to `null` would cause
+Camel to re-initialize the body from the underlying `javax.jms.Message`
+on access again.
+* link:mock.html[Mock] endpoints is now lenient, which means its easier
+to replace components with link:mock.html[Mock] for testing purposes.
+Using uri parameters which the link:mock.html[Mock] endpoint wont no
+longer complain about being unknown parameters.
+* Camel places a breadcrumb header in the Camel
+link:message.html[Message] which allow us to keep track of messages
+across transports such as link:jms.html[JMS], link:http.html[HTTP] and
+many others. See more details at link:mdc-logging.html[MDC logging].
+* Improved link:xpath.html[XPath] to allow GC to kick-in a bit earlier
+to free memory as Camel will clear references to used
+link:exchange.html[Exchange]s used during link:xpath.html[XPath]
+evaluations.
+* Fixed an issue using link:ftp.html[FTP] endpoints with the
+link:intercept.html[interceptSendToEndpoint]
+* link:using-camelproxy.html[Camel Proxy] supports asynchronous
+invocations using `Future` handles.
+* The
+link:how-do-i-configure-the-maximum-endpoint-cache-size-for-camelcontext.html[endpoint
+cache] can be configured on link:camelcontext.html[CamelContext].
+* link:cometd.html[Cometd] supports custom security policy and
+extensions as
+http://cometd.org/documentation/howtos/authentication[documented here]
+* Caches such as `ProducerCache` and `EndpointRegistry` can now be
+purged from link:camel-jmx.html[JMX].
+* Added stats for number of redeliveries and handled failures to JMX.
+* Added support for link:camel-jboss.html[JBoss 6].
+* link:jms.html[JMS] consumer uses `CACHE_AUTO` for default cache level.
+This ensure that it will automatic detect if its transacted and use
+`CACHE_NONE` which must be used for transacted. And `CACHE_CONSUMER` for
+non transacted.
+* Improved link:splitter.html[Splitter] in parallel mode to be more
+responsive when aggregating on-the-fly under high load, and reducing
+number of threads in-use.
+* Added `onPrepare` to link:multicast.html[Multicast],
+link:splitter.html[Splitter], link:recipient-list.html[Recipient List],
+and link:wire-tap.html[Wire Tap] to execute custom logic when preparing
+messages. For example you can use that to deep clone message bodies, or
+enrich messages before they are processed.
+* Added `CamelSqlQuery` header to link:sql-component.html[SQL Component]
+to specify (per exchange) SQL query.
+* `camel-cache` now works in OSGi.
+* Fixed an issue with link:hawtdb.html[HawtDB] file store growing to
+large.
+* Added `repeatCount` option to link:timer.html[Timer] so you can limit
+the number of times it fires.
+* Consuming from link:jms.html[JMS] will now uses default exchange ids,
+instead of overring and uses ids based on `JMSMessageID`. This makes
+exchange ids consistent with all components in Camel.
+* The `camel-script` component now works in OSGi and being able to
+discover and use `ScriptEngineFactory` from bundles.
+* link:restlet.html[Restlet] producer now supports the
+link:asynchronous-routing-engine.html[Asynchronous Routing Engine]
+* link:throttler.html[Throttler] now uses an
+link:expression.html[Expression] for the maximum messages per period,
+which means it can be adjusted dynamic at runtime.
+* link:cache.html[Cache] now supports replicating cache across nodes
+using listeners.
+* link:cache.html[Cache] headers are now prefixed with 'CamelCache' and
+use mixed case, also they are removed from the exchange after a cache
+operation is performed
+* Fixed issue with link:xmpp.html[XMPP] being redeployed (hot-deploy) in
+Apache ServiceMix may fail.
+* link:cxf.html[CXF] uses case-insensitive keys for CXF protocol
+headers, which Apache CXF itself also uses.
+* Fixed issue with stopping context scoped link:error-handler.html[Error
+Handler] if a route was stopped, for example using
+link:camel-jmx.html[JMX].
+* Updated documentation of each link:eip.html[EIP] to include a table
+with the options they support.
+* Improved the link:aws-sqs.html[AWS-SQS], link:aws-sns.html[AWS-SNS]
+and link:aws-s3.html[AWS-S3] components to be able to configure the
+region with which the Amazon client wants to work with.
+* Improved the link:aws-s3.html[AWS-S3] component to be able to set the
+content length and content type of streamed objects.
+* The `testConnectionOnStartup` option on link:jms.html[JMS] now also
+checks JMS producers as well.
+* Upgraded link:cometd.html[Cometd] from 1.0.1 to 2.1.0
+* link:message-filter.html[Message Filter] EIP now fail on startup if it
+was mis-configured in XML DSL
+* Fixed issue with link:content-based-router.html[Content Based Router]
+in link:scala-dsl.html[Scala DSL] not evaluating as
+link:predicate.html[Predicate]s.
+* Improved the link:jdbc.html[JDBC] component to not leave the database
+in an inconsistent state if one of multiple updates fails.
+* Fixed issue with link:jms.html[JMS] consumer may report a class cast
+exception at WARN level during processing a message.
+* Removed not needed type conversion attempts by `camel-jaxb`, when
+routing messages to link:bean.html[Bean]s, for JAXB annotated payloads
+* Optimized routing with link:bean.html[Bean] slightly
+* Fixed an issue when restarting routes with scheduled polling consumers
+having `consumer.xxx` properties configured. The `consumer.xxx`
+properties would be lost on restart.
+* Added fallback to link:file2.html[File] component, to do a copy/delete
+if a native file rename fails. This may happen if you rename files
+between different file systems such as linux -> shared windows
+directory.
+* Minor improvements to link:scala-dsl.html[Scala DSL]
+* link:aggregator2.html[Aggregator] EIP will now by default uses eager
+completion check when grouped exchange has been enabled.
+* Internal Camel caches now uses a
+http://download.oracle.com/javase/6/docs/api/java/lang/ref/SoftReference.html[SoftReference]
+which allows the JVM to be able to garbage collection from the cache in
+case its running out of memory. This should help Camel end users when
+running in low memory systems.
+* Added 2 new link:camel-maven-archetypes.html[Camel Maven Archetypes]
+for OSGi using spring-dm or blueprint
+* The link:log.html[Log] component will now by default *not* show stream
+message bodies. Use the new `showStreams` option to enable that
+explicit.
+* Improved startup time of Camel by hard loading type converters from
+`camel-core` JAR
+* Made unit testing the Camel link:source.html[Source] go faster
+* The Camel link:testing.html[test kit] will now by default lazy load
+type converters which makes unit testing faster for most tests.
+* Added new features to link:advicewith.html[AdviceWith] to support
+`weaveByType`, selectors, and a shorthand to easily add nodes to
+start/end of routes.
+* link:camel-test.html[Camel Test] support setting up
+link:camelcontext.html[CamelContext] once per test class, instead of
+every test method. This can speedup testing when having multiple test
+methods in the same unit test class.
+* Fixed an issue with link:ftp2.html[FTP] producer not trying to
+re-connect if pre write check fails. By re-connecting the producer can
+recover and process the message without failing.
+* link:camel-jmx.html[Camel JMX] can now show the routes as XML on the
+CamelContext/Route mbeans. Likewise route(s) can be updated/added from
+XML as well.
+* link:camel-jmx.html[Camel JMX] added operations to
+`ManagedCamelContext` to send messages which has headers as well.
+* link:camel-jmx.html[Camel JMX] added operations to `BrowsableEndpoint`
+mbeans to show message in generic XML format.
+* The JDBC and JPA based idempotent repositories now contains a
+createdAt property/column.
+* Improved the link:aws-sqs.html[AWS-SQS] component to change all queue
+attributes (VisibilityTimeout, MaximumMessageSize,
+MessageRetentionPeriod and Policy) at a later time if needed.
+* Aligned the authentication and proxy parameter names so
+link:http4.html[HTTP4] uses same names as link:http.html[HTTP]
+component.
+* Removed some very seldom used expression builders in Java DSL that
+caused a minor problem with being able to render the routes as XML. By
+removing those we ensure the routes creating using Java DSL can
+accurately render itself as XML DSL routes.
+* Added link:hazelcast-component.html[Hazelcast] as supported store for
+the link:idempotent-consumer.html[Idempotent Consumer] EIP
+* link:tracer.html[Tracer] uses same logic as link:log.html[Log]
+component for extracting message body. By default they will not
+log/trace message bodies from stream/files. But instead indicate its a
+stream/file message body. You can control this behavior by setting a
+property on the link:camelcontext.html[CamelContext].
+* Added monitor type consumer to link:jmx.html[JMX] consumer. This new
+style of consumer automatically creates and deploys a monitor bean
+(counter, gauge, or string) to monitor the specified attribute of an
+existing bean. This is useful for cases where a route wants to monitor a
+bean without relying on an pre-existing deployment and configuration of
+a monitor.
+* Added link:ref-language.html[Ref Language] to make it easy to refer
+and use custom link:expression.html[Expression] in XML DSLs.
+* You can provide additional arguments to
+link:scripting-languages.html[Scripting Languages] as a header on the
+Camel Message.
+* Added support for setting custom properties in the endpoint uri for
+link:cxf.html[CXF] by using `properties.` as prefix, eg
+`properties.mtom-enabled=true` to enable MTOM. This is usable if you
+configure and use link:cxf.html[CXF] from Java DSL. The XML DSL has a
+specialized CXF schema to configure this using XML tags.
+* Added option `disableTimeToLive` on link:jms.html[JMS] to force
+disabling time to live value. Added more details in link:jms.html[JMS]
+documentation about the need for synchronizing clocks for
+link:jms.html[JMS] systems when doing request/reply, and why the option
+`disableTimeToLive` may come handy.
+* link:spring-web-services.html[Spring Web Services] producer now
+propagates headers correctly.
+* Components loading resources such as link:velocity.html[Velocity],
+link:xslt.html[XSLT], link:xquery.html[XQuery],
+link:freemarker.html[FreeMarker] etc. now leverages Camels
+link:pluggable-class-resolvers.html[Pluggable Class Resolvers] which
+ensures they now work in link:using-osgi-blueprint-with-camel.html[OSGi
+Blueprint].
+* `DefaultPackageScanClassResolver` uses a JAR cache to speedup scanning
+JARs. This ensures Camel bootup faster, in case it re-scan JARs from the
+cache.
+* Exposed Restlet API in link:restlet.html[Restlet] to allow end users
+to be in full control. For example using the `org.restlet.Response`
+instance to populate the response from a link:restlet.html[Restlet]
+route.
+* Splited camel transport for cxf out of camel-cxf module. If you want
+to use camel transport for cxf or the cxfbean component, you need to add
+the dependency of camel-cxf-transport.
+* link:aggregator2.html[Aggregate] EIP will restore timeout values from
+existing exchanges from aggregation repository upon start. This ensures
+that restarting Camel, will allow the aggregator trigger timeouts for
+those existing exchanges.
+* link:bean.html[Bean] component:
+link:parameter-binding-annotations.html[Parameter Binding Annotations]
+are now also inherited from superclasses and interfaces.
+* Fixed routes using a link:content-based-router.html[Content Based
+Router] not having its child nodes enlisted in link:camel-jmx.html[JMX]
+for management.
+* Fixed parent/child relationship in
+link:content-based-router.html[Content Based Router] to be more fine
+grained.
+* Fixed issue related to non optional camel-core dependency on
+javax.script in OSGi.
+* Added option `shareUnitOfWork` to link:splitter.html[Splitter],
+link:multicast.html[Multicast], and link:recipient-list.html[Recipient
+List] to make the entire operation appear as one unit of work, that
+either succeed or failure. This underpins some use cases, especially
+with the link:splitter.html[Splitter] and using a
+link:dead-letter-channel.html[Dead Letter Channel] to only store one
+failed link:exchange.html[Exchange] (one unit of work).
+* Exceptions thrown while handling other exceptions in
+link:exception-clause.html[OnException] will now caught by a fallback
+error handler logging to 2nd exception and propagating the 2nd exception
+on the link:exchange.html[Exchange] and causing that
+link:exchange.html[Exchange] to break out processing and fail
+immediately. This avoids complications, what to do if a exceptions occur
+while handling a previous exception. For example you could end up going
+in circles. Now its predictable (Log the 2nd and fail).
+* link:exception-clause.html[OnException] will fail on startup if it has
+been misconfigured (eg its empty, such as
+`onException(Exception.class);`). You must either add redelivery
+settings, handled, continued, retryWhile, outputs, etc. to configure it
+* Fixed issue when sending link:mail.html[Mail] as Camel could
+mistakenly drop characters from `Content-Type` header. Improved how
+`charset` is parsed and configured in the `Content-Type` header.
+* The `ScheduledPollingConsumer` now rigorously catches all erros in the
+scheduled thread to avoid the thread from terminating by the JDK
+scheduled thread pool, causing the scheduled polling to stop. Added
+option `runLoggingLevel` to configure logging level for logging
+start/complete logs when the polling task runs.
+* Fixed issue with link:bean.html[Bean] endpoint propagating
+`CamelBeanMethodName` header. This header was only intended for the
+first link:bean.html[Bean] endpoint, and not any subsequent
+link:bean.html[Bean] endpoints.
+* link:spring-web-services.html[Spring Web Services] consumer now
+propagates exceptions back to Spring-WS. This allows for exception
+handling by Spring-WS EndpointExceptionResolver's
+* Optimized Camel's routing engine by moving the need for defensive copy
+of link:exchange.html[Exchange] during routing, to the
+link:error-handler.html[Error Handler]s instead (which is capable of
+performing redelivery). Optimized to only perform defensive copy if
+redelivery has been enabled.
+* Fixed issue with link:error-handler.html[Error Handler] doing
+redelivery, the passed in link:exchange.html[Exchange] could have left
+over state from the previous attempt.
+* link:seda.html[SEDA] now supports suspend/resume
+link:lifecycle.html[Lifecycle], which for example is a more gentle way
+for temporary pausing link:seda.html[SEDA] routes.
+* Fixed issue with link:routepolicy.html[ThrottlingInflightRoutePolicy]
+in context scope may not trigger to resume routes, when
+link:exchange.html[Exchange]s started from other independent routes,
+were completed.
+* Added `ManagementObjectStrategy` as SPI to make it easier to reuse all
+the various MBeans created by Camel, or to plugin a custom strategy if
+needed.
+* Improved link:smpp.html[SMPP] to be able to return error codes to the
+SMSC in case of failures by processing the incoming message. This is
+useful e.g. to instruct the SMSC to redeliver the short message.
+* Camel link:mail.html[Mail] component now supports marking mails as
+SEEN/DELETED after processing when using the pop3 protocol.
+* Fixed issue using link:content-enricher.html[Content Enricher] or
+link:polling-consumer.html[Polling Consumer] with
+link:batch-consumer.html[Batch Consumer] could cause the consumer to
+keep polling after usage. For example a link:ftp2.html[FTP] consumer
+would keep polling the FTP server.
+* link:content-enricher.html[Content Enricher] using `pollEnrich` will
+now set an empty message body if the link:content-enricher.html[Content
+Enricher] could not poll from the resource. Previously the old message
+body would be preserved.
+* Add fragment property on the link:jaxb.html[Camel JAXB] dataformat.
+* In addition of http://karaf.apache.org[Apache Karaf] features
+descriptor, Camel now provides a link:karaf.html[Karaf] shell commands
+to manipulate link:camelcontext.html[CamelContext], routes, etc.
+* link:mock.html[Mock] endpoint now accepts multiple expected
+headers/properties using the `expectedHeaderReceived` /
+`expectedPropertyReceived` methods.
+* Added the `changed` read lock option to the link:ftp2.html[FTP]
+component.
+* Added `minDepth` and `maxDepth` options to link:file2.html[File]
+component.
+* Fixed issue using link:smpp.html[SMPP] with messages longer than 254
+characters.
+* Upgraded link:amqp.html[AMQP] to use Apache QPid 0.10
+* Fixed issue if having multiple routes on the exact same
+link:jms.html[JMS] topic endpoint, and if removing one of the routes,
+causing the other active routes to not receive any more messages from
+the JMS topic.
+* Fixed issue when endpoint uris had multiple values for same parameter
+key, would only keep last parameter. For example if using
+link:http.html[HTTP], link:http4.html[HTTP4] to send a HTTP request to a
+remote HTTP server and having parameters in the URI with multiple values
+for the same key, eg such as
+`"http://someserver.com?from=me&to=foo&to=bar"`
+* Improved link:ref.html[Ref] component to throw better failure
+exceptions if the endpoint could not be found in the
+link:registry.html[Registry]
+* Introduced `mapMailMessage` option (default true) to Camel
+link:mail.html[Mail] that determines if Camel should map the raw mail
+message to headers/bodies etc.
+* link:ahc.html[AHC], link:http.html[HTTP], link:http4.html[HTTP4],
+link:jetty.html[Jetty], link:servlet.html[SERVLET] now supports multi
+valued HTTP headers.
+* Lookup bean with expected type in link:registry.html[Registry] now
+reports better exception message with actual and expected type in case
+of a caused `ClassCastException`
+* link:type-converter.html[Type Converter] discovery has been improved
+to be faster and better support different runtimes. Camel now prefers to
+load @Converter classes using the FQN class name instead of package
+scanning. Package scanning is a costly procedure and doesnt work out of
+the box in all runtimes, and using
+link:pluggable-class-resolvers.html[Pluggable Class Resolvers] is needed
+to make that work.
+
+[[Camel2.8.0Release-New]]
+New link:enterprise-integration-patterns.html[Enterprise Integration
+Patterns]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+[[Camel2.8.0Release-New.1]]
+New link:components.html[Components]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* link:ahc.html[AHC] - An asynchronous http client
+* link:apns.html[APNS] - To send notifications to Apple iOS devices
+* link:aws-sns.html[AWS-SNS] - Simple Notification Service for Amazon
+AWS Cloud
+* link:aws-s3.html[AWS-S3] - Simple Storage Service for Amazon AWS Cloud
+* link:hdfs.html[HDFS] - Hadoop File System
+* link:camel-test.html[TestNG] - Unit testing with TestNG
+
+[[Camel2.8.0Release-DSLChanges]]
+DSL Changes
+^^^^^^^^^^^
+
+* link:wire-tap.html[Wire Tap] has now fluent builders in Java DSL to
+make it easier to configure.
+* link:wire-tap.html[Wire Tap] can now set headers directly in the DSL
+when using the send new message mode.
+* Added `skipDuplicate` option to
+link:idempotent-consumer.html[Idempotent Consumer] EIP to allow end
+users to handle duplicate messages more easily in Camel routes.
+* link:throttler.html[Throttler] now uses an
+link:expression.html[Expression] to set the maximum requests per period,
+allow that to be dynamic evaluated at runtime. This means you need to
+migrate if you use XML DSL.
+* Added `copy` option to link:loop.html[Loop] EIP so you can run in copy
+mode, which mean each iteration is reset and use a copy of the same
+input exchange.
+* `endDoTry` added to Java DSL
+* Added option `shareUnitOfWork` to link:splitter.html[Splitter],
+link:multicast.html[Multicast], and link:recipient-list.html[Recipient
+List] to make the entire operation appear as one unit of work, that
+either succeed or failure. This underpins some use cases, especially
+with the link:splitter.html[Splitter] and using a
+link:dead-letter-channel.html[Dead Letter Channel] to only store one
+failed link:exchange.html[Exchange] (one unit of work).
+* <bean>, <marshal>, and <unmarshal> tags in XML DSL no longer accepts
+children (outputs).
+
+[[Camel2.8.0Release-NewAnnotations]]
+New Annotations
+^^^^^^^^^^^^^^^
+
+[[Camel2.8.0Release-NewDataFormats]]
+New link:data-format.html[Data Formats]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+[[Camel2.8.0Release-New.2]]
+New link:languages.html[Languages]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* link:ref-language.html[Ref Language]
+
+[[Camel2.8.0Release-New.3]]
+New link:examples.html[Examples]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* link:cxf-example-osgi.html[CXF Example OSGi] using Spring-DM
+* link:cxf-example-osgi-blueprint.html[CXF Example OSGi Blueprint] using
+Blueprint
+
+[[Camel2.8.0Release-New.4]]
+New link:tutorials.html[Tutorials]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+[[Camel2.8.0Release-APIbreaking]]
+API breaking
+~~~~~~~~~~~~
+
+* Added `purge` method to `ServicePool`
+* If you use link:wire-tap.html[Wire Tap] from within a
+link:content-based-router.html[Content Based Router] in Java DSL, then
+you need to use `end()` to indicate the end of the
+link:wire-tap.html[Wire Tap]. See this
+https://svn.apache.org/repos/asf/camel/trunk/camel-core/src/test/java/org/apache/camel/processor/CBRWithWireTapTest.java[test]
+* `WireTapDefinition` no longer extends from `SendDefinition`
+* Removed `maximumRequestsPerPeriod` attribute on
+link:throttler.html[<throttle>] in XML DSL. You should use an
+link:expression.html[Expression] instead, such as
+`<constant>10</constant>`
+* link:cache.html[Cache] headers are now prefixed with 'CamelCache' (see
+CacheConstants) and are removed from the exchange after the cache
+operation is performed
+* link:scala-dsl.html[Scala DSL] uses 'Camel case names' for its DSL to
+be consistent and aligned with the Java DSL
+* The `sendBody` and `requestBody` methods on `ManagedCamelContext` have
+changed signature to use a `java.lang.Object` type in the 2nd parameter.
+Instead we have introduced `sendStringBody` and `requestStringBody` that
+has a `java.lang.String` type in the 2nd parameter. For example you can
+use those from JConsole.
+* The JDBC and JPA based idempotent repositories now contains a
+createdAt property/column.
+* The authentication and proxy parameter names have been renamed in the
+link:http4.html[HTTP4] component. See the link:http4.html[HTTP4] page
+for details.
+* Removed seldom used methods on EIPs that uses an `ExpressionClause` to
+build up an expression. There are other existing methods that accept an
+`Expression` as parameter to be used instead:
+** `completionPredicate()` on `AggregationDefinition`
+** `onWhen()` on `CatchDefinition`
+** `expression()` on `IdempotentConsumerDefinition`
+** `onWhen()` on `OnCompletionDefinition`
+** `onWhen()` on `OnExceptionDefinition`
+** `idempotentConsumer()` on `ProcessorDefinition`
+** `expression()` on `SplitDefinition`
+** `onWhen()` on `TryDefinition`
+** `expression()` on `WhenDefinition`
+* Removed the deprecated `handled` methods on
+link:error-handler.html[Error Handler]. If you used `handled(false)` on
+the link:error-handler.html[Error Handler] you would have to migrate to
+using link:exception-clause.html[Exception Clause] instead that support
+`handled`.
+* `GZIPHelper` moved from
+link:http.html[HTTP]/link:http4.html[HTTP4]/link:ghttp.html[ghttp]
+components to `camel-core`
+* Removed `org.apache.camel.spi.ScriptEngineResolver`
+* `org.apache.camel.component.cxf.CxfHeaderFilterStrategy` moved from
+`camel-cxf` to `camel-cxf-transport` as
+`org.apache.camel.component.cxf.common.header.CxfHeaderFilterStrategy`
+* Added `removeEventNotifier` method to `ManagementStrategy`
+* Added getter/setter for `ManagementObjectStrategy` on
+`ManagementStrategy`
+* Moved the exception `ProxyInstantiationException` from the package
+`org.apache.camel.impl` to `org.apache.camel`
+* Added parameter `depth` to the method `pollDirectory` in the class
+`GenericFileConsumer`
+
+[[Camel2.8.0Release-KnownIssues]]
+Known Issues
+~~~~~~~~~~~~
+
+* The link:tracer.html[Tracer] may not output all details for some
+situations such as when using `onCompletion` or `intercept` etc.
+* Using link:debugger.html[Debugger] and link:tracer.html[Tracer] at the
+same time is not working.
+* Not all link:examples.html[Examples] have ANT build.xml files to run
+the example using ANT.
+* The project cannot fully build the site using Maven (eg running
+`"mvn site"`. There is no plan to make this work as the project do not
+use the maven site.
+* The following two unit tests may fail on Windows from the `camel-ftp`
+component: `FtpChangedReadLockTest` and `FtpChangedReadLockTimeoutTest`.
+
+[[Camel2.8.0Release-Importantchangestoconsiderwhenupgrading]]
+Important changes to consider when upgrading
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+* Upgraded to slf4j 1.6.1
+* Upgraded to Apache CXF 2.4.0 (CXF 2.3.x or older is no longer
+supported)
+* The `testConnectionOnStartup` option on link:jms.html[JMS] now also
+checks JMS producers as well.
+* Fixed `InterceptStrategy` to pass in actual `OutputDefinition`. For
+example in a route with a link:splitter.html[Splitter], it would now
+pass in the children of the splitter, in the
+`wrapProcessorInInterceptors` method.
+* The link:log.html[Log] component will now by default *not* show stream
+message bodies. Use the new `showStreams` option to enable that
+explicit. Likewise the link:log.html[Log] component will *not* automatic
+convert the payload to `StreamCache`. For that you need to explicit
+enable link:stream-caching.html[Stream caching] on the route or
+CamelContext.
+* Removed the artifacts `camel-spring-tests.jar` and
+`camel-blueprint-tests.jars` from being released to
+http://repo2.maven.org/maven2/[Maven Central Repository].
+* Upgraded to use Commons Net 2.2 (was 2.0) in link:ftp2.html[FTP]
+component.
+* Splited Camel transport for link:cxf.html[CXF] out of `camel-cxf`
+module. If you want to use camel transport for link:cxf.html[CXF] or the
+`cxfbean` component, you need to add the dependency of
+`camel-cxf-transport`.
+* Upgraded link:spring-web-services.html[Spring Web Services] to release
+2.0.2 from 1.x.
+* Exceptions thrown while handling other exceptions in
+link:exception-clause.html[OnException] will now caught by a fallback
+error handler logging to 2nd exception and propagating the 2nd exception
+on the link:exchange.html[Exchange] and causing that
+link:exchange.html[Exchange] to break out processing and fail
+immediately. This avoids complications, what to do if a exceptions occur
+while handling a previous exception. For example you could end up going
+in circles. Now its predictable (Log the 2nd and fail).
+* The default option `useFixedDelay` has been changed from `false` to
+`true` in the link:file2.html[File] and link:ftp2.html[FTP] consumers.
+* The `CamelBeanMethodName` header on a Camel message will not be
+propagated routing through link:bean.html[Bean] components. The
+link:bean.html[Bean] component will remove the header after usage.
+* link:content-enricher.html[Content Enricher] using `pollEnrich` will
+now set an empty message body if the link:content-enricher.html[Content
+Enricher] could not poll from the resource. Previously the old message
+body would be preserved.
+* Added field `routeId` to trace event message in camel-core and
+link:jpa.html[JPA].
+* Upgraded to Scala 2.9.0 in `camel-scala` and `camel-web`
+* End users with custom components that has
+link:type-converter.html[Type Converter]s should consider migrating to
+use the FQN in the `META-INF/services/org/apache/camel/TypeConverter`
+file. See more details at link:type-converter.html[Type Converter].
+* If you use link:wire-tap.html[Wire Tap] in Java DSL, then you need to
+add `.end()` to mark where it ends, as shown in this
+https://svn.apache.org/repos/asf/camel/branches/camel-2.8.x/camel-core/src/test/java/org/apache/camel/processor/CBRWithWireTapTest.java[unit
+test]
+* The default cacheLevel on JMS is now CACHE_AUTO, which reacts
+differently depending whether transacted=true or not. See more details
+at link:jms.html[JMS] page.
+
+[[Camel2.8.0Release-Notice]]
+Notice
+~~~~~~
+
+* The ANT support for the link:examples.html[Examples] is to be
+considered deprecated. Support for ANT will be removed in the next
+release. We may keep ANT supported for a single example, though.
+
+[[Camel2.8.0Release-GettingtheDistributions]]
+Getting the Distributions
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+[[Camel2.8.0Release-BinaryDistributions]]
+Binary Distributions
+^^^^^^^^^^^^^^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Description |Download Link |PGP Signature file of download
+|Windows Distribution
+|http://archive.apache.org/dist/camel/apache-camel/2.8.0/apache-camel-2.8.0.zip[apache-camel-2.8.0.zip]
+|http://archive.apache.org/dist/camel/apache-camel/2.8.0/apache-camel-2.8.0.zip.asc[apache-camel-2.8.0.zip.asc]
+
+|Unix/Linux/Cygwin Distribution
+|http://archive.apache.org/dist/camel/apache-camel/2.8.0/apache-camel-2.8.0.tar.gz[apache-camel-2.8.0.tar.gz]
+|http://archive.apache.org/dist/camel/apache-camel/2.8.0/apache-camel-2.8.0.tar.gz.asc[apache-camel-2.8.0.tar.gz.asc]
+|=======================================================================
+
+[Info]
+====
+ **The above URLs use redirection**
+
+The above URLs use the Apache Mirror system to redirect you to a
+suitable mirror for your download. Some users have experienced issues
+with some versions of browsers (e.g. some Safari browsers). If the
+download doesn't seem to work for you from the above URL then try using
+http://www.mozilla.com/en-US/firefox/[FireFox]
+
+====
+
+[[Camel2.8.0Release-SourceDistributions]]
+Source Distributions
+^^^^^^^^^^^^^^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Description |Download Link |PGP Signature file of download
+|Source for Windows
+|http://archive.apache.org/dist/camel/apache-camel/2.8.0/apache-camel-2.8.0-src.zip[apache-camel-2.8.0-src.zip]
+|http://archive.apache.org/dist/camel/apache-camel/2.8.0/apache-camel-2.8.0-src.zip.asc[apache-camel-2.8.0-src.zip.asc]
+
+|Source for Unix/Linux/Cygwin
+|http://archive.apache.org/dist/camel/apache-camel/2.8.0/apache-camel-2.8.0-src.tar.gz[apache-camel-2.8.0-src.tar.gz]
+|http://archive.apache.org/dist/camel/apache-camel/2.8.0/apache-camel-2.8.0-src.tar.gz.asc[apache-camel-2.8.0-src.tar.gz.asc]
+|=======================================================================
+
+[[Camel2.8.0Release-GettingtheBinariesusingMaven2]]
+Getting the Binaries using Maven 2
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To use this release in your maven project, the proper dependency
+configuration that you should use in your
+http://maven.apache.org/guides/introduction/introduction-to-the-pom.html[Maven
+POM] is:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<dependency>
+  <groupId>org.apache.camel</groupId>
+  <artifactId>camel-core</artifactId>
+  <version>2.8.0</version>
+</dependency>
+----
+
+[[Camel2.8.0Release-SVNTagCheckout]]
+SVN Tag Checkout
+^^^^^^^^^^^^^^^^
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+svn co http://svn.apache.org/repos/asf/camel/tags/camel-2.8.0
+----
+
+[[Camel2.8.0Release-Changelog]]
+Changelog
+~~~~~~~~~
+
+For a more detailed view of new features and bug fixes, see the:
+
+* http://issues.apache.org/jira/secure/ReleaseNote.jspa?projectId=12311211&&version=12316226[release
+notes for 2.8.0]

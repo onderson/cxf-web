@@ -1,0 +1,149 @@
+[[ConfluenceContent]]
+[[TutorialonusingCamelinaWebApplication-TutorialonusingCamelinaWebApplication]]
+Tutorial on using Camel in a Web Application
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Camel has been designed to work great with the link:spring.html[Spring]
+framework; so if you are already a Spring user you can think of Camel as
+just a framework for adding to your Spring XML files.
+
+So you can follow the usual Spring approach to working with web
+applications; namely to add the standard Spring hook to load a
+*/WEB-INF/applicationContext.xml* file. In that file you can include
+your usual Camel XML configuration.
+
+[[TutorialonusingCamelinaWebApplication-Step1:Edityourweb.xml]]
+Step1: Edit your web.xml
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+To enable spring add a context loader listener to your
+*/WEB-INF/web.xml* file
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+         version="2.5">
+
+  <listener>
+    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+  </listener>
+
+</web-app>
+----
+
+This will cause Spring to boot up and look for the
+*/WEB-INF/applicationContext.xml* file.
+
+[[TutorialonusingCamelinaWebApplication-Step2:Createa/WEB-INF/applicationContext.xmlfile]]
+Step 2: Create a /WEB-INF/applicationContext.xml file
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Now you just need to create your Spring XML file and add your camel
+routes or configuration.
+
+For example
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans 
+       http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+       http://www.springframework.org/schema/context 
+       http://www.springframework.org/schema/context/spring-context-2.5.xsd
+       http://camel.apache.org/schema/spring 
+       http://camel.apache.org/schema/spring/camel-spring.xsd">
+
+  <camelContext xmlns="http://camel.apache.org/schema/spring">
+    <route>
+      <from uri="seda:foo"/>
+      <to uri="mock:results"/>
+    </route>
+  </camelContext>
+
+</beans>
+----
+
+Then boot up your web application and you're good to go!
+
+[[TutorialonusingCamelinaWebApplication-HintsandTips]]
+Hints and Tips
+^^^^^^^^^^^^^^
+
+If you use http://maven.apache.org/[Maven] to build your application
+your directory tree will look like this...
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+src/main/webapp/WEB-INF
+  web.xml
+  applicationContext.xml
+----
+
+You should update your Maven pom.xml to enable WAR packaging/naming like
+this...
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<project>
+    ...
+    <packaging>war</packaging>
+    ...
+    <build>
+    <finalName>[desired WAR file name]</finalName>
+        ...
+    </build>
+----
+
+To enable more rapid development we highly recommend the
+http://docs.codehaus.org/display/JETTY/Maven+Jetty+Plugin[jetty:run
+maven plugin].
+
+Please refer to the
+http://docs.codehaus.org/display/JETTY/Maven+Jetty+Plugin[help for more
+information on using jetty:run] - but briefly if you add the following
+to your pom.xml
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.mortbay.jetty</groupId>
+        <artifactId>maven-jetty-plugin</artifactId>
+        <configuration>
+          <webAppConfig>
+            <contextPath>/</contextPath>
+          </webAppConfig>
+          <scanIntervalSeconds>10</scanIntervalSeconds>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+----
+
+Then you can run your web application as follows
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+mvn jetty:run
+----
+
+Then Jetty will also monitor your target/classes directory and your
+src/main/webapp directory so that if you modify your spring XML, your
+web.xml or your java code the web application will be restarted,
+re-creating your Camel routes.
+
+If your unit tests take a while to run, you could miss them out when
+running your web application via
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+mvn -Dtest=false jetty:run
+----

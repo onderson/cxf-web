@@ -1,0 +1,82 @@
+[[ConfluenceContent]]
+There are two different ways to send messages to any Camel
+link:endpoint.html[Endpoint] from a POJO
+
+[[POJOProducing-@EndpointInject]]
+`@EndpointInject`
++++++++++++++++++
+
+To allow sending of messages from POJOs you can use the
+http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/EndpointInject.html[@EndpointInject]
+annotation. This will inject a
+http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/ProducerTemplate.html[ProducerTemplate]
+so that the bean can participate in message exchanges.
+
+Example: send a message to the *`foo.bar`* ActiveMQ queue:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+public class Foo {
+  @EndpointInject(uri="activemq:foo.bar")
+  ProducerTemplate producer;
+
+  public void doSomething() {
+    if (whatever) {
+      producer.sendBody("<hello>world!</hello>");
+    }
+  }
+}
+----
+
+The downside of this is that your code is now dependent on a Camel API,
+the *`ProducerTemplate`*. The next section describes how to remove this
+dependency.
+
+[Tip]
+====
+
+
+See link:pojo-consuming.html[POJO Consuming] for how to use a property
+on the bean as endpoint configuration, e.g., using the *`property`*
+attribute on *`@Produce`*, *`@EndpointInject`*.
+
+====
+
+[[POJOProducing-HidingtheCamelAPIsFromYourCodeUsing@Produce]]
+Hiding the Camel APIs From Your Code Using `@Produce`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+We recommend link:hiding-middleware.html[Hiding Middleware] APIs from
+your application code so the next option might be more suitable. You can
+add the *`@Produce`* annotation to an injection point (a field or
+property setter) using a *`ProducerTemplate`* *or* using some interface
+you use in your business logic. Example:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+public interface MyListener {
+    String sayHello(String name);
+}
+
+public class MyBean {
+    @Produce(uri = "activemq:foo")
+    protected MyListener producer;
+
+    public void doSomething() {
+        // lets send a message
+        String response = producer.sayHello("James");
+    }
+}
+----
+
+Here Camel will automatically inject a smart client side proxy at
+the *`@Produce`* annotation - an instance of the *`MyListener`*
+instance. When we invoke methods on this interface the method call is
+turned into an object and using the Camel
+link:spring-remoting.html[Spring Remoting] mechanism it is sent to the
+endpoint - in this case the link:activemq.html[ActiveMQ] endpoint to
+queue *`foo`*; then the caller blocks for a response.
+
+If you want to make asynchronous message sends then use
+link:using-exchange-pattern-annotations.html[an @InOnly annotation on
+the injection point].

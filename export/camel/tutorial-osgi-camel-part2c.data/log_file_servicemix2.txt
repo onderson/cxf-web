@@ -1,0 +1,43 @@
+17:41:33,463 | INFO  | 14752391@qtp1-0  | TraceInterceptor                 | rg.apache.camel.processor.Logger   88 | ID-dell-charles-2274-1241105486478-2-8 >>> /camel-example/incident --> setHeader(webservice), Pattern:InOut, Properties:{org.apache.camel.component.cxf.DataFormat=POJO, org.apache.cxf.service.model.BindingOperationInfo=[BindingOperationInfo: {http://reportincident.example.camel.apache.org}ReportIncident]}, Headers:{content-type=text/xml;charset=UTF-8, content.type=text/xml;charset=UTF-8, operationName=ReportIncident, Host=localhost:8080, Content-Length=701, SOAPAction="http://reportincident.example.camel.apache.org/ReportIncident", User-Agent=Jakarta Commons-HttpClient/3.1, operationNameSpace=http://reportincident.example.camel.apache.org}, BodyType:org.apache.cxf.message.MessageContentsList, Body:[org.apache.camel.example.reportincident.InputReportIncident@15099a1]
+17:41:33,478 | INFO  | 14752391@qtp1-0  | TraceInterceptor                 | rg.apache.camel.processor.Logger   88 | ID-dell-charles-2274-1241105486478-2-8 >>> setHeader(webservice) --> convertBodyTo(), Pattern:InOut, Properties:{org.apache.camel.component.cxf.DataFormat=POJO, org.apache.cxf.service.model.BindingOperationInfo=[BindingOperationInfo: {http://reportincident.example.camel.apache.org}ReportIncident]}, Headers:{content-type=text/xml;charset=UTF-8, operationName=ReportIncident, content.type=text/xml;charset=UTF-8, Host=localhost:8080, Content-Length=701, SOAPAction="http://reportincident.example.camel.apache.org/ReportIncident", origin=webservice, User-Agent=Jakarta Commons-HttpClient/3.1, operationNameSpace=http://reportincident.example.camel.apache.org}, BodyType:org.apache.cxf.message.MessageContentsList, Body:[org.apache.camel.example.reportincident.InputReportIncident@15099a1]
+17:41:33,494 | INFO  | 14752391@qtp1-0  | TraceInterceptor                 | rg.apache.camel.processor.Logger   88 | ID-dell-charles-2274-1241105486478-2-8 >>> convertBodyTo() --> to(bean:webservice), Pattern:InOut, Properties:{org.apache.camel.component.cxf.DataFormat=POJO, org.apache.cxf.service.model.BindingOperationInfo=[BindingOperationInfo: {http://reportincident.example.camel.apache.org}ReportIncident]}, Headers:{content-type=text/xml;charset=UTF-8, operationName=ReportIncident, content.type=text/xml;charset=UTF-8, Host=localhost:8080, Content-Length=701, SOAPAction="http://reportincident.example.camel.apache.org/ReportIncident", origin=webservice, User-Agent=Jakarta Commons-HttpClient/3.1, operationNameSpace=http://reportincident.example.camel.apache.org}, BodyType:org.apache.camel.example.reportincident.InputReportIncident, Body:org.apache.camel.example.reportincident.InputReportIncident@15099a1
+17:41:33,510 | INFO  | 14752391@qtp1-0  | TraceInterceptor                 | rg.apache.camel.processor.Logger   88 | ID-dell-charles-2274-1241105486478-2-8 >>> to(bean:webservice) --> inOnly(queuingservice:queue:in), Pattern:InOut, Properties:{CamelBeanHolder=bean: webservice, org.apache.camel.component.cxf.DataFormat=POJO, org.apache.cxf.service.model.BindingOperationInfo=[BindingOperationInfo: {http://reportincident.example.camel.apache.org}ReportIncident]}, Headers:{origin=webservice}, BodyType:java.util.ArrayList, Body:[{org.apache.camel.example.reportincident.model.Incident=org.apache.camel.example.reportincident.model.Incident@1a6895c[
+  incidentId=0
+  incidentRef=666
+  incidentDate=Thu Jan 29 00:04:00 CET 2009
+  givenName=Charles
+  familyName=Moulliard
+  summary=This is a web service incident
+  details=This is an web service report incident,This is an web service report incident.
+  email=cmoulliard@gmail.com
+  phone=+222 10 20 30 40
+  creationUser=webservice
+  creationDate=Thu Apr 30 17:41:33 CEST 2009
+]}]
+17:41:33,619 | INFO  | ActiveMQ Task    | FailoverTransport                | sport.failover.FailoverTransport  714 | Successfully connected to tcp://localhost:61616
+17:41:33,650 | INFO  | 14752391@qtp1-0  | TraceInterceptor                 | rg.apache.camel.processor.Logger   88 | ID-dell-charles-2274-1241105486478-2-8 >>> inOnly(queuingservice:queue:in) --> transform(), Pattern:InOnly, Properties:{CamelBeanHolder=bean: webservice, org.apache.camel.component.cxf.DataFormat=POJO, org.apache.cxf.service.model.BindingOperationInfo=[BindingOperationInfo: {http://reportincident.example.camel.apache.org}ReportIncident]}, Headers:{origin=webservice}, BodyType:java.util.ArrayList, Body:[{org.apache.camel.example.reportincident.model.Incident=org.apache.camel.example.reportincident.model.Incident@1a6895c[
+  incidentId=0
+  incidentRef=666
+  incidentDate=Thu Jan 29 00:04:00 CET 2009
+  givenName=Charles
+  familyName=Moulliard
+  summary=This is a web service incident
+  details=This is an web service report incident,This is an web service report incident.
+  email=cmoulliard@gmail.com
+  phone=+222 10 20 30 40
+  creationUser=webservice
+  creationDate=Thu Apr 30 17:41:33 CEST 2009
+]}]
+17:41:33,681 | INFO  | nerContainer-589 | TraceInterceptor                 | rg.apache.camel.processor.Logger   88 | ID-dell-charles-2274-1241105486478-2-9 >>> queuingservice:queue:in --> to(bean:incidentSaver?method=process), Pattern:InOnly, Headers:{JMSXGroupID=null, JMSCorrelationID=null, JMSType=null, JMSExpiration=0, JMSMessageID=ID:dell-charles-3593-1241089972416-2:5:1:1:1, JMSRedelivered=false, JMSDeliveryMode=2, origin=webservice, JMSPriority=4, JMSReplyTo=null, JMSTimestamp=1241106093635, JMSDestination=queue://in}, BodyType:java.util.ArrayList, Body:[{org.apache.camel.example.reportincident.model.Incident=org.apache.camel.example.reportincident.model.Incident@37a96[
+  incidentId=0
+  incidentRef=666
+  incidentDate=Thu Jan 29 00:04:00 CET 2009
+  givenName=Charles
+  familyName=Moulliard
+  summary=This is a web service incident
+  details=This is an web service report incident,This is an web service report incident.
+  email=cmoulliard@gmail.com
+  phone=+222 10 20 30 40
+  creationUser=webservice
+  creationDate=Thu Apr 30 17:41:33 CEST 2009
+]}]

@@ -1,0 +1,156 @@
+[[ConfluenceContent]]
+[[MessageHistory-MessageHistory]]
+Message History
+^^^^^^^^^^^^^^^
+
+The http://www.eaipatterns.com/MessageHistory.html[Message History] from
+the link:enterprise-integration-patterns.html[EIP patterns] allows for
+analyzing and debugging the flow of messages in a loosely coupled
+system.
+
+image:http://www.eaipatterns.com/img/MessageHistory.gif[image]
+
+Attaching a Message History to the message will provide a list of all
+applications that the message passed through since its origination.
+
+In Camel you can trace message flow using the link:tracer.html[Tracer],
+or access information using the Java API from
+http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/spi/UnitOfWork.html[UnitOfWork]
+using the `getTracedRouteNodes` method.
+
+When Camel sends a message to an endpoint that endpoint information is
+stored on the link:exchange.html[Exchange] as a property with the key
+`Exchange.TO_ENDPOINT`. +
+This property contains the last known endpoint the
+link:exchange.html[Exchange] was sent to (it will be overridden when
+sending to new endpoint). Alternatively you can trace messages being
+sent using link:intercept.html[interceptors] or the
+link:eventnotifier-to-log-details-about-all-sent-exchanges.html[Event
+Notifier].
+
+[[MessageHistory-EasierMessageHistory]]
+Easier Message History
+^^^^^^^^^^^^^^^^^^^^^^
+
+*Available as of Camel 2.12*
+
+link:message-history.html[Message History] is enabled by default from
+Camel 2.12. During routing Camel captures how the
+link:exchange.html[Exchange] is routed, as a
+`org.apache.camel.MessageHistory` entity that is stored on the
+link:exchange.html[Exchange]. On the `org.apache.camel.MessageHistory`
+there is information abut the route id, processor id, timestamp, and
+elapsed time it took to process the link:exchange.html[Exchange] by the
+processor.
+
+The information can be reached from Java code with:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+List<MessageHistory> list = exchange.getProperty(Exchange.MESSAGE_HISTORY, List.class);
+...
+----
+
+[[MessageHistory-Enablingordisablingmessagehistory]]
+Enabling or disabling message history
++++++++++++++++++++++++++++++++++++++
+
+The link:message-history.html[Message History] can be enabled or
+disabled per `CamelContext` or per route. For example you can turn it
+off with
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+camelContext.setMessageHistory(false);
+----
+
+Or from XML DSL with
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<camelContext messageHistory="false" ...>
+...
+</camelContext>
+----
+
+You can also do this per route. Then a route level configuration
+overrides the `CamelContext` level configuration.
+
+[[MessageHistory-Routestack-traceinexceptionsloggedbyerrorhandler]]
+Route stack-trace in exceptions logged by error handler
++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+If link:message-history.html[Message History] is enabled, then Camel
+will leverage this information, when the link:error-handler.html[Error
+Handler] logs exhausted exceptions. Then in addition to the caused
+exception with its stacktrace, you can see the message history; you may
+think this as a "route stacktrace". And example is provided below:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+2013-05-31 14:41:28,084 [ - seda://start] ERROR DefaultErrorHandler            - Failed delivery for (MessageId: ID-davsclaus-air-lan-55446-1370004087263-0-1 on ExchangeId: ID-davsclaus-air-lan-55446-1370004087263-0-3). Exhausted after delivery attempt: 1 caught: java.lang.IllegalArgumentException: Forced to dump message history
+
+Message History
+---------------------------------------------------------------------------------------------------------------------------------------
+RouteId              ProcessorId          Processor                                                                        Elapsed (ms)
+[route1            ] [to1               ] [log:foo                                                                       ] [         6]
+[route1            ] [to2               ] [direct:bar                                                                    ] [       102]
+[route2            ] [to5               ] [log:bar                                                                       ] [         1]
+[route2            ] [delay2            ] [delay[{100}]                                                                  ] [       100]
+[route2            ] [to6               ] [mock:bar                                                                      ] [         0]
+[route1            ] [delay1            ] [delay[{300}]                                                                  ] [       303]
+[route1            ] [to3               ] [log:baz                                                                       ] [         0]
+[route1            ] [process1          ] [org.apache.camel.processor.MessageHistoryDumpRoutingTest$1$1@6a53f9d8         ] [         2]
+
+Stacktrace
+---------------------------------------------------------------------------------------------------------------------------------------
+java.lang.IllegalArgumentException: Forced to dump message history
+    at org.apache.camel.processor.MessageHistoryDumpRoutingTest$1$1.process(MessageHistoryDumpRoutingTest.java:54)
+    at org.apache.camel.processor.DelegateSyncProcessor.process(DelegateSyncProcessor.java:63)
+    at org.apache.camel.processor.RedeliveryErrorHandler.process(RedeliveryErrorHandler.java:388)
+    at org.apache.camel.processor.CamelInternalProcessor.process(CamelInternalProcessor.java:189)
+    at org.apache.camel.processor.Pipeline.process(Pipeline.java:118)
+    at org.apache.camel.processor.Pipeline.process(Pipeline.java:80)
+    at org.apache.camel.processor.DelayProcessorSupport.process(DelayProcessorSupport.java:117)
+    at org.apache.camel.processor.RedeliveryErrorHandler.process(RedeliveryErrorHandler.java:388)
+    at org.apache.camel.processor.CamelInternalProcessor.process(CamelInternalProcessor.java:189)
+    at org.apache.camel.processor.Pipeline.process(Pipeline.java:118)
+    at org.apache.camel.processor.Pipeline.process(Pipeline.java:80)
+    at org.apache.camel.processor.CamelInternalProcessor.process(CamelInternalProcessor.java:189)
+    at org.apache.camel.component.seda.SedaConsumer.sendToConsumers(SedaConsumer.java:293)
+    at org.apache.camel.component.seda.SedaConsumer.doRun(SedaConsumer.java:202)
+    at org.apache.camel.component.seda.SedaConsumer.run(SedaConsumer.java:149)
+    at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+    at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:615)
+    at java.lang.Thread.run(Thread.java:722)
+----
+
+You can turn off logging message history from the
+link:error-handler.html[Error Handler] using
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+errorHandler(defaultErrorHandler().logExhaustedMessageHistory(false));
+----
+
+From Camel 2.17 onwards the link:error-handler.html[Error Handler] do
+not log the message body/header details anymore (to avoid logging
+sensitive message body details). You can turn on the old behavior.
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+errorHandler(defaultErrorHandler().logExhaustedMessageBody(true));
+----
+
+ 
+
+[[MessageHistory-UsingThisPattern]]
+Using This Pattern
+++++++++++++++++++
+
+If you would like to use this EIP Pattern then please read the
+link:getting-started.html[Getting Started], you may also find the
+link:architecture.html[Architecture] useful particularly the description
+of link:endpoint.html[Endpoint] and link:uris.html[URIs]. Then you could
+try out some of the link:examples.html[Examples] first before trying
+this pattern out.

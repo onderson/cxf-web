@@ -1,0 +1,79 @@
+[[ConfluenceContent]]
+[[SQLExample-SQLExample]]
+SQL Example
+~~~~~~~~~~~
+
+*Available as of Camel 2.11*
+
+This example is located in the `examples/camel-example-sql` directory of
+the Camel distribution. +
+There is a `README.txt` file with instructions how to run it.
+
+If you use maven then you can easily compile and install the example
+from the command line:
+
+mvn install
+
+[[SQLExample-About]]
+About
+^^^^^
+
+This example shows how to exchange data using a shared database table.
+
+The example has two Camel routes. The first route insert new data into
+the table, triggered by a timer to run every 5th second. +
+The second route pickup the newly inserted rows from the table, process
+the row(s), and mark the row(s) as processed when done; to avoid picking
+up the same rows again.
+
+[[SQLExample-Implementation]]
+Implementation
+^^^^^^^^^^^^^^
+
+In the `camel-context.xml` file in the
+`src/main/resources/META-INF/spring` folder we have the Spring XML file
+to setup and configure the database, as well the
+link:camelcontext.html[CamelContext].
+
+\{snippet:id=e1|lang=xml|title=Setting up
+database|url=camel/trunk/examples/camel-example-sql/src/main/resources/META-INF/spring/camel-context.xml}
+
+And then in the same file we setup our Camel application. At first we
+have a orderBean that we use in the routes to generate new orders and
+process orders as well.
+
+\{snippet:id=e2|lang=xml|title=Camel
+application|url=camel/trunk/examples/camel-example-sql/src/main/resources/META-INF/spring/camel-context.xml}
+
+Notice how we have externalized the SQL queries, and use Camels
+link:using-propertyplaceholder.html[property placeholder] to refer to
+the `sql.properties` file.
+
+Using named query parameters
+
+Notice in the SQL queries below we use named parameters which must start
+with prefix ':#' and then the name, eg :#amount. Then Camel will bind
+that parameter with the given name, from the +
+message body (if its a `java.util.Map`) or from a message header with
+the name. If none parameter could be found, Camel throws an exception.
+
+\{snippet:id=e1|title=SQL
+queries|url=camel/trunk/examples/camel-example-sql/src/main/resources/sql.properties}
+
+[[SQLExample-Runningtheexample]]
+Running the example
+^^^^^^^^^^^^^^^^^^^
+
+This example can be run from the command line
+
+mvn camel:run
+
+Press ctrl + c to stop the example.
+
+[[SQLExample-SeeAlso]]
+See Also
+^^^^^^^^
+
+* link:examples.html[Examples]
+* link:sql-component.html[SQL Component]
+* link:hibernate-example.html[Hibernate Example]

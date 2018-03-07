@@ -1,0 +1,68 @@
+[[ConfluenceContent]]
+[[EventDrivenConsumer-EventDrivenConsumer]]
+Event Driven Consumer
+^^^^^^^^^^^^^^^^^^^^^
+
+Camel supports the
+http://www.enterpriseintegrationpatterns.com/EventDrivenConsumer.html[Event
+Driven Consumer] from the link:enterprise-integration-patterns.html[EIP
+patterns]. The default consumer model is event based (i.e. asynchronous)
+as this means that the Camel container can then manage pooling,
+threading and concurrency for you in a declarative manner.
+
+image:http://www.enterpriseintegrationpatterns.com/img/EventDrivenConsumerSolution.gif[image]
+
+The Event Driven Consumer is implemented by consumers implementing the
+http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/Processor.html[Processor]
+interface which is invoked by the link:message-endpoint.html[Message
+Endpoint] when a link:message.html[Message] is available for processing.
+
+[[EventDrivenConsumer-Example]]
+Example
++++++++
+
+The following demonstrates
+a http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/Processor.html[Processor] defined
+in the Camel  link:registry.html[Registry] which is invoked when an
+event occurs from a link:jms.html[JMS] queue
+
+* +
+*
+
+*Using the link:fluent-builders.html[Fluent Builders]*
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from("jms:queue:foo")
+    .processRef("processor");
+----
+
+ 
+
+**Using the link:spring-xml-extensions.html[Spring XML Extensions]**
+
+[source,brush:,xml;,gutter:,false;,theme:,Default]
+----
+<route>
+    <from uri="jms:queue:foo"/>
+    <to uri="processor"/>
+</route>
+----
+
+ 
+
+For more details see
+
+* link:message.html[Message]
+* link:message-endpoint.html[Message Endpoint]
+
+[[EventDrivenConsumer-UsingThisPattern]]
+Using This Pattern
+++++++++++++++++++
+
+If you would like to use this EIP Pattern then please read the
+link:getting-started.html[Getting Started], you may also find the
+link:architecture.html[Architecture] useful particularly the description
+of link:endpoint.html[Endpoint] and link:uris.html[URIs]. Then you could
+try out some of the link:examples.html[Examples] first before trying
+this pattern out.

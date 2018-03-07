@@ -1,0 +1,15 @@
+[[ConfluenceContent]]
+[[JavaDoc-JavaDoc]]
+JavaDoc
+~~~~~~~
+
+The core API is defined in the
+http://www.javadoc.io/doc/org.apache.camel/camel-core[camel-core
+javadoc].
+
+[[JavaDoc-SeeAlso]]
+See Also
+^^^^^^^^
+
+* link:architecture.html[Architecture]
+* link:getting-started.html[Getting Started]

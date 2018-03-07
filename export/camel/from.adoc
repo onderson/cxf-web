@@ -1,0 +1,66 @@
+[[ConfluenceContent]]
+Starting point for a Camel Route that starts a route with a given
+Endpoint. The Endpoint can be from one of the many Camel
+link:components.html[Components]. The component creates Camel Exchanges
+from their respective Sources and puts them into the route.
+
+[[from-Syntax]]
+Syntax
+------
+
+[[from-Java]]
+Java
+~~~~
+
+* from(String uri)
+* from(Endpoint endPoint)
+
+[[from-SpringXML]]
+Spring XML
+~~~~~~~~~~
+
+<from uri="" ref=""/>
+
+[[from-Parameters]]
+Parameters
+~~~~~~~~~~
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|===================================================
+|Parameter |Type |Description
+|uri |String |URI describing a Camel Endpoint
+|endpoint |Endpoint |a Camel Endpoint
+|ref |Bean |Reference to an Endpoint bean definition
+|===================================================
+
+[[from-Examples]]
+Examples
+--------
+
+Start a route with the File Endpoint. Each file in the directory creates
+an Exchange that is put into the camel route.
+
+[[from-Java.1]]
+Java
+~~~~
+
+ A camel route is started using from inside the configure method of the
+class link:routebuilder.html[RouteBuilder].
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from("file:c:/in")
+----
+
+[[from-SpringXMLSchema]]
+ Spring XML Schema
+~~~~~~~~~~~~~~~~~~
+
+The route is defined inside a CamelContext.
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<route>
+  <from uri="file:c:/in" />
+</route>
+----

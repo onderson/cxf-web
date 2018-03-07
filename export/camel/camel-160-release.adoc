@@ -1,0 +1,201 @@
+[[ConfluenceContent]]
+[[Camel1.6.0Release-Camel1.6.0release]]
+Camel 1.6.0 release
+-------------------
+
+image:http://activemq.apache.org/camel/download.data/camel-box-v1.0-150x200.png[image]
+
+[[Camel1.6.0Release-NewandNoteworthy]]
+New and Noteworthy
+~~~~~~~~~~~~~~~~~~
+
+Welcome to the 1.6.0 release which approx 169 issues resolved (new
+features, improvements and bug fixes such as...)
+
+* RedeliveryPolicy added support for ref attribute to reference a
+existing policy in the link:registry.html[Registry]
+* major improvements to link:jetty.html[Jetty] for better handling of
+exception and faults and easier end-user customization how response
+should be written
+* minor improvements to link:http.html[HTTP] and link:mina.html[MINA]
+* link:http.html[HTTP] supports authentication
+* link:mina.html[MINA] producer now throws CamelExchangeException in
+case no response received from remote server when in sync mode
+(sync=true)
+* link:ftp.html[SFTP] added support for knownhosts, privatekey files and
+passive mode
+* Added `onWhen` predicate to link:exception-clause.html[Exception
+Clause]
+* link:exception-clause.html[Exception Clause] is much smarter as it
+will use caused by exception hierarchy for matching as well (will use
+bottom ups)
+* link:dead-letter-channel.html[Dead Letter Channel] now have
+`onRedeliver` to allow custom processing an link:exchange.html[Exchange]
+*before* its being redelivered. Allowing you to work on the message
+being sent.
+* Message Exchange Pattern can now be changed directly in the DSL.
+
+[[Camel1.6.0Release-New]]
+New link:enterprise-integration-patterns.html[Enterprise Integration
+Patterns]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* None
+
+[[Camel1.6.0Release-New.1]]
+New link:components.html[Components]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* link:freemarker.html[FreeMarker]
+* link:restlet.html[Restlet]
+
+[[Camel1.6.0Release-New.2]]
+New link:dsl.html[DSL]
+^^^^^^^^^^^^^^^^^^^^^^
+
+* link:scala-dsl.html[Scala] (work in progress, not fully feature
+complete)
+
+[[Camel1.6.0Release-NewAnnotations]]
+New Annotations
+^^^^^^^^^^^^^^^
+
+* None
+
+[[Camel1.6.0Release-NewDataFormats]]
+New link:data-format.html[Data Formats]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* link:json.html[JSon]
+* link:tidymarkup.html[TidyMarkup]
+* https://cwiki.apache.org/confluence/pages/createpage.action?spaceKey=CAMEL&title=Zip&linkCreation=true&fromPageId=101051[Zip]
+
+[[Camel1.6.0Release-New.3]]
+New link:languages.html[Languages]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* None
+
+[[Camel1.6.0Release-New.4]]
+New link:examples.html[Examples]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* None
+
+[[Camel1.6.0Release-APIbreakings]]
+API breakings
+~~~~~~~~~~~~~
+
+* From Camel 1.6.0 the camel-cxf producer's serviceClass parameter
+should be Interface, before that you could specify the serviceClass as a
+Class or Interface.
+* From Camel 1.6.0 the camel-jetty producer is removed and camel-jetty
+component doesn't dependent jetty-client module.
+
+[[Camel1.6.0Release-KnownIssues]]
+Known Issues
+~~~~~~~~~~~~
+
+See known issues from previous releases.
+
+[[Camel1.6.0Release-Importantchangestoconsiderwhenupgrading]]
+Important changes to consider when upgrading
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+[[Camel1.6.0Release-JAXBdataformat]]
+JAXB data format
+^^^^^^^^^^^^^^^^
+
+If you use XJC to create the java class from the schema, you will get a
+ObjectFactory for you JAXB context. Since the ObjectFactory uses
+JAXBElement to hold the reference of the schema and element instance
+value, from Camel 1.6.0 jaxbDataformat will ignore the JAXBElement by
+default and you will get the element instance value instead of the
+JAXBElement object form the unmarshaled message body. +
+If you want to get the JAXBElement object form the unmarshaled message
+body, you need to set the JaxbDataFormat object's ignoreJAXBElement
+property to be false.
+
+[[Camel1.6.0Release-GettingtheDistributions]]
+Getting the Distributions
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+[[Camel1.6.0Release-BinaryDistributions]]
+Binary Distributions
+^^^^^^^^^^^^^^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Description |Download Link |PGP Signature file of download
+|Windows Distribution
+|http://archive.apache.org/dist/camel/apache-camel/1.6.0/apache-camel-1.6.0.zip[apache-camel-1.6.0.zip]
+|http://archive.apache.org/dist/camel/apache-camel/1.6.0/apache-camel-1.6.0.zip.asc[apache-camel-1.6.0.zip.asc]
+
+|Unix/Linux/Cygwin Distribution
+|http://archive.apache.org/dist/camel/apache-camel/1.6.0/apache-camel-1.6.0.tar.gz[apache-camel-1.6.0.tar.gz]
+|http://archive.apache.org/dist/camel/apache-camel/1.6.0/apache-camel-1.6.0.tar.gz.asc[apache-camel-1.6.0.tar.gz.asc]
+|=======================================================================
+
+[Info]
+====
+ **The above URLs use redirection**
+
+The above URLs use the Apache Mirror system to redirect you to a
+suitable mirror for your download. Some users have experienced issues
+with some versions of browsers (e.g. some Safari browsers). If the
+download doesn't seem to work for you from the above URL then try using
+http://www.mozilla.com/en-US/firefox/[FireFox]
+
+====
+
+[[Camel1.6.0Release-SourceDistributions]]
+Source Distributions
+^^^^^^^^^^^^^^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Description |Download Link |PGP Signature file of download
+|Source for Windows
+|http://archive.apache.org/dist/camel/apache-camel/1.6.0/apache-camel-1.6.0-src.zip[apache-camel-1.6.0-src.zip]
+|http://archive.apache.org/dist/camel/apache-camel/1.6.0/apache-camel-1.6.0-src.zip.asc[apache-camel-1.6.0-src.zip.asc]
+
+|Source for Unix/Linux/Cygwin
+|http://archive.apache.org/dist/camel/apache-camel/1.6.0/apache-camel-1.6.0-src.tar.gz[apache-camel-1.6.0-src.tar.gz]
+|http://archive.apache.org/dist/camel/apache-camel/1.6.0/apache-camel-1.6.0-src.tar.gz.asc[apache-camel-1.6.0-src.tar.gz.asc]
+|=======================================================================
+
+[[Camel1.6.0Release-GettingtheBinariesusingMaven2]]
+Getting the Binaries using Maven 2
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To use this release in your maven project, the proper dependency
+configuration that you should use in your
+http://maven.apache.org/guides/introduction/introduction-to-the-pom.html[Maven
+POM] is:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<dependency>
+  <groupId>org.apache.camel</groupId>
+  <artifactId>camel-core</artifactId>
+  <version>1.6.0</version>
+</dependency>
+----
+
+[[Camel1.6.0Release-SVNTagCheckout]]
+SVN Tag Checkout
+^^^^^^^^^^^^^^^^
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+svn co http://svn.apache.org/repos/asf/activemq/camel/tags/camel-1.6.0
+----
+
+[[Camel1.6.0Release-Changelog]]
+Changelog
+~~~~~~~~~
+
+For a more detailed view of new features and bug fixes, see:
+
+* http://issues.apache.org/jira/secure/ReleaseNote.jspa?projectId=12311211&styleName=Html&version=12315676[JIRA
+Release notes for 1.6.0]

@@ -1,0 +1,24 @@
+[[ConfluenceContent]]
+[[HowdoIuseJava1.4logging-HowdoIuseJava1.4logging?]]
+How do I use Java 1.4 logging?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Camel uses http://www.slf4j.org/[sfl4j] which allows you to configure
+logging via, among others:
+
+* http://logging.apache.org/log4j/[Log4j]
+* http://logback.qos.ch/[Logback]
+* http://java.sun.com/j2se/1.4.2/docs/api/java/util/logging/package-summary.html[JDK
+Util Logging logging]
+
+The quick way to enable Java 1.4 logging is to create a
+*commons-logging.properties* file on the classpath with this entry...
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+org.apache.commons.logging.Log=org.apache.commons.logging.impl.Jdk14Logger
+#org.apache.commons.logging.Log=org.apache.commons.logging.impl.Log4JLogger
+----
+
+Many thanks to Glen Mazza for figuring this out
+image:https://cwiki.apache.org/confluence/s/en_GB/5997/6f42626d00e36f53fe51440403446ca61552e2a2.1/_/images/icons/emoticons/smile.png[(smile)]

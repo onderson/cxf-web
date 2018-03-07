@@ -1,0 +1,108 @@
+[[ConfluenceContent]]
+[[CXFTomcatExample-CXFTomcatExample]]
+CXF Tomcat Example
+~~~~~~~~~~~~~~~~~~
+
+*Available as of Camel 2.5*
+
+This example is located in the `examples/camel-example-cxf-tomcat`
+directory of the Camel distribution. +
+There is a `README.txt` file with instructions how to run it.
+
+If you use maven then you can easily package the example from the
+command line:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+mvn package
+----
+
+[[CXFTomcatExample-About]]
+About
+^^^^^
+
+This example demonstrates how you can use link:cxf.html[CXF] to expose a
+web service in Camel using code first approach.
+
+[[CXFTomcatExample-Implementation]]
+Implementation
+^^^^^^^^^^^^^^
+
+The web service we want to expose is defined as an interface which has 2
+operations:
+
+*IncidentService.java*
+
+In this example we are not using any JAX-WS annotations. You can use
+those annotations to fine control the web service wsdl contract.
+
+In the Camel route we expose this web service very easily using the
+Camel link:cxf.html[CXF] component. +
+All we have to do is to define an endpoint uri in the format
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+cxf:/incident?serviceClass=org.apache.camel.example.cxf.incident.IncidentService
+----
+
+This means Camel will expose the web service using the relative address
+`/incident` and the serviceClass parameter links to the interface which
+defines the code first approach.
+
+In this example we want to be flexible, so if we add a 3rd operation to
+the web service we want it to be easily to add a route to handle this
+operation. Therefore we use the link:recipient-list.html[Recipient List]
+EIP pattern to route to the route which handles the given operation.
+Notice how we use a link:direct.html[Direct] endpoint to link the
+routes.
+
+*CamelRoute.java*
+
+[[CXFTomcatExample-SpringXML]]
+Spring XML
+++++++++++
+
+In the Spring XML file we have to import some link:cxf.html[CXF]
+mandatory imports. Notice we use the `cxf-servlet` to leverage HTTP
+Servlet with link:cxf.html[CXF].
+
+*camel-config.xml*
+
+[[CXFTomcatExample-web.xml]]
+web.xml
++++++++
+
+In the `web.xml` file we have just to setup Spring and CXF the usual
+way.
+
+*web.xml*
+
+[[CXFTomcatExample-Runningtheexample]]
+Running the example
+^^^^^^^^^^^^^^^^^^^
+
+This example runs in Apache Tomcat, so you will have to package the .war
+file and copy it to the `webapp` folder of Tomcat, which is the hot
+deploy folder.
+
+*Note:* You have to use the version number of Camel you use. In this
+documentation we are using 2.5.0.
+
+You can then use SoapUI or another web service client and send a request
+to the
+`http://localhost:8080/camel-example-cxf-tomcat-2.5.0/webservices/incident`
+url.
+
+The wsdl is located at:
+`http://localhost:8080/camel-example-cxf-tomcat-2.5.0/webservices/incident?wsdl`. +
+And link:cxf.html[CXF] outputs which web services it has from this url
+`http://localhost:8080/camel-example-cxf-tomcat-2.5.0/webservices`.
+
+[[CXFTomcatExample-SeeAlso]]
+See Also
+^^^^^^^^
+
+* link:examples.html[Examples]
+* link:cxf.html[CXF]
+* link:http.html[HTTP]
+* link:servlet.html[Servlet]

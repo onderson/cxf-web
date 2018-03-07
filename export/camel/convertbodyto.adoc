@@ -1,0 +1,66 @@
+[[ConfluenceContent]]
+Convert the message body to the given class type. To do so camel uses a
+hierarchy of TypeConverters
+
+[[convertBodyTo-Syntax]]
+Syntax
+------
+
+[[convertBodyTo-Java]]
+Java
+~~~~
+
+convertBodyTo(Class type [, String charset])
+
+[[convertBodyTo-SpringXML]]
+Spring XML
+~~~~~~~~~~
+
+<convertBodyTo type="<String>" [charset="<String>"] >
+
+[[convertBodyTo-Parameters]]
+Parameters
+~~~~~~~~~~
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Parameter |Type |Description
+|type |Class |Class type to convert to. For spring dsl use the Fully
+qualified name
+
+|charset |String |charset name for conversions from byte to String
+|=======================================================================
+
+[[convertBodyTo-Examples]]
+Examples
+--------
+
+convert to Java String
+
+[[convertBodyTo-Java.1]]
+Java
+~~~~
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+convertBodyTo(String.class)
+----
+
+[[convertBodyTo-SpringXMLSchema]]
+Spring XML Schema
+~~~~~~~~~~~~~~~~~
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<convertBodyTo type="java.lang.String"/>
+----
+
+[[convertBodyTo-Othertypestouse:]]
+Other types to use:
+~~~~~~~~~~~~~~~~~~~
+
+* org.w3c.dom.Document: If you read xml files and want the encoding from
+the xml to be used
+* javax.xml.transform.stream.StreamSource: Streaming source for xml
+* InputStream
+* byte[]

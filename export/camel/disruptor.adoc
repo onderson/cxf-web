@@ -1,0 +1,426 @@
+[[ConfluenceContent]]
+[[Disruptor-DisruptorComponent]]
+Disruptor Component
+~~~~~~~~~~~~~~~~~~~
+
+*Available as of Camel 2.12*
+
+The *`disruptor:`* component provides asynchronous
+http://www.eecs.harvard.edu/~mdw/proj/seda/[SEDA] behavior much as the
+standard SEDA Component, but utilizes a
+https://github.com/LMAX-Exchange/disruptor[Disruptor] instead of a
+http://docs.oracle.com/javase/1.5.0/docs/api/java/util/concurrent/BlockingQueue.html[BlockingQueue]
+utilized by the standard link:seda.html[SEDA].
+
+Alternatively, a *`disruptor-vm:`* endpoint is supported by this
+component, providing an alternative to the standard link:vm.html[VM].
+
+As with the SEDA component, buffers of the *`disruptor:`* endpoints are
+only visible within a *single* link:camelcontext.html[CamelContext] and
+no support is provided for persistence or recovery. The
+*`disruptor-vm:`* endpoints provides support for communication across
+CamelContexts instances (provided *`camel-disruptor.jar`* is on the
+*system/boot* classpath).
+
+The main advantage of choosing to use the Disruptor Component over the
+SEDA or the VM Component is performance in use cases where there is high
+contention between producer(s) and/or multi-casted or concurrent
+consumers. In those cases, significant increases of throughput and
+reduction of latency has been observed. Performance in scenarios without
+contention is comparable to the SEDA and VM Components.
+
+The Disruptor is implemented with the intention of mimicking the
+behavior and options of the SEDA and VM Components as much as possible.
+
+The main differences are:
+
+* The buffer used is always bounded in size (default *`1024`*
+exchanges).
+* As a the buffer is always bounded, the default behavior for the
+Disruptor is to block while the buffer is full instead of throwing an
+exception. This default behavior may be configured on the component (see
+options).
+* Disruptor endpoints don't implement the *`BrowsableEndpoint`*
+interface. As such, the exchanges currently in the Disruptor can't be
+retrieved, only the number of exchanges.
+* Disruptor requires its consumers (multicasted or otherwise) to be
+statically configured. Adding or removing consumers on the fly requires
+complete flushing of all pending exchanges in the Disruptor.
+* As a result of the reconfiguration: data sent over a Disruptor is
+directly processed and 'gone' if there is at least one consumer. Late
+joiners receive new exchanges published after they joined.
+* The *`pollTimeout`* option is not supported by the Disruptor
+Component.
+* When a producer blocks on a full Disruptor, it does not respond to
+thread interrupts.
+
+Maven users will need to add the following dependency to their
+*`pom.xml`* for this component:
+
+[source,brush:,xml;,gutter:,false;,theme:,Default]
+----
+<dependency>
+    <groupId>org.apache.camel</groupId>
+    <artifactId>camel-disruptor</artifactId>
+    <version>x.x.x</version>
+    <!-- use the same version as your Camel core version -->
+</dependency>
+----
+
+[[Disruptor-URIFormat]]
+URI Format
+^^^^^^^^^^
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+ disruptor:someName[?options]
+----
+
+or
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+ disruptor-vm:someName[?options]
+----
+
+Where *`someName`* can be any string that uniquely identifies the
+endpoint within the current link:camelcontext.html[CamelContext] (or
+across contexts in case of *`disruptor-vm:`*).
+
+You can append query options to the URI in the following format:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+?option=value&option=value&...
+----
+
+[[Disruptor-Options]]
+Options
+^^^^^^^
+
+All the following options are valid for both the *`disruptor:`*
+and *`disruptor-vm:`* components:
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|*Name* |*Default* |*Description*
+|`size` |`1024` a|
+The maximum capacity of the Disruptor's ring buffer. Will be effectively
+increased to the nearest power of two.
+
+[Warning]
+====
+
+
+*Note:* Care should be taken when using this option. The size is
+determined by the value specified _when the first endpoint is created_.
+Each endpoint must therefore specify the same size.
+
+====
+
+|`bufferSize` |  |*Component only:* The maximum default size (capacity
+of the number of messages it can hold) of the Disruptors ring buffer.
+This option is used if size is not in use.
+
+|`queueSize` |  |*Component only:* Additional option to specify
+the *`bufferSize`* to maintain maximum compatibility with the
+link:seda.html[SEDA] Component.
+
+|`concurrentConsumers` |`1` |Number of concurrent threads processing
+exchanges.
+
+|`waitForTaskToComplete` |`IfReplyExpected` a|
+Option to specify whether the caller should wait for the asynchronous
+task to complete before continuing.
+
+The following options are supported:
+
+* *`Always`*
+* *`Never`*
+* *`IfReplyExpected`*
+
+The first two values are self-explanatory.
+
+The last value, *`IfReplyExpected`*, will only wait if the message is
+https://cwiki.apache.org/confluence/display/CAMEL/Request+Reply[Request
+Reply] based.
+
+See https://cwiki.apache.org/confluence/display/CAMEL/Async[Async]
+messaging for more details.
+
+|`timeout` |`30000` a|
+Timeout (in milliseconds) before a *seda* producer will stop waiting for
+an asynchronous task to complete.
+
+See *`waitForTaskToComplete`* and
+https://cwiki.apache.org/confluence/display/CAMEL/Async[Async] for more
+details.
+
+Disable the *`timeout`* by using *`0`* or a negative value.
+
+|`defaultMultipleConsumers` |  |*Component only:* Allows to set the
+default allowance of multiple consumers for endpoints created by this
+component used when *`multipleConsumers`* is not provided.
+
+|`multipleConsumers` |`false` a|
+Specifies whether multiple consumers are allowed. If *`true`*, you can
+use Disruptor for http://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern[Publish-Subscribe] messaging.
+That is, you can send a message to the SEDA queue and have each consumer
+receive a copy of the message.
+
+[Info]
+====
+
+
+When *`true`*, this option should be specified on _every_ consumer
+endpoint.
+
+====
+
+|`limitConcurrentConsumers` |`true` a|
+Whether to limit the number of *`concurrentConsumer`*'s to the maximum
+of *`500`*.
+
+By default, an exception will be thrown if a Disruptor endpoint is
+configured with a greater number.
+
+When *`false`* the number of concurrent consumers is unlimited.
+
+|`blockWhenFull` |`true` a|
+Whether a thread that sends messages to a full Disruptor will block
+until the ring buffer's capacity is no longer exhausted.
+
+By default, the calling thread will block and wait until the message can
+be accepted.
+
+When *`false`* an exception will be thrown stating that the queue is
+full.
+
+|`defaultBlockWhenFull` |  a|
+*Component only:* configures the producer's default behavior when the
+ring buffer is full for endpoints created by this component.
+
+This option is ignored when *`blockWhenFull=true`*.
+
+|`waitStrategy` |`Blocking` a|
+Defines the strategy used by consumer threads to wait on new exchanges
+to be published.
+
+The following options are supported: +
+__
+
+* *`Blocking`*
+* *`Sleeping`*
+* *`BusySpin`*
+* *`Yielding`*
+
+Refer to the section below for more information on this subject
+
+|`defaultWaitStrategy` |  |*Component only:* Allows to set the default
+wait strategy for endpoints created by this component used
+when *`waitStrategy`* is not provided.
+
+|`producerType` |`Multi` a|
+Defines the producers allowed on the Disruptor.
+
+The following options are supported:
+
+* *`Multi`* - allow multiple producers
+* *`Single`* - enable certain optimizations only allowed when one
+concurrent producer (on one thread or otherwise synchronized) is active.
+
+|`defaultProducerType` |  |*Component only:* Allows to set the default
+producer type for endpoints created by this component used
+when *`producerType`* is not provided.
+|=======================================================================
+
+[[Disruptor-Waitstrategies]]
+Wait strategies
+^^^^^^^^^^^^^^^
+
+The wait strategy effects the type of waiting performed by the consumer
+threads that are currently waiting for the next exchange to be
+published. The following strategies can be chosen:
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Name |Description |Advice
+|*`Blocking`* |Blocking strategy that uses a lock and condition variable
+for Consumers waiting on a barrier. |This strategy can be used when
+throughput and low-latency are not as important as CPU resource.
+
+|*`Sleeping`* |Sleeping strategy that initially spins, then uses a
+*`Thread.yield()`*, and eventually for the minimum number of nanos the
+OS and JVM will allow while the Consumers are waiting on a barrier.
+|This strategy is a good compromise between performance and CPU
+resource. Latency spikes can occur after quiet periods.
+
+|*`BusySpin`* |Busy Spin strategy that uses a busy spin loop for
+Consumers waiting on a barrier. |This strategy will use CPU resource to
+avoid syscalls which can introduce latency jitter. It is best used when
+threads can be bound to specific CPU cores.
+
+|*`Yielding`* |Yielding strategy that uses a *`Thread.yield()`* for
+Consumers waiting on a barrier after an initially spinning. |This
+strategy is a good compromise between performance and CPU resource
+without incurring significant latency spikes.
+|=======================================================================
+
+[[Disruptor-UseofRequestReply]]
+Use of Request Reply
+^^^^^^^^^^^^^^^^^^^^
+
+The Disruptor component supports using link:request-reply.html[Request
+Reply], where the caller will wait for the Async route to complete. For
+instance:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from("mina:tcp://0.0.0.0:9876?textline=true&sync=true")
+  .to("disruptor:input");
+
+from("disruptor:input")
+  .to("bean:processInput")
+  .to("bean:createResponse");
+----
+
+In the route above, we have a TCP listener on port *`9876`* that accepts
+incoming requests. The request is routed to the *`disruptor:input`*
+buffer. As it is a link:request-reply.html[Request Reply] message, we
+wait for the response. When the consumer on the *`disruptor:input`*
+buffer is complete, it copies the response to the original message
+response.
+
+[[Disruptor-Concurrentconsumers]]
+Concurrent consumers
+^^^^^^^^^^^^^^^^^^^^
+
+By default, the Disruptor endpoint uses a single consumer thread, but
+you can configure it to use concurrent consumer threads. So instead of
+thread pools you can use:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from("disruptor:stageName?concurrentConsumers=5")
+  .process(...)
+----
+
+As for the difference between the two, note a thread pool can
+increase/shrink dynamically at runtime depending on load, whereas the
+number of concurrent consumers is always fixed and supported by the
+Disruptor internally so performance will be higher.
+
+[[Disruptor-Threadpools]]
+Threadpools
+^^^^^^^^^^^
+
+Be aware that adding a thread pool to a Disruptor endpoint by doing
+something like:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from("disruptor:stageName")
+  .thread(5)
+  .process(...)
+----
+
+Can wind up with adding a normal
+http://docs.oracle.com/javase/1.5.0/docs/api/java/util/concurrent/BlockingQueue.html[BlockingQueue]
+to be used in conjunction with the Disruptor, effectively negating part
+of the performance gains achieved by using the Disruptor. Instead, it's
+recommended to directly configure the number of threads that process
+messages on a Disruptor endpoint using the *`concurrentConsumers`*
+option.
+
+[[Disruptor-Sample]]
+Sample
+^^^^^^
+
+In the route below we use the Disruptor to send the request to this
+asynchronous queue to be able to send a fire-and-forget message for
+further processing in another thread, and return a constant reply in
+this thread to the original caller.
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+public void configure() throws Exception {
+    from("direct:start")
+        // send it to the disruptor that is async
+        .to("disruptor:next")
+        // return a constant response
+        .transform(constant("OK"));
+
+    from("disruptor:next")
+      .to("mock:result");
+}
+----
+
+Here we send a *`Hello World`* message and expects the reply to be
+*`OK`*.
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+Object out = template.requestBody("direct:start", "Hello World");
+assertEquals("OK", out);
+----
+
+The *`Hello World`* message will be consumed from the Disruptor from
+another thread for further processing. Since this is from a unit test,
+it will be sent to a *`mock`* endpoint where we can do assertions in the
+unit test.
+
+[[Disruptor-UsingmultipleConsumers]]
+Using `multipleConsumers`
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In this example we have defined two consumers and registered them as
+spring beans.
+
+[source,brush:,xml;,gutter:,false;,theme:,Default]
+----
+<!-- define the consumers as spring beans -->
+<bean id="consumer1" class="org.apache.camel.spring.example.FooEventConsumer"/>
+
+<bean id="consumer2" class="org.apache.camel.spring.example.AnotherFooEventConsumer"/>
+
+<camelContext xmlns="http://camel.apache.org/schema/spring">
+    <!-- define a shared endpoint which the consumers can refer to instead of using url -->
+    <endpoint id="foo" uri="disruptor:foo?multipleConsumers=true"/>
+</camelContext>
+----
+
+Since we have specified *`multipleConsumers=true`* on the
+Disruptor *`foo`* endpoint we can have those two or more consumers
+receive their own copy of the message as a kind of pub-sub style
+messaging. As the beans are part of an unit test they simply send the
+message to a *`mock`* endpoint.
+
+Note the use of *`@Consume`* to consume from the Disruptor.
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+public class FooEventConsumer {
+
+    @EndpointInject(uri = "mock:result")
+    private ProducerTemplate destination;
+
+    @Consume(ref = "foo")
+    public void doSomething(String body) {
+        destination.sendBody("foo" + body);
+    }
+
+}
+----
+
+[[Disruptor-ExtractingdisruptorInformation]]
+Extracting `disruptor` Information
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+If needed, information such as buffer size, etc. can be obtained without
+using JMX in this fashion:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+DisruptorEndpoint disruptor = context.getEndpoint("disruptor:xxxx");
+int size = disruptor.getBufferSize();
+----

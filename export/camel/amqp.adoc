@@ -1,0 +1,212 @@
+[[ConfluenceContent]]
+[[AMQP-AMQP]]
+AMQP
+~~~~
+
+The *amqp:* component supports the http://www.amqp.org/[AMQP 1.0
+protocol] using the JMS Client API of the
+https://github.com/apache/qpid-jms/[Qpid] project. In case you want to
+use *AMQP 0.9* (in particular RabbitMQ) you might also be interested in
+the link:rabbitmq.html[Camel RabbitMQ] component. Please keep in mind
+that prior to the *Camel 2.17.0* AMQP component supported *AMQP 0.9* and
+above, however since *Camel 2.17.0* it supports only *AMQP 1.0*.
+
+Maven users will need to add the following dependency to their
+*`pom.xml`* for this component:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<dependency>
+    <groupId>org.apache.camel</groupId>
+    <artifactId>camel-amqp</artifactId>
+    <version>${camel.version}</version> <!-- use the same version as your Camel core version -->
+</dependency>
+----
+
+[[AMQP-URIformat]]
+URI format
+^^^^^^^^^^
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+amqp:[queue:|topic:]destinationName[?options]
+----
+
+[[AMQP-AMQPOptions]]
+AMQP Options
+^^^^^^^^^^^^
+
+You can specify all of the various configuration options of the
+link:jms.html[JMS] component after the destination name.
+
+[[AMQP-Usage]]
+Usage
+^^^^^
+
+As AMQP component inherits from the JMS component. The usage of the
+former is almost identical to the latter:
+
+*Using AMQP component*
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+// Consuming from AMQP queue
+from("amqp:queue:incoming")
+  .to(...);
+ 
+// Sending message to the AMQP topic
+from(...)
+  .to("amqp:topic:notify");
+----
+
+[[AMQP-ConfiguringAMQPcomponent]]
+Configuring AMQP component
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Starting from the *Camel 2.16.1* you can also use the
+*`AMQPComponent#amqp10Component(String connectionURI)`* factory method
+to return the *AMQP 1.0* component with the pre-configured topic
+prefix: 
+
+*Creating AMQP 1.0 component*
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+ AMQPComponent amqp = AMQPComponent.amqp10Component("amqp://guest:guest@localhost:5672");
+----
+
+Keep in mind that starting from the
+*Camel 2.17* the *`AMQPComponent#amqp10Component(String connectionURI)`* factory
+method has been deprecated on the behalf of the
+*`AMQPComponent#amqpComponent(String connectionURI)`*: 
+
+*Creating AMQP 1.0 component*
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+AMQPComponent amqp = AMQPComponent.amqpComponent("amqp://localhost:5672");
+ 
+AMQPComponent authorizedAmqp = AMQPComponent.amqpComponent("amqp://localhost:5672", "user", "password");
+----
+
+Starting from *Camel 2.17*, in order to automatically configure the AMQP
+component, you can also add an instance
+of *`org.apache.camel.component.amqp.AMQPConnectionDetails`* to the
+registry. For example for Spring Boot you just have to define bean:
+
+*AMQP connection details auto-configuration*
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+@Bean
+AMQPConnectionDetails amqpConnection() {
+  return new AMQPConnectionDetails("amqp://lcoalhost:5672"); 
+}
+ 
+@Bean
+AMQPConnectionDetails securedAmqpConnection() {
+  return new AMQPConnectionDetails("amqp://lcoalhost:5672", "username", "password"); 
+}
+----
+
+ 
+
+You can also rely on the link:properties.html[Camel properties] to read
+the AMQP connection details. The factory
+method *`AMQPConnectionDetails.discoverAMQP()`* attempts to read Camel
+properties in a Kubernetes-like convention, just as demonstrated on the
+snippet below:
+
+ 
+
+*AMQP connection details auto-configuration*
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+export AMQP_SERVICE_HOST = "mybroker.com"
+export AMQP_SERVICE_PORT = "6666"
+export AMQP_SERVICE_USERNAME = "username"
+export AMQP_SERVICE_PASSWORD = "password"
+ 
+...
+ 
+@Bean
+AMQPConnectionDetails amqpConnection() {
+  return AMQPConnectionDetails.discoverAMQP(); 
+}
+----
+
+[[AMQP-ConfiguringConnectionFactory]]
+Configuring Connection Factory
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Like with any other JMS-based component, usually it's important to
+configure JMS connection factory. For example, you'd like to set your
+broker URL or set proper connection credentials. Additionally, you would
+always want to set some kind of pooling (or caching) on the connection
+factory. An example of how to do both of these tasks is shown below.
+
+[source,brush:,xml;,gutter:,false;,theme:,Default]
+----
+<bean id="jmsConnectionFactory" class="org.apache.qpid.jms.JmsConnectionFactory">
+  <property name="remoteURI" value="amqp://localhost:5672" />
+  <property name="username" value="admin"/>
+  <property name="password" value="admin"/>
+</bean>
+
+<bean id="jmsCachingConnectionFactory" class="org.springframework.jms.connection.CachingConnectionFactory">
+  <property name="targetConnectionFactory" ref="jmsConnectionFactory" />
+</bean>
+
+<bean id="jmsConfig" class="org.apache.camel.component.jms.JmsConfiguration" >
+  <property name="connectionFactory" ref="jmsCachingConnectionFactory" /> 
+  <property name="cacheLevelName" value="CACHE_CONSUMER" />
+</bean>    
+
+<bean id="amqp" class="org.apache.camel.component.amqp.AMQPComponent">
+    <property name="configuration" ref="jmsConfig" />
+</bean>    
+
+<camelContext xmlns="http://camel.apache.org/schema/blueprint" id="simple">
+  <route>
+    <from uri="timer:simple?period=5000"/>
+    <setBody>
+        <simple>Hello World</simple>
+    </setBody>
+    <to uri="amqp:test"/>
+  </route>
+</camelContext>
+----
+
+[[AMQP-UsingamqpinsideKaraf]]
+Using amqp inside Karaf
+^^^^^^^^^^^^^^^^^^^^^^^
+
+To use the *`amqp`* component inside Karaf use the predefined feature
+called *`camel-amqp`* to install the necessary bundles.
+
+Example:
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+karaf@root()> repo-add camel
+karaf@root()> feature:install camel-amqp
+----
+
+and the environment would be set.
+
+Use the *`camel-blueprint`* or *`camel-spring`* features to define
+routes in those contexts.
+
+ 
+
+[[AMQP-SeeAlso]]
+See Also
+^^^^^^^^
+
+* link:configuring-camel.html[Configuring Camel]
+* link:component.html[Component]
+* link:endpoint.html[Endpoint]
+* link:getting-started.html[Getting Started]
+
+ 

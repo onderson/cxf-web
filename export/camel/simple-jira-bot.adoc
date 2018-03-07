@@ -1,0 +1,66 @@
+[[ConfluenceContent]]
+[[SimpleJiraBot-SimpleJiraBotExample]]
+Simple Jira Bot Example
+~~~~~~~~~~~~~~~~~~~~~~~
+
+*Available as of Camel 2.7*
+
+The example is included in the distribution at
+`examples/camel-example-simplejirabot`. It contains a `README.txt` file
+with details how to use and run it.
+
+[[SimpleJiraBot-Theroutes]]
+The routes
+^^^^^^^^^^
+
+This example has 1 route implemented in both the Java and XML DSLs as an
+example. Both route from a RSS endpoint to an IRC endpoint.
+
+Java DSL
+
+XML DSL
+
+Information for configuring each endpoint can be found here: +
+link:rss.html[RSS endpoint documentation] +
+link:irc.html[IRC endpoint documentation]
+
+[[SimpleJiraBot-Usage]]
+Usage
+^^^^^
+
+To run the Java DSL example type
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+cd javadsl
+mvn camel:run
+----
+
+To run the XML Configuration example type
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+cd xmlconf
+mvn camel:run
+----
+
+It takes about 10 second before the bot will join the channel and Camel
+logs to the screen the first time. The log should be like this
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+2011-01-03 07:24:43,840 [archRequest.xml] INFO  jirabot                        - Exchange[Body:[CAMEL-2480] Use mock XMPP server for unit tests]
+----
+
+[[SimpleJiraBot-SeeAlso]]
+See Also
+^^^^^^^^
+
+* http://gnodet.blogspot.com/2009/10/jira-notification-system-for-irc-using.html[A
+jira notification system for irc using Camel] by Guillaume Nodet - all
+code is in a single XML hot deployed in
+http://felix.apache.org/site/index.html[Apache Karaf].
+* http://coderthoughts.blogspot.com/2009/07/irc-alerter-written-using-apache-camel.html[An
+IRC alerter written using Apache Camel and Java] how to easily integrate
+IRC with Camel to monitor and do alerts.
+* link:examples.html[Examples]

@@ -1,0 +1,125 @@
+[[ConfluenceContent]]
+[[JOLT-JOLTComponent]]
+JOLT Component
+~~~~~~~~~~~~~~
+
+*Available as of Camel 2.16*
+
+The *jolt:* component allows you to process a JSON messages using an
+http://bazaarvoice.github.io/jolt/[JOLT] specification. This can be
+ideal when doing JSON to JSON transformation.
+
+Maven users will need to add the following dependency to
+their `pom.xml` for this component:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<dependency>
+    <groupId>org.apache.camel</groupId>
+    <artifactId>camel-jolt</artifactId>
+    <version>x.x.x</version>
+    <!-- use the same version as your Camel core version -->
+</dependency>
+----
+
+ 
+
+[[JOLT-URIformat]]
+URI format
+^^^^^^^^^^
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+jolt:specName[?options]
+----
+
+Where *specName* is the classpath-local URI of the specification to
+invoke; or the complete URL of the remote specification
+(eg: file://folder/myfile.vm[file://folder/myfile.json]).
+
+You can append query options to the URI in the following
+format, `?option=value&option=value&...`
+
+[[JOLT-Options]]
+Options
+^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Option |Default |Description
+|`contentCache` |`true` |Cache for the resource content when it is
+loaded. +
+Note : as of Camel 2.9 cached resource content can be cleared via JMX
+using the endpoint's `clearContentCache` operation.
+
+|`outputType` |`Hydrated` |Sets the output of the transformation to
+Hydrated as List or Maps, or JsonString as a String object containing
+the JSON.
+
+|`inputType` |`Hydrated` |Sets the input of the transformation to
+Hydrated as List or Maps, or JsonString as a String object containing
+the JSON.
+
+|`transformDsl` |`Chainr` |The
+http://bazaarvoice.github.io/jolt/#Documentation[transform DSL] to use
+for loading the provided specification. Available values Chainr, Shiftr,
+Defaultr, Removr and Sortr.
+|=======================================================================
+
+[[JOLT-Dynamicspecification]]
+Dynamic specification
+^^^^^^^^^^^^^^^^^^^^^
+
+Camel provides a header by which you can define a different resource
+location for a specification. If this header is set then Camel uses this
+over the endpoint configured resource. This allows you to provide a
+dynamic specification at runtime.
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Header |Type |Description
+|CamelJoltResourceUri |String |A URI for the specification resource to
+use instead of the endpoint configured.
+|=======================================================================
+
+[[JOLT-Samples]]
+Samples
+^^^^^^^
+
+For example you could use something like
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from("activemq:My.Queue").
+  to("jolt:com/acme/MyResponse.json");
+----
+
+And a file based resource:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from("activemq:My.Queue").
+  to("jolt:file://myfolder/MyResponse.json?contentCache=true").
+  to("activemq:Another.Queue");
+----
+
+You can also specify what specification the component should use
+dynamically via a header, so for example:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from("direct:in").
+  setHeader("CamelJoltResourceUri").constant("path/to/my/spec.json").
+  to("jolt:dummy");
+----
+
+ 
+
+[[JOLT-SeeAlso]]
+See Also
+^^^^^^^^
+
+* link:configuring-camel.html[Configuring Camel]
+* link:component.html[Component]
+* link:endpoint.html[Endpoint]
+* link:getting-started.html[Getting Started]

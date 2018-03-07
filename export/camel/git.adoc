@@ -1,0 +1,118 @@
+[[ConfluenceContent]]
+[[Git-GitComponent]]
+Git Component
+~~~~~~~~~~~~~
+
+*Available as of Camel 2.16*
+
+The *git:* component allows you to work with a generic Git repository. 
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<dependency>
+    <groupId>org.apache.camel</groupId>
+    <artifactId>camel-git</artifactId>
+    <version>x.x.x</version>
+    <!-- use the same version as your Camel core version -->
+</dependency>
+----
+
+*URI Format*
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+git://localRepositoryPath[?options]
+----
+
+[[Git-URIOptions]]
+URI Options
+^^^^^^^^^^^
+
+The producer allows to do operations on a specific repository. +
+The consumer allows consuming commits, tags and branches on a specific
+repository.
+
+[width="100%",cols="20%,20%,20%,20%,20%",options="header",]
+|=======================================================================
+|Name |Default Value |Type |Context |Description
+|localPath |`null` |String |Shared |The path to the local Git repository
+
+|remotePath |`null` |String |Shared |The path to the remote Git
+repository
+
+|remoteName |`null` |String |Shared |The remote name useful for
+particular operation like push and pull
+
+|operation |`null` |String |Producer |The operation to perform.
+Currently supports the following values: *clone, init, add, remove,
+commit, commitAll, createBranch, deleteBranch, createTag, deleteTag,
+status, log, push, pull, showBranches, cherryPick.*
+
+|branchName |`null` |String |Producer |The name of the branch to work on
+
+|tagName |`null` |String |Producer |The tag of the branch to work on
+
+|username |`null` |String |Producer |The username to use in
+authentication phase to the git repository
+
+|password |`null` |String |Producer |The password to use in
+authentication phase to the git repository
+
+|type |`null` |String |Consumer |The type of consumer. Currently
+supports the following values: *commit, tag, branch*
+|=======================================================================
+
+[[Git-MessageHeaders]]
+Message Headers
+^^^^^^^^^^^^^^^
+
+[width="100%",cols="20%,20%,20%,20%,20%",options="header",]
+|=======================================================================
+|Name |Default Value |Type |Context |Description
+|CamelGitOperation |`null` |String |Producer |The operation to do on a
+repository, if not specified as endpoint option
+
+|CamelGitFilename |`null` |String |Producer |The file name in an add
+operation
+
+|CamelGitCommitMessage |`null` |String |Producer |The commit message
+related in a commit operation
+
+|CamelGitCommitUsername |`null` |String |Producer |The commit username
+in a commit operation
+
+|CamelGitCommitEmail |`null` |String |Producer |The commit email in a
+commit operation
+
+|CamelGitCommitId |`null` |String |Producer |The commit id
+|=======================================================================
+
+[[Git-ProducerExample]]
+Producer Example
+^^^^^^^^^^^^^^^^
+
+Below is an example route of a producer that add a file test.java to a
+local repository, commit it with a specific message on master branch and
+then push it to remote repository.
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from("direct:start")
+        .setHeader(GitConstants.GIT_FILE_NAME, constant("test.java"))
+        .to("git:///tmp/testRepo?operation=add")
+        .setHeader(GitConstants.GIT_COMMIT_MESSAGE, constant("first commit"))
+        .to("git:///tmp/testRepo?operation=commit")
+        .to("git:///tmp/testRepo?operation=push&remotePath=https://foo.com/test/test.git&username=xxx&password=xxx")
+----
+
+[[Git-ConsumerExample]]
+Consumer Example
+^^^^^^^^^^^^^^^^
+
+Below is an example route of a consumer that consumes commit:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from("git:///tmp/testRepo?type=commit")
+                        .to(....)
+----

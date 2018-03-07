@@ -1,0 +1,226 @@
+[[ConfluenceContent]]
+[[NMR-NMRComponent]]
+NMR Component
+~~~~~~~~~~~~~
+
+The *nmr* component is an adapter to the Normalized Message Router (NMR)
+in http://servicemix.apache.org/home.html[ServiceMix], which is intended
+for use by Camel applications deployed directly into the OSGi container.
+You can exchange objects with NMR and not only XML like this is the case
+with the JBI specification. The interest of this component is that you
+can interconnect camel routes deployed in different OSGI bundles.
+
+By contrast, the link:jbi.html[JBI] component is intended for use by
+Camel applications deployed into the ServiceMix JBI container.
+
+[[NMR-InstallinginApacheServicemix]]
+Installing in Apache Servicemix
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The NMR component is provided with Apache ServiceMix. It is *not*
+distributed with Camel. To install the NMR component in ServiceMix,
+enter the following command in the ServiceMix console window:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+features:install nmr camel-nmr
+----
+
+[[NMR-InstallinginplainApacheKaraf]]
+Installing in plain Apache Karaf
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In plain Karaf the nmr component can also be installed using the
+servicemix artifacts:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+features:chooseurl camel <version>
+features:addurl mvn:org.apache.servicemix.nmr/apache-servicemix-nmr/1.5.0/xml/features
+features:install camel-blueprint nmr camel-nmr
+install -s mvn:org.apache.servicemix.camel/org.apache.servicemix.camel.component/4.4.2
+----
+
+[[NMR-Configuration]]
+Configuration
+^^^^^^^^^^^^^
+
+You also need to instantiate the NMR component. You can do this by
+editing your Spring configuration file, `META-INF/spring/*.xml`, and
+adding the following `bean` instance:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<beans xmlns:osgi="http://www.springframework.org/schema/osgi" ... >
+    ...
+    <bean id="nmr" class="org.apache.servicemix.camel.nmr.ServiceMixComponent">
+        <property name="nmr">
+            <osgi:reference interface="org.apache.servicemix.nmr.api.NMR" />
+        </property>
+    </bean>
+    ...
+</beans>
+----
+
+[[NMR-NMRconsumerandproducerendpoints]]
+NMR consumer and producer endpoints
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The following code:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from("nmr:MyServiceEndpoint")
+----
+
+Automatically exposes a new endpoint to the bus with endpoint name
+`MyServiceEndpoint` (see link:nmr.html[URI-format]).
+
+When an NMR endpoint appears at the end of a route, for example:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+to("nmr:MyServiceEndpoint")
+----
+
+The messages sent by this producer endpoint are sent to the already
+deployed NMR endpoint.
+
+[[NMR-URI-format]]
+
+[[NMR-URIformat]]
+URI format
+^^^^^^^^^^
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+nmr:endpointName
+----
+
+[[NMR-URIOptions]]
+URI Options
++++++++++++
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Option |Default Value |Description
+|`runAsSubject` |`false` |*Apache ServiceMix 4.4:* When this is set to
+`true` on a consumer endpoint, the endpoint will be invoked on behalf of
+the `Subject` that is set on the `Exchange` (i.e. the call to
+`Subject.getSubject(AccessControlContext)` will return the `Subject`
+instance)
+
+|`synchronous` |`false` |When this is set to `true` on a consumer
+endpoint, an incoming, synchronous NMR Exchange will be handled on the
+sender's thread instead of being handled on a new thread of the NMR
+endpoint's thread pool
+
+|`timeout` |`0` |*Apache ServiceMix 4.4:* When this is set to a value
+greater than 0, the producer endpoint will timeout if it doesn't receive
+a response from the NMR within the given timeout period (in
+milliseconds). Configuring a timeout value will switch to using
+synchronous interactions with the NMR instead of the usual asynchronous
+messaging.
+
+|`throwExceptionOnFailure` |true |*Apache ServiceMix 4.5.2:* When this
+is set to `false` then NMR's exceptions (like TimeoutException) will be
+consumed silently.
+
+|`interfaceName` |null |*Apache ServiceMix 4.5.3:* When specify this as
+a `QName` then it could be considered when NMR looking for the target
+NMR endpoint during dispatch
+
+|`serviceName` |null |*Apache ServiceMix 4.5.3:* When specify this as a
+`QName` then it could be considered when NMR looking for the target NMR
+endpoint during dispatch
+|=======================================================================
+
+[[NMR-Examples]]
+Examples
+++++++++
+
+Consumer
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from("nmr:MyServiceEndpoint") // consume nmr exchanges asynchronously
+from("nmr:MyServiceEndpoint?synchronous=true").to() // consume nmr exchanges synchronously and use the same thread as defined by NMR ThreadPool
+----
+
+Producer
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from()...to("nmr:MyServiceEndpoint") // produce nmr exchanges asynchronously
+from()...to("nmr:MyServiceEndpoint?timeout=10000") // produce nmr exchanges synchronously and wait till 10s to receive response
+----
+
+[[NMR-UsingStreambodies]]
+Using Stream bodies
+^^^^^^^^^^^^^^^^^^^
+
+If you are using a stream type as the message body, you should be aware
+that a stream is only capable of being read once. So if you enable
+`DEBUG` logging, the body is usually logged and thus read. To deal with
+this, Camel has a `streamCaching` option that can cache the stream,
+enabling you to read it multiple times.
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from("nmr:MyEndpoint").streamCaching().to("xslt:transform.xsl", "bean:doSomething");
+----
+
+The stream caching is default enabled, so it is not necessary to set the
+`streamCaching()` option. +
+We store big input streams (by default, over 64K) in a `temp` file using
+`CachedOutputStream`. When you close the input stream, the temp file
+will be deleted.
+
+[[NMR-Testing]]
+Testing
++++++++
+
+NMR camel routes can be tested using the camel unit test approach even
+if they will be deployed next in different bundles on an OSGI runtime.
+With this aim in view, you will extend the ServiceMixNMR Mock class
+`org.apache.servicemix.camel.nmr.AbstractComponentTest` which will
+create a NMR bus, register the Camel NMR Component and the endpoints
+defined into the Camel routes.
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+public class ExchangeUsingNMRTest extends AbstractComponentTest {
+
+    @Test
+    public void testProcessing() throws InterruptedException {
+        MockEndpoint mock = getMockEndpoint("mock:simple");
+        mock.expectedBodiesReceived("Simple message body");
+
+        template.sendBody("direct:simple", "Simple message body");
+
+        assertMockEndpointsSatisfied();
+
+    }
+
+    @Override
+    protected RouteBuilder createRouteBuilder() throws Exception {
+        return new RouteBuilder() {
+
+            @Override
+            public void configure() throws Exception {
+                from("direct:simple").to("nmr:simple");
+                from("nmr:simple?synchronous=true").to("mock:simple");
+            }
+        };
+    }
+}
+----
+
+[[NMR-SeeAlso]]
+See Also
+^^^^^^^^
+
+* link:configuring-camel.html[Configuring Camel]
+* link:component.html[Component]
+* link:endpoint.html[Endpoint]
+* link:getting-started.html[Getting Started]

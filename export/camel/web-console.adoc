@@ -1,0 +1,171 @@
+[[ConfluenceContent]]
+[[WebConsole-WebConsole]]
+Web Console
+-----------
+
+*Deprecated*
+
+[Warning]
+====
+
+
+The web console module from Apache Camel distribution is deprecated and
+will be removed from Camel 2.16 onwards. +
+Instead we encourage users to look at some of the alternative console
+projects, which some are listed in the bottom of this page.
+
+====
+
+The Camel Web Console is available from versions 2.0 onwards and
+provides a full access over a RESTful API to camel endpoints, messages
+and routes.
+
+[Info]
+====
+ **Camel 2.5 or better**
+
+The link:web-console.html[Web Console] from Camel 2.5 onwards requires
+JDK 1.6 as minimum to run.
+
+====
+
+[[WebConsole-DownloadandRuntheConsole]]
+Download and Run the Console
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Download the console from Maven Central at
+http://repo2.maven.org/maven2/org/apache/camel/camel-web-standalone/
+
+Then from the command line type
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+java -jar camel-web-standalone-2.8.0.jar 
+----
+
+You should now be able to point your browser at: http://localhost:8080/
+
+[[WebConsole-BuildandRuntheConsole]]
+Build and Run the Console
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+First get the latest link:source.html[Source] then from the command line
+type
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+cd components/camel-web
+mvn jetty:run
+----
+
+Then point your web browse at http://localhost:8080/
+
+You should be able to do things like
+
+* browse the available endpoints
+* browse the messages on an endpoint if it is a
+link:browsableendpoint.html[BrowsableEndpoint]
+* send a message to an endpoint
+* create new endpoints
+
+[[WebConsole-RunningusingTomcat]]
+Running using Tomcat
+^^^^^^^^^^^^^^^^^^^^
+
+*Available as of Camel 2.10*
+
+You can also run the web console from an embedded Apache Tomcat using
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+cd components/camel-web
+mvn tomcat7:run
+----
+
+Then point your web browse at http://localhost:8080/
+
+[[WebConsole-Embeddingwebconsoleinyourownwebapplication.]]
+Embedding web console in your own web application.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+See these relevant discussions for more information (more information to
+come soon):
+
+http://camel.465427.n5.nabble.com/Embedded-web-console-td478885.html
+
+http://camel.465427.n5.nabble.com/example-app-to-embed-camel-web-console-td4512075.html
+
+[[WebConsole-RESTAPI]]
+REST API
+~~~~~~~~
+
+Camel comes with a full RESTful API for interacting with the Camel
+context, the available endpoints and routes. You can browse details of
+the running API via http://localhost:8080/api
+
+The web application uses mostly the same URIs for the HTML
+representation of a resource (e.g. */endpoints*) as the JSON and XML
+representations. To help rendering the different representations in your
+browser you can append *.xml*, *.html*, *.json* or even *.dot* to URLs.
+
+For example viewing these URLs are equivalent
+
+[width="100%",cols="50%,50%",options="header",]
+|================================================
+|URL |Same as
+|http://localhost:8080/endpoints.xml a|
+ 
+
+http://localhost:8080/endpoints
+
+with Accept header of text/xml or application/xml
+
+|http://localhost:8080/endpoints.json a|
+ 
+
+http://localhost:8080/endpoints
+
+with Accept header of application/json
+
+|http://localhost:8080/routes.dot a|
+ 
+
+http://localhost:8080/routes
+
+with Accept header of text/vnd.graphviz
+
+|================================================
+
+For more details try viewing the http://localhost:8080/api[API
+documentation in your local Camel instance]
+
+[[WebConsole-RouteViewingandEditingthroughWebConsole]]
+Route Viewing and Editing through Web Console
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Web Console provide route viewing and editing functionality. You can
+view your route via http://localhost:8080/routes/yourRouteId and it
+default present the route in XML. +
+Camel uses JAXB to process the XML route definitions.
+
+[[WebConsole-ExternalWebConsoles]]
+External Web Consoles
+---------------------
+
+There are a number of external web consoles for Apache Camel in separate
+open source projects:
+
+[width="100%",cols="50%,50%",options="header",]
+|=======================================================================
+|External Project |Description
+|http://hawt.io/[hawtio] |hawtio is an open source HTML5 web application
+for visualising, managing, tracing and debugging Camel routes &
+endpoints, ActiveMQ brokers, JMX, OSGi and logging.
+
+|http://sksamuel.github.com/camelwatch/[CamelWatch] |A web app for
+monitoring Camel applications.
+
+|http://www.jboss.org/rhq[RHQ] |RHQ is an open source operational
+monitoring tool which has support for Apache Camel (along with other
+Apache projects like Tomcat, httpd, ActiveMQ etc)
+|=======================================================================

@@ -1,0 +1,81 @@
+[[ConfluenceContent]]
+[[ActiveMQCamelTomcat-EmbeddedActiveMQBrokerwithCamelrunninginApacheTomcatexample]]
+Embedded ActiveMQ Broker with Camel running in Apache Tomcat example
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+*Available as of Camel 2.11*
+
+This example shows how you can embed Apache ActiveMQ Broker and Camel in
+a web application, which can run on Apache Tomcat or other web
+containers.
+
+This example embeds ActiveMQ Broker and a Camel application which will
+continuously send a message per second to an inbox queue. +
+Then another Camel route will route messages from the inbox to the
+outbox queue.
+
+[[ActiveMQCamelTomcat-BuildingandRunningexample]]
+Building and Running example
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+You will need to build this example first:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+  mvn install
+----
+
+Which will create a .war file in the target directly. You can then
+deploy this .war file in any web container such as Apache Tomcat, by
+copying the .war file to its /webapp directory.
+
+For example to start Apache Tomcat
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+bin/catalina.sh run
+----
+
+And then build the example and deploy to Apache Tomcat
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+mvn install
+cp target/camel-example-activemq-tomcat.war /opt/apache-tomcat-7.0.26/webapps/
+----
+
+[[ActiveMQCamelTomcat-Sourcecode]]
+Source code
+^^^^^^^^^^^
+
+This example is a web application which mean we have a `web.xml` file in
+the `src/main/webapp/WEB-INF` directory. The code is as follows:
+
+We have two Spring XML files that embed
+
+* broker.xml to embed Apache ActiveMQ broker
+* camel-config.xml to embed Apache Camel with the routes
+
+The `broker.xml` file is located in the `src/main/resources` directory
+and contains:
+
+The `camel-config.xml` file is located in the `src/main/resources`
+directory and contains:
+
+[[ActiveMQCamelTomcat-JMX]]
+JMX
+^^^
+
+You can use JConsole to get details about the running ActiveMQ and
+Camel. This is done by starting up jconsole, and then under local
+processes, +
+select the process which has catalina in the name (catalina is Apache
+Tomcat).
+
+[[ActiveMQCamelTomcat-SeeAlso]]
+See Also
+^^^^^^^^
+
+* Other link:examples.html[Examples]
+* Camel link:activemq.html[ActiveMQ] component
+* http://activemq.apache.org/[Apache ActiveMQ]

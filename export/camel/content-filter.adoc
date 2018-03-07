@@ -1,0 +1,67 @@
+[[ConfluenceContent]]
+[[ContentFilter-ContentFilter]]
+Content Filter
+^^^^^^^^^^^^^^
+
+Camel supports the
+http://www.enterpriseintegrationpatterns.com/ContentFilter.html[Content
+Filter] from the link:enterprise-integration-patterns.html[EIP patterns]
+using one of the following mechanisms in the routing logic to transform
+content from the inbound message.
+
+* link:message-translator.html[Message Translator]
+* invoking a link:bean-integration.html[Java bean]
+* link:processor.html[Processor] object
+
+image:http://www.enterpriseintegrationpatterns.com/img/ContentFilter.gif[image]
+
+A common way to filter messages is to use an
+link:expression.html[Expression] in the link:dsl.html[DSL] like
+link:xquery.html[XQuery], link:sql.html[SQL] or one of the supported
+link:scripting-languages.html[Scripting Languages].
+
+*Using the link:fluent-builders.html[Fluent Builders]*
+
+Here is a simple example using the link:dsl.html[DSL] directly
+
+In this example we add our own link:processor.html[Processor]
+
+For further examples of this pattern in use you could look at one of the
+JUnit tests
+
+* http://svn.apache.org/viewvc/camel/trunk/camel-core/src/test/java/org/apache/camel/processor/TransformTest.java?view=markup[TransformTest]
+* http://svn.apache.org/viewvc/camel/trunk/camel-core/src/test/java/org/apache/camel/processor/TransformViaDSLTest.java?view=markup[TransformViaDSLTest]
+
+*Using Spring XML*
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<route>
+  <from uri="activemq:Input"/>
+  <bean ref="myBeanName" method="doTransform"/>
+  <to uri="activemq:Output"/>
+</route>
+----
+
+You can also use XPath to filter out part of the message you are
+interested in:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<route>
+  <from uri="activemq:Input"/>
+  <setBody><xpath resultType="org.w3c.dom.Document">//foo:bar</xpath></setBody>
+  <to uri="activemq:Output"/>
+</route> 
+----
+
+[[ContentFilter-UsingThisPattern]]
+Using This Pattern
+++++++++++++++++++
+
+If you would like to use this EIP Pattern then please read the
+link:getting-started.html[Getting Started], you may also find the
+link:architecture.html[Architecture] useful particularly the description
+of link:endpoint.html[Endpoint] and link:uris.html[URIs]. Then you could
+try out some of the link:examples.html[Examples] first before trying
+this pattern out.

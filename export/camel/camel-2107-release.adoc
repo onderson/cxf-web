@@ -1,0 +1,120 @@
+[[ConfluenceContent]]
+[[Camel2.10.7Release-Camel2.10.7release]]
+Camel 2.10.7 release
+--------------------
+
+image:http://camel.apache.org/download.data/camel-box-v1.0-150x200.png[image]
+
+ 
+
+[[Camel2.10.7Release-NewandNoteworthy]]
+New and Noteworthy
+~~~~~~~~~~~~~~~~~~
+
+Welcome to the 2.10.7 release which mainly address
+http://camel.apache.org/security-advisories.data/CVE-2013-4330.txt.asc[CVE-2013-4330]
+and comes with 63 issues resolved.
+
+For more details see the
+https://issues.apache.org/jira/secure/ReleaseNote.jspa?projectId=12311211&version=12324667[JIRA
+tickets]
+
+[[Camel2.10.7Release-KnownIssues]]
+Known Issues
+~~~~~~~~~~~~
+
+* See link:camel-2100-release.html[Camel 2.10.0 Release]
+
+[[Camel2.10.7Release-Importantchangestoconsiderwhenupgrading]]
+Important changes to consider when upgrading
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+* See link:camel-2100-release.html[Camel 2.10.0 Release]
+
+[[Camel2.10.7Release-Notice]]
+Notice
+~~~~~~
+
+* See link:camel-2100-release.html[Camel 2.10.0 Release]
+
+[[Camel2.10.7Release-GettingtheDistributions]]
+Getting the Distributions
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+[[Camel2.10.7Release-BinaryDistributions]]
+Binary Distributions
+^^^^^^^^^^^^^^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Description |Download Link |PGP Signature file of download
+|Windows Distribution
+|http://archive.apache.org/dist/camel/apache-camel/2.10.7/apache-camel-2.10.7.zip[apache-camel-2.10.7.zip]
+|http://archive.apache.org/dist/camel/apache-camel/2.10.7/apache-camel-2.10.7.zip.asc[apache-camel-2.10.7.zip.asc]
+
+|Unix/Linux/Cygwin Distribution
+|http://archive.apache.org/dist/camel/apache-camel/2.10.7/apache-camel-2.10.7.tar.gz[apache-camel-2.10.7.tar.gz]
+|http://archive.apache.org/dist/camel/apache-camel/2.10.7/apache-camel-2.10.7.tar.gz.asc[apache-camel-2.10.7.tar.gz.asc]
+|=======================================================================
+
+[Info]
+====
+ **The above URLs use redirection**
+
+The above URLs use the Apache Mirror system to redirect you to a
+suitable mirror for your download. Some users have experienced issues
+with some versions of browsers (e.g. some Safari browsers). If the
+download doesn't seem to work for you from the above URL then try using
+http://www.mozilla.com/en-US/firefox/[FireFox]
+
+====
+
+[[Camel2.10.7Release-SourceDistributions]]
+Source Distributions
+^^^^^^^^^^^^^^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Description |Download Link |PGP Signature file of download
+|Source (zip)
+|http://archive.apache.org/dist/camel/apache-camel/2.10.7/apache-camel-2.10.7-src.zip[apache-camel-2.10.7-src.zip]
+|http://archive.apache.org/dist/camel/apache-camel/2.10.7/apache-camel-2.10.7-src.zip.asc[apache-camel-2.10.7-src.zip.asc]
+|=======================================================================
+
+[[Camel2.10.7Release-GettingtheBinariesusingMaven2]]
+Getting the Binaries using Maven 2
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To use this release in your maven project, the proper dependency
+configuration that you should use in your
+http://maven.apache.org/guides/introduction/introduction-to-the-pom.html[Maven
+POM] is:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<dependency>
+  <groupId>org.apache.camel</groupId>
+  <artifactId>camel-core</artifactId>
+  <version>2.10.7</version>
+</dependency>
+----
+
+[[Camel2.10.7Release-GitTagCheckout]]
+Git Tag Checkout
+^^^^^^^^^^^^^^^^
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+git clone https://git-wip-us.apache.org/repos/asf/camel.git
+cd camel
+git checkout camel-2.10.7
+----
+
+[[Camel2.10.7Release-Changelog]]
+Changelog
+~~~~~~~~~
+
+For a more detailed view of new features and bug fixes, see the:
+
+* https://issues.apache.org/jira/secure/ReleaseNote.jspa?projectId=12311211&version=12324667[release
+notes for 2.10.7]

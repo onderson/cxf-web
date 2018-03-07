@@ -1,0 +1,127 @@
+[[ConfluenceContent]]
+[[RoutingSlipAnnotation-@RoutingSlipAnnotation]]
+@RoutingSlip Annotation
+~~~~~~~~~~~~~~~~~~~~~~~
+
+As of Camel 2.4.0 we now support the use of @RoutingSlip on a bean
+method to easily create a dynamic link:routing-slip.html[Routing Slip]
+using a Java method.
+
+[[RoutingSlipAnnotation-SimpleExampleusing@Consumeand@RoutingSlip]]
+Simple Example using @Consume and @RoutingSlip
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+package com.acme.foo;
+
+public class RouterBean {
+
+    @Consume(uri = "activemq:foo")
+    @RoutingSlip
+    public String[] route(String body) {
+        return new String[]{"activemq:bar", "activemq:whatnot"};
+    }
+}
+----
+
+For example if the above bean is configured in link:spring.html[Spring]
+when using a *<camelContext>* element as follows
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+       http://activemq.apache.org/camel/schema/spring http://activemq.apache.org/camel/schema/spring/camel-spring.xsd
+    ">
+
+  <camelContext xmlns="http://activemq.apache.org/camel/schema/spring"/>
+
+  <bean id="myRoutingSlip" class="com.acme.foo.RouterBean"/>
+
+</beans>
+----
+
+then a route will be created consuming from the *foo* queue on the
+link:activemq.html[ActiveMQ] component which when a message is received
+the message will be forwarded to the endpoints defined by the result of
+this method call - namely the *bar* and *whatnot* queues.
+
+[[RoutingSlipAnnotation-Howitworks]]
+How it works
+^^^^^^^^^^^^
+
+The return value of the @RoutingSlip method is converted to either a
+java.util.Collection / java.util.Iterator or array of objects where each
+element is converted to an link:endpoint.html[Endpoint] or a String, or
+if you are only going to route to a single endpoint then just return
+either an Endpoint object or an object that can be converted to a
+String. So the following methods are all valid
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+@RoutingSlip
+public String[] route(String body) { ... }
+
+@RoutingSlip 
+public List<String> route(String body) { ... }
+
+@RoutingSlip 
+public Endpoint route(String body) { ... }
+
+@RoutingSlip 
+public Endpoint[] route(String body) { ... }
+
+@RoutingSlip 
+public Collection<Endpoint> route(String body) { ... }
+
+@RoutingSlip 
+public URI route(String body) { ... }
+
+@RoutingSlip
+public URI[] route(String body) { ... }
+----
+
+Then for each endpoint or URI the message is routed accordingly to the
+returned slip. See details at the link:routing-slip.html[Routing Slip]
+EIP.
+
+You can then use whatever Java code you wish to figure out what
+endpoints to route to; for example you can use the
+link:bean-binding.html[Bean Binding] annotations to inject parts of the
+message body or headers or use link:expression.html[Expression] values
+on the message.
+
+[[RoutingSlipAnnotation-MoreComplexExampleUsingDSL]]
+More Complex Example Using DSL
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In this example we will use more complex link:bean-binding.html[Bean
+Binding], plus we will use a separate route to invoke the
+link:routing-slip.html[Routing Slip]
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+public class RouterBean2 {
+
+    @RoutingSlip
+    public String route(@Header("customerID") String custID String body) {
+        if (custID == null)  return null;
+        return "activemq:Customers.Orders." + custID;
+    }
+}
+
+public class MyRouteBuilder extends RouteBuilder {
+    protected void configure() {
+        from("activemq:Orders.Incoming").routingSlip(bean("myRouterBean", "route"));
+    }
+}
+----
+
+Notice how we are injecting some headers or expressions and using them
+to determine the recipients using link:routing-slip.html[Routing Slip]
+EIP. +
+See the link:bean-integration.html[Bean Integration] for more details.

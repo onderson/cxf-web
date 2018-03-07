@@ -1,0 +1,46 @@
+[[ConfluenceContent]]
+[[CustomDataFormat-CustomDataFormat]]
+Custom DataFormat
+~~~~~~~~~~~~~~~~~
+
+You can use your custom link:data-format.html[Data Format]
+implementation with Camel. All you have to do is to implement the
+`DataFormat` interface. For example in the following we will implement a
+reverse data format as shown below:
+
+*Custom implementation of DataFormat that reverses data*
+
+And to use it in Java DSL:
+
+Notice we use custom to refer to the link:data-format.html[Data Format]
+in the link:registry.html[Registry]. In Java DSL you can also provide
+the instance directly as shown:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from("direct:a")
+    .marshal(new MyReverseDataFormat())
+    .to("mock:a");
+----
+
+And likewise to use it in XML DSL:
+
+Notice in the XML DSL example above we use <custom> to refer to a custom
+data format. This requires *Camel 2.8* or better. In older releases you
+would have to use the `ref` attribute as shown below. Notice the `ref`
+attribute has been @deprecated and you should prefer to use the <custom>
+way:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+ <marshal ref="reverse"/>
+----
+
+[[CustomDataFormat-SeeAlso]]
+See Also
+^^^^^^^^
+
+* link:configuring-camel.html[Configuring Camel]
+* link:component.html[Component]
+* link:endpoint.html[Endpoint]
+* link:getting-started.html[Getting Started]

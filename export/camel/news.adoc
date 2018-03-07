@@ -1,0 +1,662 @@
+[[ConfluenceContent]]
+[[News-News]]
+News
+~~~~
+
+
+https://cwiki.apache.org/confluence/display/~gzurowski[image:news.userimage/gzurowski-89607-pp-wojtek-avatar.png[User
+icon: gzurowski,title="gzurowski"]]
+https://cwiki.apache.org/confluence/display/CAMEL/2018/01/26/Apache+Camel+2.20.2+Released[Apache
+Camel 2.20.2 Released]
+
+https://cwiki.apache.org/confluence/display/~gzurowski[Gregor Zurowski]
+posted on Jan 26, 2018
+
+The Camel community announces the immediate availability of the new
+patch release Camel 2.20.2. This release contains 41 fixes applied in
+the past few weeks by the community on the Camel 2.20.x maintenance
+branch.
+
+The artifacts are published and ready for you
+to http://camel.apache.org/download.html[download] either from the
+Apache mirrors or from the Central Maven repository. For more details
+please take a look at
+the https://issues.apache.org/jira/secure/ReleaseNote.jspa?version=12342152&projectId=12311211[release
+notes]. +
+Many thanks to all who made this release possible.
+
+On behalf of the Camel PMC, +
+Gregor Zurowski
+
+link:/confluence/pages/editblogpost.action?pageId=75963358[Edit]
+
+
+https://cwiki.apache.org/confluence/display/~gzurowski[image:news.userimage/gzurowski-89607-pp-wojtek-avatar.png[User
+icon: gzurowski,title="gzurowski"]]
+https://cwiki.apache.org/confluence/display/CAMEL/2017/11/14/Apache+Camel+2.20.1+Released[Apache
+Camel 2.20.1 Released]
+
+https://cwiki.apache.org/confluence/display/~gzurowski[Gregor Zurowski]
+posted on Nov 14, 2017
+
+The Camel community announces the immediate availability of the new
+patch release Camel 2.20.1. This release contains 65 fixes applied in
+the past few weeks by the community on the Camel 2.20.x maintenance
+branch.
+
+The artifacts are published and ready for you to
+http://camel.apache.org/download.html[download] either from the Apache
+mirrors or from the Central Maven repository. For more details please
+take a look at the
+https://issues.apache.org/jira/secure/ReleaseNote.jspa?version=12341590&projectId=12311211[release
+notes]. +
+Many thanks to all who made this release possible.
+
+On behalf of the Camel PMC, +
+Gregor Zurowski
+
+link:/confluence/pages/editblogpost.action?pageId=74687082[Edit]
+
+
+https://cwiki.apache.org/confluence/display/~gzurowski[image:news.userimage/gzurowski-89607-pp-wojtek-avatar.png[User
+icon: gzurowski,title="gzurowski"]]
+https://cwiki.apache.org/confluence/display/CAMEL/2017/11/05/Apache+Camel+2.19.4+Released[Apache
+Camel 2.19.4 Released]
+
+https://cwiki.apache.org/confluence/display/~gzurowski[Gregor Zurowski]
+posted on Nov 05, 2017
+
+The Camel community announces the immediate availability of the new
+patch release Camel 2.19.4. This release contains 39 fixes applied in
+the past few weeks by the community on the Camel 2.19.x maintenance
+branch.
+
+The artifacts are published and ready for you
+to http://camel.apache.org/download.html[download] either from the
+Apache mirrors or from the Central Maven repository. For more details
+please take a look at
+the https://issues.apache.org/jira/secure/ReleaseNote.jspa?version=12341575&projectId=12311211[release
+notes].
+
+Many thanks to all who made this release possible.
+
+On behalf of the Camel PMC, +
+Gregor Zurowski
+
+link:/confluence/pages/editblogpost.action?pageId=74686235[Edit]
+
+
+https://cwiki.apache.org/confluence/display/~gzurowski[image:news.userimage/gzurowski-89607-pp-wojtek-avatar.png[User
+icon: gzurowski,title="gzurowski"]]
+https://cwiki.apache.org/confluence/display/CAMEL/2017/10/11/Apache+Camel+2.20.0+Released[Apache
+Camel 2.20.0 Released]
+
+https://cwiki.apache.org/confluence/display/~gzurowski[Gregor Zurowski]
+posted on Oct 11, 2017
+
+The Camel community announces the immediate availability of the new
+minor release Camel 2.20.0. This release contains over 550 fixes and
+improvements. An overview of the changes is
+available link:camel-2200-release.html[here].
+
+The artifacts are published and ready for you
+to https://cwiki.apache.org/confluence/display/CAMEL/Download[download] either
+from the Apache mirrors or from the Central Maven repository. For more
+details please take a look at
+the https://issues.apache.org/jira/secure/ReleaseNote.jspa?version=12340219&styleName=&projectId=12311211[release
+notes].
+
+Many thanks to all who made this release possible.
+
+On behalf of the Camel PMC, +
+Gregor Zurowski
+
+link:/confluence/pages/editblogpost.action?pageId=74683019[Edit]
+
+
+https://cwiki.apache.org/confluence/display/~gzurowski[image:news.userimage/gzurowski-89607-pp-wojtek-avatar.png[User
+icon: gzurowski,title="gzurowski"]]
+https://cwiki.apache.org/confluence/display/CAMEL/2017/09/25/Apache+Camel+2.18.5+Released[Apache
+Camel 2.18.5 Released]
+
+https://cwiki.apache.org/confluence/display/~gzurowski[Gregor Zurowski]
+posted on Sep 25, 2017
+
+The Camel community announces the immediate availability of the new
+patch release Camel 2.18.5. This is the last planned patch release for
+the Camel 2.18.x branch that contains 51 fixes applied in the past few
+weeks by the community.
+
+The artifacts are published and ready for you
+to http://camel.apache.org/download.html[download] either from the
+Apache mirrors or from the Central Maven repository. For more details
+please take a look at
+the https://issues.apache.org/jira/secure/ReleaseNote.jspa?version=12340599&projectId=12311211[release
+notes].
+
+Many thanks to all who made this release possible.
+
+On behalf of the Camel PMC,
+
+Gregor Zurowski
+
+link:/confluence/pages/editblogpost.action?pageId=73640036[Edit]
+
+
+https://cwiki.apache.org/confluence/display/~gzurowski[image:news.userimage/gzurowski-89607-pp-wojtek-avatar.png[User
+icon: gzurowski,title="gzurowski"]]
+https://cwiki.apache.org/confluence/display/CAMEL/2017/09/14/Apache+Camel+2.19.3+Released[Apache
+Camel 2.19.3 Released]
+
+https://cwiki.apache.org/confluence/display/~gzurowski[Gregor Zurowski]
+posted on Sep 14, 2017
+
+The Camel community announces the immediate availability of the new
+patch release Camel 2.19.3. This release contains 40 fixes applied in
+the past few weeks by the community on the Camel 2.19.x maintenance
+branch.
+
+The artifacts are published and ready for you
+to http://camel.apache.org/download.html[download] either from the
+Apache mirrors or from the Central Maven repository. For more details
+please take a look at
+the https://issues.apache.org/jira/secure/ReleaseNote.jspa?version=12341135&projectId=12311211[release
+notes].
+
+Many thanks to all who made this release possible.
+
+On behalf of the Camel PMC, +
+Gregor Zurowski
+
+link:/confluence/pages/editblogpost.action?pageId=73638388[Edit]
+
+
+https://cwiki.apache.org/confluence/display/~gzurowski[image:news.userimage/gzurowski-89607-pp-wojtek-avatar.png[User
+icon: gzurowski,title="gzurowski"]]
+https://cwiki.apache.org/confluence/display/CAMEL/2017/08/01/Apache+Camel+2.19.2+Released[Apache
+Camel 2.19.2 Released]
+
+https://cwiki.apache.org/confluence/display/~gzurowski[Gregor Zurowski]
+posted on Aug 01, 2017
+
+The Camel community announces the immediate availability of the new
+patch release Camel 2.19.2. This release contains 41 fixes applied in
+the past few weeks by the community on the Camel 2.19.x maintenance
+branch.
+
+The artifacts are published and ready for you
+to http://camel.apache.org/download.html[download] either from the
+Apache mirrors or from the Central Maven repository. For more details
+please take a look at
+the https://issues.apache.org/jira/secure/ReleaseNote.jspa?version=12340945&projectId=12311211[release
+notes].
+
+Many thanks to all who made this release possible.
+
+On behalf of the Camel PMC, +
+Gregor Zurowski
+
+link:/confluence/pages/editblogpost.action?pageId=73631882[Edit]
+
+
+https://cwiki.apache.org/confluence/display/~davsclaus[image:news.userimage/user-avatar[User
+icon: davsclaus,title="davsclaus"]]
+https://cwiki.apache.org/confluence/display/CAMEL/2017/07/11/Official+Apache+Camel+chat+room+on+Gitter[Official
+Apache Camel chat room on Gitter]
+
+https://cwiki.apache.org/confluence/display/~davsclaus[Claus Ibsen]
+posted on Jul 11, 2017
+
+The Camel PMC recently created an
+https://gitter.im/apache/apache-camel[apache-camel chat room] on the
+Gitter instant messaging platform.
+
+Gitter is popular among developers and many open source projects have a
+room there, so it's only natural that we also have a room there for
+Apache Camel.
+
+If you are unfamiliar with Gitter you can learn about it from
+Wikipedia: https://en.wikipedia.org/wiki/Gitter
+
+The link to the Apache Camel chat room
+is: https://gitter.im/apache/apache-camel
+
+On behalf of the Camel PMC, +
+Claus Ibsen
+
+link:/confluence/pages/editblogpost.action?pageId=71764738[Edit]
+
+
+https://cwiki.apache.org/confluence/display/~davsclaus[image:news.userimage/user-avatar[User
+icon: davsclaus,title="davsclaus"]]
+https://cwiki.apache.org/confluence/display/CAMEL/2017/06/17/New+Camel+committers[New
+Camel committers]
+
+https://cwiki.apache.org/confluence/display/~davsclaus[Claus Ibsen]
+posted on Jun 17, 2017
+
+New Camel committers
+
+A couple of week ago the Camel PMC voted in three new contributors to
+become committers:
+
+- Onder Sezgin +
+- Quinn Stevenson +
+- Tomohisa Igarashi
+
+On behalf of the Camel PMC, welcome aboard Onder, Quinn, and Tomo and
+keep up the great work! +
+Claus Ibsen
+
+link:/confluence/pages/editblogpost.action?pageId=71011583[Edit]
+
+
+https://cwiki.apache.org/confluence/display/~gzurowski[image:news.userimage/gzurowski-89607-pp-wojtek-avatar.png[User
+icon: gzurowski,title="gzurowski"]]
+https://cwiki.apache.org/confluence/display/CAMEL/2017/06/15/Apache+Camel+2.19.1+Released[Apache
+Camel 2.19.1 Released]
+
+https://cwiki.apache.org/confluence/display/~gzurowski[Gregor Zurowski]
+posted on Jun 15, 2017
+
+The Camel community announces the immediate availability of the new
+patch release Camel 2.19.1. This release contains 57 fixes applied in
+the past few weeks by the community on the Camel 2.19.x maintenance
+branch.
+
+The artifacts are published and ready for you to
+http://camel.apache.org/download.html[download] either from the Apache
+mirrors or from the Central Maven repository. For more details please
+take a look at the
+https://issues.apache.org/jira/secure/ReleaseNote.jspa?version=12340460&projectId=12311211[release
+notes].
+
+Many thanks to all who made this release possible.
+
+On behalf of the Camel PMC, +
+Gregor Zurowski
+
+link:/confluence/pages/editblogpost.action?pageId=71011302[Edit]
+
+
+https://cwiki.apache.org/confluence/display/~gzurowski[image:news.userimage/gzurowski-89607-pp-wojtek-avatar.png[User
+icon: gzurowski,title="gzurowski"]]
+https://cwiki.apache.org/confluence/display/CAMEL/2017/05/25/Apache+Camel+2.18.4+Released[Apache
+Camel 2.18.4 Released]
+
+https://cwiki.apache.org/confluence/display/~gzurowski[Gregor Zurowski]
+posted on May 25, 2017
+
+The Camel community announces the immediate availability of the new
+patch release Camel 2.18.4. This release contains 44 fixes applied in
+the past few weeks by the community on the Camel 2.18.x maintenance
+branch.
+
+The artifacts are published and ready for you
+to http://camel.apache.org/download.html[download] either from the
+Apache mirrors or from the Central Maven repository. For more details
+please take a look at
+the https://issues.apache.org/jira/secure/ReleaseNote.jspa?version=12339774&projectId=12311211[release
+notes].
+
+Many thanks to all who made this release possible.
+
+On behalf of the Camel PMC,
+
+Gregor Zurowski
+
+link:/confluence/pages/editblogpost.action?pageId=70256722[Edit]
+
+
+https://cwiki.apache.org/confluence/display/~zregvart[image:news.userimage/user-avatar[User
+icon: zregvart,title="zregvart"]]
+https://cwiki.apache.org/confluence/display/CAMEL/2017/05/22/New+Apache+Camel+logo+vote+results+are+in[New
+Apache Camel logo vote results are in]
+
+https://cwiki.apache.org/confluence/display/~zregvart[Zoran Regvart]
+posted on May 22, 2017
+
+The Apache Camel community has made a
+https://camel.apache.org/2017/02/28/new-apache-camel-logo-open-for-proposals.html[call
+for a new logo] and subsequently
+https://camel.apache.org/2017/05/03/new-apache-camel-logo-voting-is-now-open.html[voted
+on the new logo design]. And the results are now in^*^!
+
+There have been 245 votes cast, out of which only 1 will be discarded
+(vote cast for 4 design proposals) which constitutes 0,4% of the total
+votes.
+
+Out of the 244 remaining valid votes:
+
+1.  Design by James Lei submitted
+athttps://issues.apache.org/jira/secure/attachment/12855173/apachecamel.pnghttps://issues.apache.org/jira/browse/CAMEL-10543
+received *52 (21.31%)* votes
+2.  Design by Bharadwaj Nakka submitted at
+https://issues.apache.org/jira/secure/attachment/12856742/new_log_camel.jpghttps://issues.apache.org/jira/browse/CAMEL-10543
+received *14 (5.74%)* votes
+3.  Design by Merkushev Kirill submitted at
+https://github.com/apache/camel/pull/1369 received *59 (24.18%)* votes
+4.  Design by Zoran Regvart (1) submitted at
+https://github.com/apache/camel/pull/1486 received *37 (15.16%)* votes
+5.  Design by Zoran Regvart (2) submitted
+athttps://github.com/apache/camel/pull/1494 received *135 (55.33%)*
+votes
+6.  Design by Filip Majewski submitted at
+https://github.com/apache/camel/pull/1551 received *72 (29.50%)* votes
+7.  Design by David Klassen submitted at
+https://github.com/apache/camel/pull/1556 received *121 (49.59%)* votes
+8.  Design by Brad Parks (1) submitted at
+https://github.com/apache/camel/pull/1573 received *57 (23.36%)* votes
+9.  Design by Brad Parks (2) submitted
+athttps://github.com/apache/camel/pull/1575 received *27 (11.07%)* votes
+
+The Apache Camel community would like to *thank everyone for
+participating* either by submitting their logo design proposal,
+commenting and collaborating with the authors or casting the vote.
+
+With this feedback from the community the Camel Project Management
+Committee (PMC) will announce the new official Apache Camel Logo, stay
+tuned for that!
+
+On behalf of the Apache Camel community,
+
+Zoran
+
+~*Errm, well they were in a week ago, but I'm late to write this
+announcement, posts to the mailing lists were more prompt~
+
+link:/confluence/pages/editblogpost.action?pageId=70256213[Edit]
+
+
+https://cwiki.apache.org/confluence/display/~gzurowski[image:news.userimage/gzurowski-89607-pp-wojtek-avatar.png[User
+icon: gzurowski,title="gzurowski"]]
+https://cwiki.apache.org/confluence/display/CAMEL/2017/05/18/Apache+Camel+2.17.7+Released[Apache
+Camel 2.17.7 Released]
+
+https://cwiki.apache.org/confluence/display/~gzurowski[Gregor Zurowski]
+posted on May 18, 2017
+
+The Camel community announces the immediate availability of the new
+Camel 2.17.7 patch release. This release contains 15 fixes and is the
+last planned release for the 2.17.x branch.
+
+The artifacts are published and ready for you
+to http://camel.apache.org/download.html[download] either from the
+Apache mirrors or from the Central Maven repository. For more details
+please take a look at
+the https://issues.apache.org/jira/secure/ReleaseNote.jspa?version=12339843&projectId=12311211[release
+notes].
+
+Many thanks to all who made this release possible.
+
+On behalf of the Camel PMC, +
+Gregor Zurowski
+
+link:/confluence/pages/editblogpost.action?pageId=70255887[Edit]
+
+
+https://cwiki.apache.org/confluence/display/~gzurowski[image:news.userimage/gzurowski-89607-pp-wojtek-avatar.png[User
+icon: gzurowski,title="gzurowski"]]
+https://cwiki.apache.org/confluence/display/CAMEL/2017/05/05/Apache+Camel+2.19.0+Released[Apache
+Camel 2.19.0 Released]
+
+https://cwiki.apache.org/confluence/display/~gzurowski[Gregor Zurowski]
+posted on May 05, 2017
+
+The Camel community announces the immediate availability of the new
+minor release Camel 2.19.0. This release contains over 670 fixes and
+improvements including the update to Spring Boot 1.5, the new Camel
+connector component and link:camel-2190-release.html[many more].
+
+The artifacts are published and ready for you
+to https://cwiki.apache.org/confluence/display/CAMEL/Download[download] either
+from the Apache mirrors or from the Central Maven repository. For more
+details please take a look at
+the https://issues.apache.org/jira/secure/ReleaseNote.jspa?version=12337871&projectId=12311211[release
+notes].
+
+Many thanks to all who made this release possible.
+
+On behalf of the Camel PMC, +
+Gregor Zurowski
+
+link:/confluence/pages/editblogpost.action?pageId=69409636[Edit]
+
+
+https://cwiki.apache.org/confluence/display/~davsclaus[image:news.userimage/user-avatar[User
+icon: davsclaus,title="davsclaus"]]
+https://cwiki.apache.org/confluence/display/CAMEL/2017/05/03/New+Apache+Camel+Logo+-+voting+is+now+open[New
+Apache Camel Logo - voting is now open]
+
+https://cwiki.apache.org/confluence/display/~davsclaus[Claus Ibsen]
+posted on May 03, 2017
+
+The Camel community had a call for the design of a new logo[1] and we +
+have received nine design proposals in chronological order: +
+ +
+1. Design by James Lei submitted at +
+https://issues.apache.org/jira/secure/attachment/12855173/apachecamel.png +
+https://issues.apache.org/jira/browse/CAMEL-10543 +
+ +
+2. Design by Bharadwaj Nakka submitted at +
+https://issues.apache.org/jira/secure/attachment/12856742/new_log_camel.jpg +
+https://issues.apache.org/jira/browse/CAMEL-10543 +
+ +
+3. Design by Merkushev Kirill submitted at +
+https://github.com/apache/camel/pull/1369 +
+ +
+4. Design by Zoran Regvart (1) submitted at +
+https://github.com/apache/camel/pull/1486 +
+ +
+5. Design by Zoran Regvart (2) submitted at +
+https://github.com/apache/camel/pull/1494 +
+ +
+6. Design by Filip Majewski submitted at +
+https://github.com/apache/camel/pull/1551 +
+ +
+7. Design by David Klassen submitted at +
+https://github.com/apache/camel/pull/1556 +
+ +
+8. Design by Brad Parks (1) submitted at +
+https://github.com/apache/camel/pull/1573 +
+ +
+9. Design by Brad Parks (2) submitted at +
+https://github.com/apache/camel/pull/1575 +
+ +
+The design proposals are now up for community vote which will give +
+the Camel Project Management Committee (PMC) direction as to what +
+design the community prefers. After that the Camel PMC will pick one +
+of the proposals as the new Camel logo. +
+ +
+The voting period is open from 1.5.2017 00:00 UTC and close two weeks +
+later on 14.5.2017. 23:59 UTC, and you will be able to pick up to +
+three designs. +
+ +
+Vote on your favorite 3 logos at the following URL: +
+ +
+https://goo.gl/forms/A3pIzPyWzU8rlMJ13 +
+ +
+We would like to thank everyone for participating either by submitting +
+their logo design proposal, commenting and collaborating with the +
+authors or casting the vote. +
+ +
+on behalf of the Camel community, +
+ +
+Zoran and Claus +
+ +
+[1] https://camel.apache.org/2017/02/28/new-apache-camel-logo-open-for-proposals.html
+
+link:/confluence/pages/editblogpost.action?pageId=69408972[Edit]
+
+
+https://cwiki.apache.org/confluence/display/~davsclaus[image:news.userimage/user-avatar[User
+icon: davsclaus,title="davsclaus"]]
+https://cwiki.apache.org/confluence/display/CAMEL/2017/03/19/Apache+Camel+first+commit+was+10+years+ago+on+March+19th[Apache
+Camel first commit was 10 years ago on March 19th]
+
+https://cwiki.apache.org/confluence/display/~davsclaus[Claus Ibsen]
+posted on Mar 19, 2017
+
+Today marks a very special day as it was exactly 10 years ago
+the http://svn.apache.org/viewvc/activemq/camel/trunk/?pathrev=519901[first
+commit] of Apache Camel was done by its creator James Strachan.
+
+....
+ 
+....
+
+....
+Added Mon Mar 19 10:54:57 2007 UTC (10 years ago) by jstrachan
+....
+
+....
+Initial checkin of Camel routing library
+....
+
+The project was created as a sub-project to Apache ActiveMQ and back
+then github did not exists, so its using good old subversion. +
+ +
+In summer 2007 the first release of Apache Camel was published, which
+happened on July 2nd so lets wait until the summer to celebrate it's 10
+years birthday. +
+
+link:/confluence/pages/editblogpost.action?pageId=68719621[Edit]
+
+
+https://cwiki.apache.org/confluence/display/~gzurowski[image:news.userimage/gzurowski-89607-pp-wojtek-avatar.png[User
+icon: gzurowski,title="gzurowski"]]
+https://cwiki.apache.org/confluence/display/CAMEL/2017/03/12/Apache+Camel+2.18.3+Released[Apache
+Camel 2.18.3 Released]
+
+https://cwiki.apache.org/confluence/display/~gzurowski[Gregor Zurowski]
+posted on Mar 12, 2017
+
+The Camel community announces the immediate availability of the new
+patch release Camel 2.18.3. This release contains 38 fixes applied in
+the past few weeks by the community on the Camel 2.18.x maintenance
+branch.
+
+The artifacts are published and ready for you
+to https://cwiki.apache.org/confluence/display/CAMEL/Download[download] either
+from the Apache mirrors or from the Central Maven repository. For more
+details please take a look at
+the https://issues.apache.org/jira/secure/ReleaseNote.jspa?version=12339161&projectId=12311211[release
+notes].
+
+Many thanks to all who made this release possible.
+
+On behalf of the Camel PMC,
+
+Gregor Zurowski
+
+link:/confluence/pages/editblogpost.action?pageId=68718760[Edit]
+
+
+https://cwiki.apache.org/confluence/display/~gzurowski[image:news.userimage/gzurowski-89607-pp-wojtek-avatar.png[User
+icon: gzurowski,title="gzurowski"]]
+https://cwiki.apache.org/confluence/display/CAMEL/2017/03/09/Apache+Camel+2.17.6+Released[Apache
+Camel 2.17.6 Released]
+
+https://cwiki.apache.org/confluence/display/~gzurowski[Gregor Zurowski]
+posted on Mar 09, 2017
+
+The Camel community announces the immediate availability of the new
+patch release Camel 2.17.6. This release contains 17 fixes applied in
+the past few weeks by the community on the Camel 2.17.x maintenance
+branch.
+
+The artifacts are published and ready for you
+to link:download.html[download] either from the Apache mirrors or from
+the Central Maven repository. For more details please take a look at
+the https://issues.apache.org/jira/secure/ReleaseNote.jspa?version=12339170&projectId=12311211[release
+notes].
+
+Many thanks to all who made this release possible.
+
+On behalf of the Camel PMC,
+
+Gregor Zurowski
+
+link:/confluence/pages/editblogpost.action?pageId=68718404[Edit]
+
+
+https://cwiki.apache.org/confluence/display/~davsclaus[image:news.userimage/user-avatar[User
+icon: davsclaus,title="davsclaus"]]
+https://cwiki.apache.org/confluence/display/CAMEL/2017/02/28/New+Apache+Camel+Logo+-+Open+for+proposals[New
+Apache Camel Logo - Open for proposals]
+
+https://cwiki.apache.org/confluence/display/~davsclaus[Claus Ibsen]
+posted on Feb 28, 2017
+
+The Apache Camel logo is a bit out dated so we have discussed in the
+Camel PMC and community to come up with a new one. +
+We encourage anyone to participate by submitting a logo proposal and/or
+share thoughts
+
+The logo can be submitted by either:
+
+* a PR on GitHub (preferred)
+* file attachment to JIRA
+ticket: https://issues.apache.org/jira/browse/CAMEL-10543
+
+And each logo should be:
+
+* images should be added to docs/img
+* each PR should contains a single logo
+
+We are looking for a new logo that has two parts
+
+* graphical logo
+* name: Apache Camel
+
+So we can use the logo without the word Apache Camel, but also as a
+combination of the two of them, eg as logo on the Camel front page. +
+Also if the logo can be vector based it would be a benefit, so it
+can scale up and down nicely.
+
+You can find details here how to contribute to the project and how to
+work on the source code. +
+Such as how to do a github PR: http://camel.apache.org/contributing
+
+*The period is open until Monday 27th March 2017*
+
+After the period the submitted logos will be in a public vote, and the
+outcome of that vote will influence the decision on which logo to use as
+the official Apache Camel logo.
+
+At this time of writing there are two proposals submitted at PRs:
+
+https://github.com/apache/camel/pull/1369 +
+https://github.com/apache/camel/pull/1494
+
+More information and questions can be asked at the JIRA ticket: +
+https://issues.apache.org/jira/browse/CAMEL-10543
+
+link:/confluence/pages/editblogpost.action?pageId=68716917[Edit]
+
+
+https://cwiki.apache.org/confluence/display/~davsclaus[image:news.userimage/user-avatar[User
+icon: davsclaus,title="davsclaus"]]
+https://cwiki.apache.org/confluence/display/CAMEL/2017/02/18/Welcome+Zoran+Regvart+as+newest+Camel+committer[Welcome
+Zoran Regvart as newest Camel committer]
+
+https://cwiki.apache.org/confluence/display/~davsclaus[Claus Ibsen]
+posted on Feb 18, 2017
+
+A weeks ago the Camel PMC voted another one of the very active and
+talented contributors to become a committer.
+
+Zoran Regvart was actively involved with Apache Camel for about 8 month
+contributing code and helping other users, especially for the Camel
+Salesforce component.
+
+Likewise he helped upgrade Jetty to support Jetty 9.3 which is not
+trivial work because Jetty keeps breaking their APIs and we have many
+components that rely on Jetty so its often a pain/more work to
+upgrade/maintain.
+
+On behalf of the Camel PMC, welcome aboard Zoran and keep up the great
+work! +
+Claus Ibsen
+
+link:/confluence/pages/editblogpost.action?pageId=68715329[Edit]

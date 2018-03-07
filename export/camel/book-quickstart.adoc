@@ -1,0 +1,297 @@
+[[ConfluenceContent]]
+[[chapter-quickstart]]
+[[BookQuickstart-Quickstart]]
+Quickstart
+----------
+
+To start using Apache Camel quickly, you can read through some simple
+examples in this chapter. For readers who would like a more thorough
+introduction, please skip ahead to Chapter 3.
+
+[[BookQuickstart-WalkthroughanExampleCode]]
+Walk through an Example Code
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This mini-guide takes you through the source code of a
+https://svn.apache.org/repos/asf/camel/trunk/examples/camel-example-jms-file/src/main/java/org/apache/camel/example/jmstofile/CamelJmsToFileExample.java[simple
+example].
+
+Camel can be configured either by using link:spring.html[Spring] or
+directly in Java - which
+https://svn.apache.org/repos/asf/camel/trunk/examples/camel-example-jms-file/src/main/java/org/apache/camel/example/jmstofile/CamelJmsToFileExample.java[this
+example does].
+
+This example is available in the `examples\camel-example-jms-file`
+directory of the link:download.html[Camel distribution].
+
+We start with creating a link:camelcontext.html[CamelContext] - which is
+a container for link:components.html[Components],
+link:routes.html[Routes]
+etc:\{snippet:id=e1|lang=java|url=camel/trunk/examples/camel-example-jms-file/src/main/java/org/apache/camel/example/jmstofile/CamelJmsToFileExample.java}There
+is more than one way of adding a Component to the CamelContext. You can
+add components implicitly - when we set up the routing - as we do here
+for the
+link:file2.html[FileComponent]:\{snippet:id=e3|lang=java|url=camel/trunk/examples/camel-example-jms-file/src/main/java/org/apache/camel/example/jmstofile/CamelJmsToFileExample.java}or
+explicitly - as we do here when we add the JMS
+Component:\{snippet:id=e2|lang=java|url=camel/trunk/examples/camel-example-jms-file/src/main/java/org/apache/camel/example/jmstofile/CamelJmsToFileExample.java}The
+above works with any JMS provider. If we know we are using
+link:activemq.html[ActiveMQ] we can use an even simpler form using the
+http://activemq.apache.org/maven/5.5.0/activemq-camel/apidocs/org/apache/activemq/camel/component/ActiveMQComponent.html#activeMQComponent%28java.lang.String%29[`activeMQComponent()`
+method] while specifying the
+http://activemq.apache.org/configuring-transports.html[brokerURL] used
+to connect to ActiveMQ
+
+In normal use, an external system would be firing messages or events
+directly into Camel through one if its link:components.html[Components]
+but we are going to use the
+http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/ProducerTemplate.html[ProducerTemplate]
+which is a really easy way for testing your
+configuration:\{snippet:id=e4|lang=java|url=camel/trunk/examples/camel-example-jms-file/src/main/java/org/apache/camel/example/jmstofile/CamelJmsToFileExample.java}Next
+you *must* start the camel context. If you are using
+link:spring.html[Spring] to configure the camel context this is
+automatically done for you; though if you are using a pure Java approach
+then you just need to call the start() method
+
+camelContext.start();
+
+This will start all of the configured routing rules.
+
+So after starting the link:camelcontext.html[CamelContext], we can fire
+some objects into
+camel:\{snippet:id=e5|lang=java|url=camel/trunk/examples/camel-example-jms-file/src/main/java/org/apache/camel/example/jmstofile/CamelJmsToFileExample.java}
+
+[[BookQuickstart-Whathappens?]]
+What happens?
+~~~~~~~~~~~~~
+
+From the
+http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/ProducerTemplate.html[ProducerTemplate]
+- we send objects (in this case text) into the
+link:camelcontext.html[CamelContext] to the Component
+_test-jms:queue:test.queue_. These text objects will be
+link:type-converter.html[converted automatically] into JMS Messages and
+posted to a JMS Queue named _test.queue_. When we set up the
+link:routes.html[Route], we configured the
+link:file2.html[FileComponent] to listen off the _test.queue_.
+
+The File link:file2.html[FileComponent] will take messages off the
+Queue, and save them to a directory named _test_. Every message will be
+saved in a file that corresponds to its destination and message id.
+
+Finally, we configured our own listener in the link:routes.html[Route] -
+to take notifications from the link:file2.html[FileComponent] and print
+them out as text.
+
+*That's it!*
+
+If you have the time then use 5 more minutes to
+link:walk-through-another-example.html[Walk through another example]
+that demonstrates the Spring DSL (XML based) routing.
+
+[[BookQuickstart-Walkthroughanotherexample]]
+Walk through another example
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+[[BookQuickstart-Introduction]]
+Introduction
+^^^^^^^^^^^^
+
+Continuing the walk from our first
+link:walk-through-an-example.html[example], we take a closer look at the
+routing and explain a few pointers - so you won't walk into a bear trap,
+but can enjoy an after-hours walk to the local pub for a large beer
+image:https://cwiki.apache.org/confluence/s/en_GB/5997/6f42626d00e36f53fe51440403446ca61552e2a2.1/_/images/icons/emoticons/wink.png[(wink)]
+
+First we take a moment to look at the
+link:enterprise-integration-patterns.html[Enterprise Integration
+Patterns] - the base pattern catalog for integration scenarios. In
+particular we focus on link:pipes-and-filters.html[Pipes and filters] -
+a central pattern. This is used to route messages through a sequence of
+processing steps, each performing a specific function - much like the
+Java Servlet Filters.
+
+[[BookQuickstart-Pipesandfilters]]
+Pipes and filters
+^^^^^^^^^^^^^^^^^
+
+In this sample we want to process a message in a sequence of steps where
+each steps can perform their specific function. In our example we have a
+link:jms.html[JMS] queue for receiving new orders. When an order is
+received we need to process it in several steps:
+
+* validate
+* register
+* send confirm email
+
+This can be created in a route like this:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<route>
+   <from uri="jms:queue:order"/>
+   <pipeline>
+      <bean ref="validateOrder"/>
+      <bean ref="registerOrder"/>
+      <bean ref="sendConfirmEmail"/>
+   </pipeline>
+</route>
+----
+
+**Pipeline is default**
+
+In the route above we specify `pipeline` but it can be omitted as its
+default, so you can write the route as:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<route>
+   <from uri="jms:queue:order"/>
+   <bean ref="validateOrder"/>
+   <bean ref="registerOrder"/>
+   <bean ref="sendConfirmEmail"/>
+</route>
+----
+
+This is commonly used not to state the pipeline.
+
+An example where the pipeline needs to be used, is when using a
+multicast and "one" of the endpoints to send to (as a logical group) is
+a pipeline of other endpoints. For example.
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<route>
+   <from uri="jms:queue:order"/>
+   <multicast>
+     <to uri="log:org.company.log.Category"/>
+     <pipeline>
+       <bean ref="validateOrder"/>
+       <bean ref="registerOrder"/>
+       <bean ref="sendConfirmEmail"/>
+     </pipeline>
+   </multicast>
+</route>
+----
+
+The above sends the order (from `jms:queue:order`) to two locations at
+the same time, our log component, and to the "pipeline" of beans which
+goes one to the other. If you consider the opposite, sans the
+`<pipeline>`
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<route>
+   <from uri="jms:queue:order"/>
+   <multicast>
+     <to uri="log:org.company.log.Category"/>
+     <bean ref="validateOrder"/>
+     <bean ref="registerOrder"/>
+     <bean ref="sendConfirmEmail"/>
+   </multicast>
+</route>
+----
+
+you would see that multicast would not "flow" the message from one bean
+to the next, but rather send the order to all 4 endpoints (1x log, 3x
+bean) in parallel, which is not (for this example) what we want. We need
+the message to flow to the validateOrder, then to the registerOrder,
+then the sendConfirmEmail so adding the pipeline, provides this
+facility.
+
+Where as the `bean ref` is a reference for a spring bean id, so we
+define our beans using regular Spring XML as:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+   <bean id="validateOrder" class="com.mycompany.MyOrderValidator"/>
+----
+
+Our validator bean is a plain POJO that has no dependencies to Camel
+what so ever. So you can implement this POJO as you like. Camel uses
+rather intelligent link:bean-binding.html[Bean Binding] to invoke your
+POJO with the payload of the received message. In this example we will
+*not* dig into this how this happens. You should return to this topic
+later when you got some hands on experience with Camel how it can easily
+bind routing using your existing POJO beans.
+
+So what happens in the route above. Well when an order is received from
+the link:jms.html[JMS] queue the message is routed like
+link:pipes-and-filters.html[Pipes and filters]: +
+1. payload from the link:jms.html[JMS] is sent as input to the
+validateOrder bean +
+2. the output from validateOrder bean is sent as input to the
+registerOrder bean +
+3. the output from registerOrder bean is sent as input to the
+sendConfirmEmail bean
+
+[[BookQuickstart-UsingCamelComponents]]
+Using Camel Components
+^^^^^^^^^^^^^^^^^^^^^^
+
+In the route lets imagine that the registration of the order has to be
+done by sending data to a TCP socket that could be a big mainframe. As
+Camel has many link:components.html[Components] we will use the
+camel-mina component that supports link:mina.html[TCP] connectivity. So
+we change the route to:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<route>
+   <from uri="jms:queue:order"/>
+   <bean ref="validateOrder"/>
+   <to uri="mina:tcp://mainframeip:4444?textline=true"/>
+   <bean ref="sendConfirmEmail"/>
+</route>
+----
+
+What we now have in the route is a `to` type that can be used as a
+direct replacement for the bean type. The steps is now: +
+1. payload from the link:jms.html[JMS] is sent as input to the
+validateOrder bean +
+2. the output from validateOrder bean is sent as text to the mainframe
+using TCP +
+3. the output from mainframe is sent back as input to the
+sendConfirmEmai bean
+
+What to notice here is that the `to` is not the end of the route (the
+world
+image:https://cwiki.apache.org/confluence/s/en_GB/5997/6f42626d00e36f53fe51440403446ca61552e2a2.1/_/images/icons/emoticons/wink.png[(wink)])
+in this example it's used in the middle of the
+link:pipes-and-filters.html[Pipes and filters]. In fact we can change
+the `bean` types to `to` as well:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<route>
+   <from uri="jms:queue:order"/>
+   <to uri="bean:validateOrder"/>
+   <to uri="mina:tcp://mainframeip:4444?textline=true"/>
+   <to uri="bean:sendConfirmEmail"/>
+</route>
+----
+
+As the `to` is a generic type we must state in the uri scheme which
+component it is. So we must write *bean:* for the link:bean.html[Bean]
+component that we are using.
+
+[[BookQuickstart-Conclusion]]
+Conclusion
+^^^^^^^^^^
+
+This example was provided to demonstrate the Spring DSL (XML based) as
+opposed to the pure Java DSL from the
+link:walk-through-an-example.html[first example]. And as well to point
+about that the `to` doesn't have to be the last node in a route graph.
+
+This example is also based on the *in-only* message exchange pattern.
+What you must understand as well is the *in-out* message exchange
+pattern, where the caller expects a response. We will look into this in
+another example.
+
+[[BookQuickstart-Seealso]]
+See also
+^^^^^^^^
+
+* link:examples.html[Examples]
+* link:tutorials.html[Tutorials]
+* link:user-guide.html[User Guide]

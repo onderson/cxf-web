@@ -1,0 +1,10 @@
+[[ConfluenceContent]]
+[[Whatplatformsaresupported-Whatplatformsaresupported?]]
+What platforms are supported?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Any platform supporting JDK 6.
+
+We regularly test Camel on Linux, Windows and OS X. If you have a
+platform that is not listed contact one of the companies that provide
+link:support.html[commercial support].

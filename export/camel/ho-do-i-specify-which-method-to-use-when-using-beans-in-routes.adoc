@@ -1,0 +1,11 @@
+[[ConfluenceContent]]
+[[HodoIspecifywhichmethodtousewhenusingbeansinroutes?-HodoIspecifywhichmethodtousewhenusingbeansinroutes?]]
+Ho do I specify which method to use when using beans in routes?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+See link:bean.html[Bean], link:bean-integration.html[Bean Integration]
+and link:bean-binding.html[Bean Binding]
+
+However if you have overloaded methods you need to specify which of
+those overloaded method you want to use by specifying parameter type
+qualifiers. See more details at link:bean-binding.html[Bean Binding]

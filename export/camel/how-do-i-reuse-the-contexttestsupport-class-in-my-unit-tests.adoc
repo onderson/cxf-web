@@ -1,0 +1,46 @@
+[[ConfluenceContent]]
+[[HowdoIreusetheContextTestSupportclassinmyunittests-HowdoIreusetheContextTestSupportclassinmyunittests]]
+How do I reuse the ContextTestSupport class in my unit tests
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+You might want to look at the various link:testing.html[Testing]
+options, in particular link:camel-test.html[Camel Test] and
+link:spring-testing.html[Spring Testing] to see if those are better,
+more powerful options. We see ContextTestSupport as an older, less
+powerful option.
+
+There are a number of useful unit test cases and support classes you can
+reuse in your own unit test cases.
+
+If you use maven2 then here you go:
+
+ContextTestSupport :
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+       <dependency>
+           <groupId>org.apache.camel</groupId>
+           <artifactId>camel-core</artifactId>
+           <version>${camel-version}</version>
+           <type>test-jar</type>
+           <scope>test</scope>
+       </dependency>
+----
+
+SpringTestSupport:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+       <dependency>
+           <groupId>org.apache.camel</groupId>
+           <artifactId>camel-spring</artifactId>
+           <version>${camel-version}</version>
+           <type>test-jar</type>
+           <scope>test</scope>
+       </dependency>
+----
+
+if you don't use maven:
+
+http://repo1.maven.org/maven2/org/apache/camel/camel-core/1.2.0/camel-core-1.2.0-tests.jar
+http://repo1.maven.org/maven2/org/apache/camel/camel-spring/1.2.0/camel-spring-1.2.0-tests.jar

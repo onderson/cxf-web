@@ -1,0 +1,72 @@
+[[ConfluenceContent]]
+[[Upgradedependencyguide-HowtoupgradeaCameldependency]]
+How to upgrade a Camel dependency
+---------------------------------
+
+[[Upgradedependencyguide-1.OpenanJIRAissue]]
+1. Open an JIRA issue
+~~~~~~~~~~~~~~~~~~~~~
+
+Open an JIRA issue at https://issues.apache.org/jira/browse/CAMEL, if it
+does not already exist. +
+The issue type should be "Task". A sample can be found here:
+https://issues.apache.org/jira/browse/CAMEL-3471
+
+[[Upgradedependencyguide-2.Changetheparentpom]]
+2. Change the parent pom
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+All dependency versions are managed in the parent pom. Change the
+version number for the dependency you want to upgrade in this file.
+
+[[Upgradedependencyguide-3.Customizethesourcecode(ifnecessary)]]
+3. Customize the source code (if necessary)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If this upgrade is a major change (e.g. from Apache Mina 1.1.7 to
+2.0.2), it could require some source code and/or test customizations. Be
+careful with changes in the unit tests!
+
+[[Upgradedependencyguide-4.AskforanOSGI-fiedversion(ifnecessary)]]
+4. Ask for an OSGI-fied version (if necessary)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If this dependency is not available as an OSGI bundle, ask the Apache
+Servicemix guys for an OSGI-fied version of this dependency. You should
+do this by opening a JIRA issue at
+https://issues.apache.org/jira/browse/SMX4 +
+The issue type should be "Task". A sample can be found here:
+https://issues.apache.org/jira/browse/SMX4-699
+
+[[Upgradedependencyguide-5.Changetheplatform/karafpom(ifnecessary)]]
+5. Change the platform/karaf pom (if necessary)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If a new OSGI-fied version of this dependency is provided, update the
+platform/karaf pom with the new version.
+
+[[Upgradedependencyguide-6.Validatethefeatures.xml(ifnecessary)]]
+6. Validate the features.xml (if necessary)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If you change anything in the features.xml from platform/karaf you
+should run a validation test to ensure the generated features.xml file
+is correct. You can do this running the following maven goal from the
+platform directory.
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+mvn clean install -Pvalidate
+----
+
+[[Upgradedependencyguide-7.Runacompletebuild]]
+7. Run a complete build
+~~~~~~~~~~~~~~~~~~~~~~~
+
+To ensure you don't break anything with your upgrade, run a complete
+build from the Camel root directory:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+mvn clean install
+----

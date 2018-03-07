@@ -1,0 +1,119 @@
+[[ConfluenceContent]]
+[[Camel2.15.2Release-Camel2.15.2release]]
+Camel 2.15.2 release
+--------------------
+
+image:http://camel.apache.org/download.data/camel-box-v1.0-150x200.png[image]
+
+ 
+
+[[Camel2.15.2Release-NewandNoteworthy]]
+New and Noteworthy
+~~~~~~~~~~~~~~~~~~
+
+Welcome to the 2.15.2 release which is mainly a bug fix release with 82
+issues resolved..
+
+For more details see
+the https://issues.apache.org/jira/secure/ReleaseNote.jspa?version=12329743&styleName=&projectId=12311211[JIRA
+tickets]
+
+[[Camel2.15.2Release-KnownIssues]]
+Known Issues
+~~~~~~~~~~~~
+
+* See link:camel-2150-release.html[Camel 2.15.0 Release]
+
+[[Camel2.15.2Release-Importantchangestoconsiderwhenupgrading]]
+Important changes to consider when upgrading
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+* See link:camel-2150-release.html[Camel 2.15.0 Release]
+
+[[Camel2.15.2Release-Notice]]
+Notice
+~~~~~~
+
+* See link:camel-2150-release.html[Camel 2.15.0 Release]
+
+[[Camel2.15.2Release-GettingtheDistributions]]
+Getting the Distributions
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+[[Camel2.15.2Release-BinaryDistributions]]
+Binary Distributions
+^^^^^^^^^^^^^^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Description |Download Link |PGP Signature file of download
+|Windows Distribution
+|http://www.apache.org/dyn/closer.lua/camel/apache-camel/2.15.2/apache-camel-2.15.2.zip[apache-camel-2.15.2.zip]
+|http://www.apache.org/dist/camel/apache-camel/2.15.2/apache-camel-2.15.2.zip.asc[apache-camel-2.15.2.zip.asc]
+
+|Unix/Linux/Cygwin Distribution
+|http://www.apache.org/dyn/closer.lua/camel/apache-camel/2.15.2/apache-camel-2.15.2.tar.gz[apache-camel-2.15.2.tar.gz]
+|http://www.apache.org/dist/camel/apache-camel/2.15.2/apache-camel-2.15.2.tar.gz.asc[apache-camel-2.15.2.tar.gz.asc]
+|=======================================================================
+
+[Info]
+====
+ **The above URLs use redirection**
+
+The above URLs use the Apache Mirror system to redirect you to a
+suitable mirror for your download. Some users have experienced issues
+with some versions of browsers (e.g. some Safari browsers). If the
+download doesn't seem to work for you from the above URL then try using
+http://www.mozilla.com/en-US/firefox/[FireFox]
+
+====
+
+[[Camel2.15.2Release-SourceDistributions]]
+Source Distributions
+^^^^^^^^^^^^^^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Description |Download Link |PGP Signature file of download
+|Source (zip)
+|http://www.apache.org/dyn/closer.lua/camel/apache-camel/2.15.2/apache-camel-2.15.2-src.zip[apache-camel-2.15.2-src.zip]
+|http://www.apache.org/dist/camel/apache-camel/2.15.2/apache-camel-2.15.2-src.zip.asc[apache-camel-2.15.2-src.zip.asc]
+|=======================================================================
+
+[[Camel2.15.2Release-GettingtheBinariesusingMaven2]]
+Getting the Binaries using Maven 2
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To use this release in your maven project, the proper dependency
+configuration that you should use in
+your http://maven.apache.org/guides/introduction/introduction-to-the-pom.html[Maven
+POM] is:
+
+[source,brush:,xml;,gutter:,false;,theme:,Default]
+----
+<dependency>
+  <groupId>org.apache.camel</groupId>
+  <artifactId>camel-core</artifactId>
+  <version>2.15.2</version>
+</dependency>
+----
+
+[[Camel2.15.2Release-GitTagCheckout]]
+Git Tag Checkout
+^^^^^^^^^^^^^^^^
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+git clone https://git-wip-us.apache.org/repos/asf/camel.git
+cd camel
+git checkout camel-2.15.2
+----
+
+[[Camel2.15.2Release-Changelog]]
+Changelog
+~~~~~~~~~
+
+For a more detailed view of new features and bug fixes, see the:
+
+https://issues.apache.org/jira/secure/ReleaseNote.jspa?version=12329743&styleName=&projectId=12311211[release
+notes for 2.15.2]

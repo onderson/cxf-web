@@ -1,0 +1,121 @@
+[[ConfluenceContent]]
+[[Camel2.8.2Release-Camel2.8.2release]]
+Camel 2.8.2 release
+-------------------
+
+image:http://camel.apache.org/download.data/camel-box-v1.0-150x200.png[image]
+
+[[Camel2.8.2Release-NewandNoteworthy]]
+New and Noteworthy
+~~~~~~~~~~~~~~~~~~
+
+Welcome to the 2.8.2 release which is mainly a bug fix release with 105
+issues resolved.
+
+* link:soap.html[SOAP] now supports multiple parameters.
+* link:cxf.html[CXF] supports better with blueprint.
+* Fixed the bundle issue when you install the camel-cxf and
+camel-cxf-transport at the same time.
+
+For more details see the
+http://issues.apache.org/jira/secure/ReleaseNote.jspa?projectId=12311211&&version=12317866[JIRA
+tickets]
+
+[[Camel2.8.2Release-KnownIssues]]
+Known Issues
+~~~~~~~~~~~~
+
+* See link:camel-280-release.html[Camel 2.8.0 Release]
+
+[[Camel2.8.2Release-Importantchangestoconsiderwhenupgrading]]
+Important changes to consider when upgrading
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+* Upgraded to CXF 2.4.3
+* See link:camel-280-release.html[Camel 2.8.0 Release]
+
+[[Camel2.8.2Release-Notice]]
+Notice
+~~~~~~
+
+* See link:camel-280-release.html[Camel 2.8.0 Release]
+
+[[Camel2.8.2Release-GettingtheDistributions]]
+Getting the Distributions
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+[[Camel2.8.2Release-BinaryDistributions]]
+Binary Distributions
+^^^^^^^^^^^^^^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Description |Download Link |PGP Signature file of download
+|Windows Distribution
+|http://archive.apache.org/dist/camel/apache-camel/2.8.2/apache-camel-2.8.2.zip[apache-camel-2.8.2.zip]
+|http://archive.apache.org/dist/camel/apache-camel/2.8.2/apache-camel-2.8.2.zip.asc[apache-camel-2.8.2.zip.asc]
+
+|Unix/Linux/Cygwin Distribution
+|http://archive.apache.org/dist/camel/apache-camel/2.8.2/apache-camel-2.8.2.tar.gz[apache-camel-2.8.2.tar.gz]
+|http://archive.apache.org/dist/camel/apache-camel/2.8.2/apache-camel-2.8.2.tar.gz.asc[apache-camel-2.8.2.tar.gz.asc]
+|=======================================================================
+
+[Info]
+====
+ **The above URLs use redirection**
+
+The above URLs use the Apache Mirror system to redirect you to a
+suitable mirror for your download. Some users have experienced issues
+with some versions of browsers (e.g. some Safari browsers). If the
+download doesn't seem to work for you from the above URL then try using
+http://www.mozilla.com/en-US/firefox/[FireFox]
+
+====
+
+[[Camel2.8.2Release-SourceDistributions]]
+Source Distributions
+^^^^^^^^^^^^^^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Description |Download Link |PGP Signature file of download
+|Source (zip)
+|http://archive.apache.org/dist/camel/apache-camel/2.8.2/apache-camel-2.8.2-src.zip[apache-camel-2.8.2-src.zip]
+|http://archive.apache.org/dist/camel/apache-camel/2.8.2/apache-camel-2.8.0-src.zip.asc[apache-camel-2.8.2-src.zip.asc]
+|=======================================================================
+
+[[Camel2.8.2Release-GettingtheBinariesusingMaven2]]
+Getting the Binaries using Maven 2
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To use this release in your maven project, the proper dependency
+configuration that you should use in your
+http://maven.apache.org/guides/introduction/introduction-to-the-pom.html[Maven
+POM] is:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<dependency>
+  <groupId>org.apache.camel</groupId>
+  <artifactId>camel-core</artifactId>
+  <version>2.8.2</version>
+</dependency>
+----
+
+[[Camel2.8.2Release-SVNTagCheckout]]
+SVN Tag Checkout
+^^^^^^^^^^^^^^^^
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+svn co http://svn.apache.org/repos/asf/camel/tags/camel-2.8.2
+----
+
+[[Camel2.8.2Release-Changelog]]
+Changelog
+~~~~~~~~~
+
+For a more detailed view of new features and bug fixes, see the:
+
+* http://issues.apache.org/jira/secure/ReleaseNote.jspa?projectId=12311211&&version=12317866[release
+notes for 2.8.2]

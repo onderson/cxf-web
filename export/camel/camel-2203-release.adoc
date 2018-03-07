@@ -1,0 +1,145 @@
+[[ConfluenceContent]]
+[[Camel2.20.3Release-Camel2.20.3Release(currentlyinprogress)]]
+Camel 2.20.3 Release (currently in progress)
+--------------------------------------------
+
+image:http://camel.apache.org/images/camel-box-small.png[image]
+
+ 
+
+[[Camel2.20.3Release-NewandNoteworthy]]
+New and Noteworthy
+~~~~~~~~~~~~~~~~~~
+
+Welcome to the x.y.z release which approx XXX issues resolved (new
+features, improvements and bug fixes such as...)
+
+* highlighted issue fixed
+* highlighted issue fixed
+
+[[Camel2.20.3Release-New]]
+New link:enterprise-integration-patterns.html[Enterprise Integration
+Patterns]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+[[Camel2.20.3Release-New.1]]
+New link:components.html[Components]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+[[Camel2.20.3Release-NewDSL]]
+New DSL
+^^^^^^^
+
+[[Camel2.20.3Release-NewAnnotations]]
+New Annotations
+^^^^^^^^^^^^^^^
+
+[[Camel2.20.3Release-NewDataFormats]]
+New link:data-format.html[Data Formats]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+[[Camel2.20.3Release-New.2]]
+New link:languages.html[Languages]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+[[Camel2.20.3Release-New.3]]
+New link:examples.html[Examples]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+[[Camel2.20.3Release-New.4]]
+New link:tutorials.html[Tutorials]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+[[Camel2.20.3Release-APIbreaking]]
+API breaking
+~~~~~~~~~~~~
+
+[[Camel2.20.3Release-KnownIssues]]
+Known Issues
+~~~~~~~~~~~~
+
+[[Camel2.20.3Release-Importantchangestoconsiderwhenupgrading]]
+Important changes to consider when upgrading
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+[[Camel2.20.3Release-GettingtheDistributions]]
+Getting the Distributions
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+[[Camel2.20.3Release-BinaryDistributions]]
+Binary Distributions
+^^^^^^^^^^^^^^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Description |Download Link |PGP Signature file of download
+|Windows Distribution
+|http://www.apache.org/dyn/closer.cgi/camel/apache-camel/x.y.x/apache-camel-x.y.x.zip[apache-camel-x.y.x.zip]
+|http://www.apache.org/dist/camel/apache-camel/x.y.x/apache-camel-x.y.x.zip.asc[apache-camel-x.y.x.zip.asc]
+
+|Unix/Linux/Cygwin Distribution
+|http://www.apache.org/dyn/closer.cgi/camel/apache-camel/x.y.x/apache-camel-x.y.x.tar.gz[apache-camel-x.y.x.tar.gz]
+|http://www.apache.org/dist/camel/apache-camel/x.y.x/apache-camel-x.y.x.tar.gz.asc[apache-camel-x.y.x.tar.gz.asc]
+|=======================================================================
+
+[Info]
+====
+ **The above URLs use redirection**
+
+The above URLs use the Apache Mirror system to redirect you to a
+suitable mirror for your download. Some users have experienced issues
+with some versions of browsers (e.g. some Safari browsers). If the
+download doesn't seem to work for you from the above URL then try using
+http://www.mozilla.com/en-US/firefox/[FireFox]
+
+====
+
+[[Camel2.20.3Release-SourceDistributions]]
+Source Distributions
+^^^^^^^^^^^^^^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Description |Download Link |PGP Signature file of download
+|Source (zip)
+|http://www.apache.org/dyn/closer.cgi/camel/apache-camel/x.y.x/apache-camel-x.y.x-src.zip[apache-camel-x.y.x-src.zip]
+|http://www.apache.org/dist/camel/apache-camel/x.y.x/apache-camel-x.y.x-src.zip.asc[apache-camel-x.y.x-src.zip.asc]
+|=======================================================================
+
+[[Camel2.20.3Release-GettingtheBinariesusingMaven2]]
+Getting the Binaries using Maven 2
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To use this release in your maven project, the proper dependency
+configuration that you should use in your
+http://maven.apache.org/guides/introduction/introduction-to-the-pom.html[Maven
+POM] is:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<dependency>
+  <groupId>org.apache.camel</groupId>
+  <artifactId>camel-core</artifactId>
+  <version>x.y.x</version>
+</dependency>
+----
+
+[[Camel2.20.3Release-GitTagCheckout]]
+Git Tag Checkout
+^^^^^^^^^^^^^^^^
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+git clone https://git-wip-us.apache.org/repos/asf/camel.git
+cd camel
+git checkout camel-x.y.x
+----
+
+[[Camel2.20.3Release-Changelog]]
+Changelog
+~~~~~~~~~
+
+For a more detailed view of new features and bug fixes, see the:
+
+* http://issues.apache.org/jira/secure/ReleaseNote.jspa?projectId=12311211&styleName=Html[Release
+notes for x.y.x]

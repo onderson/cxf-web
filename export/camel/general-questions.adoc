@@ -1,0 +1,42 @@
+[[ConfluenceContent]]
+General questions about Camel
+
+* link:can-i-get-commercial-support.html[Can I get commercial support]
+* link:can-i-use-camel-on-java-14.html[Can I use Camel on Java 1.4]
+* link:does-camel-work-on-ibms-jdk.html[Does Camel work on IBM's JDK?]
+* link:how-can-i-get-help.html[How can I get help]
+* link:how-can-i-get-the-source-code.html[How can I get the source code]
+* link:how-does-camel-compare-to-mule.html[How does Camel compare to
+Mule]
+* link:how-does-camel-compare-to-servicemix.html[How does Camel compare
+to ServiceMix]
+* link:how-does-camel-compare-to-servicemix-eip.html[How does Camel
+compare to ServiceMix EIP]
+* link:how-does-camel-compare-to-synapse.html[How does Camel compare to
+Synapse]
+* link:how-does-camel-work.html[How does Camel work]
+* link:how-does-camel-work-with-activemq.html[How does Camel work with
+ActiveMQ]
+* link:how-does-camel-work-with-servicemix.html[How does Camel work with
+ServiceMix]
+* link:how-does-the-camel-api-compare-to.html[How does the Camel API
+compare to]
+* link:how-does-the-website-work.html[How does the website work]
+* link:how-do-i-become-a-committer.html[How do I become a committer]
+* link:how-do-i-compile-the-code.html[How do I compile the code]
+* link:how-do-i-edit-the-website.html[How do I edit the website]
+* link:how-do-i-run-camel-using-java-webstart.html[How do I run Camel
+using Java WebStart]
+* link:if-i-use-servicemix-when-should-i-use-camel.html[If I use
+ServiceMix when should I use Camel]
+* link:is-camel-an-esb.html[Is Camel an ESB]
+* link:is-camel-ioc-friendly.html[Is Camel IoC friendly]
+* link:running-camel-standalone.html[Running Camel standalone]
+* link:what-are-the-dependencies.html[What are the dependencies]
+* link:what-is-a-router.html[What is a router]
+* link:what-is-camel.html[What is Camel]
+* link:what-is-the-license.html[What is the license]
+* link:what-jars-do-i-need.html[What jars do I need]
+* link:what-languages-are-supported.html[What languages are supported]
+* link:what-platforms-are-supported.html[What platforms are supported]
+* link:why-the-name-camel.html[Why the name Camel]

@@ -1,0 +1,7 @@
+[[ConfluenceContent]]
+Questions on logging output from Camel to a console, using the
+link:log.html[Log] endpoint or JDK 1.4 logging or Log4j etc
+
+* link:how-do-i-enable-debug-logging.html[How do I enable debug logging]
+* link:how-do-i-use-java-14-logging.html[How do I use Java 1.4 logging]
+* link:how-do-i-use-log4j.html[How do I use log4j]

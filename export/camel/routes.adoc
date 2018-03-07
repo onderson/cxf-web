@@ -1,0 +1,48 @@
+[[ConfluenceContent]]
+[[Routes-Routes]]
+Routes
+~~~~~~
+
+Camel supports the definition of routing rules using a Java
+link:dsl.html[DSL] (domain specific language) which avoids the need for
+cumbersome XML using a link:routebuilder.html[RouteBuilder].
+
+For example a simple route can be created as follows.
+
+As you can see from the above Camel uses link:uris.html[URIs] to wire
+endpoints together.
+
+[[Routes-URIStringformatting]]
+URI String formatting
+^^^^^^^^^^^^^^^^^^^^^
+
+*Available as of Camel 2.0*
+
+If you have endpoint URIs that accept options and you want to be able to
+substitute the value, e.g. build the URI by concat the strings together,
+then you can use the `java.lang.String.format` method. But in Camel 2.0
+we have added two convenient methods in the Java DSL so you can do
+`fromF` and `toF` that uses String formatting to build the URI.
+
+[[Routes-Filters]]
+Filters
+^^^^^^^
+
+You can combine simple routes with filters which can be arbitrary
+link:predicate.html[Predicate] implementations.
+
+[[Routes-Choices]]
+Choices
+^^^^^^^
+
+With a choice you provide a list of predicates and outcomes along with
+an optional default otherwise clause which is invoked if none of the
+conditions are met.
+
+[[Routes-Usingacustomprocessor]]
+Using a custom processor
+++++++++++++++++++++++++
+
+Here is an example of using a custom link:processor.html[Processor]
+
+You can mix and match custom processors with filters and choices.

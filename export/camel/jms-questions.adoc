@@ -1,0 +1,5 @@
+[[ConfluenceContent]]
+Questions on using the link:jms.html[JMS] endpoints in Camel
+
+* link:why-does-my-jms-route-only-consume-one-message-at-once.html[Why
+does my JMS route only consume one message at once]

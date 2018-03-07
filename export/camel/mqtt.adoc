@@ -1,0 +1,200 @@
+[[ConfluenceContent]]
+[[MQTT-MQTTComponent]]
+MQTT Component
+~~~~~~~~~~~~~~
+
+*Available as of Camel 2.10*
+
+The *mqtt:* component is used for communicating with
+http://mqtt.org[MQTT] compliant message brokers, like
+http://activemq.apache.org[Apache ActiveMQ] or
+http://mosquitto.org[Mosquitto]
+
+Maven users will need to add the following dependency to their `pom.xml`
+for this component:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<dependency>
+    <groupId>org.apache.camel</groupId>
+    <artifactId>camel-mqtt</artifactId>
+    <version>x.x.x</version>
+    <!-- use the same version as your Camel core version -->
+</dependency>
+----
+
+[[MQTT-URIformat]]
+URI format
+^^^^^^^^^^
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+mqtt://name[?options]
+----
+
+Where *name* is the name you want to assign the component.
+
+[[MQTT-Options]]
+Options
+^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Property |Default |Description
+|`host` |`tcp://127.0.0.1:1883` |The URI of the MQTT broker to connect
+too - this component also supports SSL - e.g. _ssl://127.0.0.1:8883_
+
+|`localAddress` |  |The local InetAddress and port to use
+
+a|
+....
+userName
+....
+
+ |  |userName to be used for authentication against the MQTT broker
+
+a|
+....
+password
+....
+
+ |  |password to be used for authentication against the MQTT broker
+
+|`connectAttemptsMax` |`-1` |The maximum number of attempts to establish
+an initial connection - *_-1_* in infinite.
+
+|`reconnectAttemptsMax` |`-1` |The maximum number of attempts to
+re-establish a connection after failure - *_-1_* in infinite.
+
+|`reconnectDelay` |`10` |The time in milliseconds between attempts to
+reestablish an initial or failed connection
+
+|`reconnectBackOffMultiplier` |`2.0` |The multiplier to use to the delay
+between connection attempts for successive failed connection attempts
+
+|`reconnectDelayMax` |`30000` |The maximum time in milliseconds between
+a new attempt to establish a connection. So even using the
+reconnectBackOffMultiplier, this property will define the maximum delay
+before another connection attempt to the MQTT broker
+
+|`qualityOfService` |`AtLeastOnce` |The MQTT Quality of Service to use
+for message exchanges. It can be one of *AtMostOnce*, *AtLeastOnce* or
+*ExactlyOnce*
+
+|`subscribeTopicName` |  |The name of the Topic to subscribe to for
+messages. _Deprecated since 2.15.0 (use subscribeTopicNames instead).
+
+|`subscribeTopicNames` |  a|
+*Since Camel 2.15.0.*  A comma-delimited list of Topics to subscribe to
+for messages.  
+
+Note that each item of this list can contain MQTT wildcards ('\+' and/or
+'#'), in order to subscribe to topics matching a certain pattern within
+a hierarchy.  For example, '\+' is a wildcard for all topics at a level
+within the hierarchy, so if a broker has topics "topics/one" and
+"topics/two", then "topics/\+" can be used to subscribe to both.  A
+caveat to consider here is that if the broker adds "topics/three", the
+route would also begin to receive messages from that topic.
+
+|`publishTopicName` |`camel/mqtt/test` |The default Topic to publish
+messages on
+
+|`byDefaultRetain` |`false` |The default retain policy to be used on
+messages sent to the MQTT broker
+
+|`mqttTopicPropertyName` |_MQTTTopicPropertyName_ a|
+The property name to look for on an Exchange for an individual published
+message. If this is set - the name will be used as the Topic to publish
+a message to the MQTT message broker. This option is removed since camel
+2.14.0.
+
+*Since Camel 2.14.0*, Camel uses "**CamelMQTTSubscribeTopic**" to store
+the topic name of the MQTT consumer into the message header, and
+"*CamelMQTTPublishTopic*" to look up the topic name of the MQTT producer
+from the message header.
+
+|`mqttRetainPropertyName` |`MQTTRetain` |The property name to look for
+on an Exchange for an individual published message. If this is set
+(expects a Boolean value) - then the retain property will be set on the
+message sent to the MQTT message broker.
+
+|`mqttQosPropertyName` |`MQTTQos` |The property name to look for on an
+Exchange for an individual published message. If this is set (one of
+*AtMostOnce*, *AtLeastOnce* or *ExactlyOnce* ) - then that QoS will be
+set on the message sent to the MQTT message broker.
+
+|`connectWaitInSeconds` |`10` |Delay in seconds the Component will wait
+for a connection to be established to the MQTT broker
+
+|`disconnectWaitInSeconds` |`5` |The number of seconds the Component
+will wait for a valid disconnect on stop() from the MQTT broker
+
+|`sendWaitInSeconds` |`5` |The maximum time the Component will wait for
+a receipt from the MQTT broker to acknowledge a published message before
+throwing an exception
+
+|`clientId` |  |The identifier to use for the Component connection to
+the MQTT broker. If not specified it will be assigned automatically.
+
+|`cleanSession` |`true` |If true then all state information is discarded
+when connecting to, or disconnecting from, the MQTT broker. Note that a
+clientId must be specified when setting cleanSession to false. +
+|=======================================================================
+
+You can append query options to the URI in the following format,
+`?option=value&option=value&...`
+
+[[MQTT-Samples]]
+Samples
+^^^^^^^
+
+Sending messages:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from("direct:foo").to("mqtt:cheese?publishTopicName=test.mqtt.topic");
+----
+
+Consuming messages:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from("mqtt:bar?subscribeTopicName=test.mqtt.topic").transform(body().convertToString()).to("mock:result")
+----
+
+[[MQTT-Endpoints]]
+Endpoints
+~~~~~~~~~
+
+Camel supports the link:message-endpoint.html[Message Endpoint] pattern
+using the
+http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/Endpoint.html[Endpoint]
+interface. Endpoints are usually created by a
+link:component.html[Component] and Endpoints are usually referred to in
+the link:dsl.html[DSL] via their link:uris.html[URIs].
+
+From an Endpoint you can use the following methods
+
+* http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/Endpoint.html#createProducer()[createProducer()]
+will create a
+http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/Producer.html[Producer]
+for sending message exchanges to the endpoint
+* http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/Endpoint.html#createConsumer(org.apache.camel.Processor)[createConsumer()]
+implements the link:event-driven-consumer.html[Event Driven Consumer]
+pattern for consuming message exchanges from the endpoint via a
+http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/Processor.html[Processor]
+when creating a
+http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/Consumer.html[Consumer]
+* http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/Endpoint.html#createPollingConsumer()[createPollingConsumer()]
+implements the link:polling-consumer.html[Polling Consumer] pattern for
+consuming message exchanges from the endpoint via a
+http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/PollingConsumer.html[PollingConsumer]
+
+[[MQTT-SeeAlso]]
+See Also
+^^^^^^^^
+
+* link:configuring-camel.html[Configuring Camel]
+* link:message-endpoint.html[Message Endpoint] pattern
+* link:uris.html[URIs]
+* link:writing-components.html[Writing Components]

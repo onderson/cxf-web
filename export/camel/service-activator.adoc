@@ -1,0 +1,59 @@
+[[ConfluenceContent]]
+[[ServiceActivator-ServiceActivator]]
+Service Activator
+^^^^^^^^^^^^^^^^^
+
+Camel has several endpoint components that support the
+http://www.enterpriseintegrationpatterns.com/MessagingAdapter.html[Service
+Activator] from the link:enterprise-integration-patterns.html[EIP
+patterns].
+
+image:http://www.enterpriseintegrationpatterns.com/img/MessagingAdapterSolution.gif[image]
+
+Components like link:bean.html[Bean], link:cxf.html[CXF] and
+link:pojo.html[Pojo] provide a a way to bind the message exchange to a
+Java interface/service where the route defines the endpoints and wires
+it up to the bean.
+
+In addition you can use the link:bean-integration.html[Bean Integration]
+to wire messages to a bean using annotation.
+
+Here is a simple example of using a link:direct.html[Direct] endpoint to
+create a messaging interface to a link:pojo.html[Pojo]
+link:bean.html[Bean] service.
+
+*Using the link:fluent-builders.html[Fluent Builders]*
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from("direct:invokeMyService").to("bean:myService");
+----
+
+*Using the link:spring-xml-extensions.html[Spring XML Extensions]*
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<route>
+    <from uri="direct:invokeMyService"/>
+    <to uri="bean:myService"/>
+</route>
+----
+
+[[ServiceActivator-SeeAlso]]
+See Also
+++++++++
+
+* link:bean.html[Bean]
+* link:pojo.html[Pojo]
+* link:cxf.html[CXF]
+
+[[ServiceActivator-UsingThisPattern]]
+Using This Pattern
+++++++++++++++++++
+
+If you would like to use this EIP Pattern then please read the
+link:getting-started.html[Getting Started], you may also find the
+link:architecture.html[Architecture] useful particularly the description
+of link:endpoint.html[Endpoint] and link:uris.html[URIs]. Then you could
+try out some of the link:examples.html[Examples] first before trying
+this pattern out.

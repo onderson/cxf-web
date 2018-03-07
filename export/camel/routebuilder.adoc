@@ -1,0 +1,18 @@
+[[ConfluenceContent]]
+[[RouteBuilder-RouteBuilder]]
+RouteBuilder
+~~~~~~~~~~~~
+
+The
+http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/builder/RouteBuilder.html[RouteBuilder]
+is a base class which is derived from to create routing rules using the
+link:dsl.html[DSL]. Instances of link:routebuilder.html[RouteBuilder]
+are then added to the link:camelcontext.html[CamelContext].
+
+[[RouteBuilder-SeeAlso]]
+See Also
+^^^^^^^^
+
+* link:camelcontext.html[CamelContext]
+* link:routes.html[Routes]
+* link:architecture.html[Architecture]

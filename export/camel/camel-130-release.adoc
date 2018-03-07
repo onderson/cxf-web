@@ -1,0 +1,171 @@
+[[ConfluenceContent]]
+image:http://camel.apache.org/download.data/camel-box-v1.0-150x200.png[image]
+
+[[Camel1.3.0Release-NewandNoteworthy]]
+New and Noteworthy
+~~~~~~~~~~~~~~~~~~
+
+Welcome to the 1.3.0 release which includes 208 new features,
+improvements and bug fixes such as...
+
+* improved link:bean-integration.html[Bean Integration]
+* improved testing via link:spring-testing.html[Spring Testing] along
+with the link:mock.html[Mock], link:test.html[Test],
+link:dataset.html[DataSet] components
+* browsing of endpoints via the
+link:browsableendpoint.html[BrowsableEndpoint] with support in the
+link:jms.html[JMS], link:list.html[List], link:mock.html[Mock],
+link:seda.html[SEDA] and link:vm.html[VM] components
+* improved support for message exchange patterns such as InOut for JMS
+* various improvements in link:cxf.html[CXF], link:ibatis.html[iBatis],
+link:jetty.html[Jetty], link:mina.html[MINA] components
+* improved link:xpath.html[XPath] and link:xquery.html[XQuery] support
+in Spring XML and with easier namespace configuration
+* default to more efficient JMS usage when working with
+https://issues.apache.org/activemq/browse/CAMEL-294[Spring 2.5.x to
+avoid a previous Spring bug]
+* various improvements in the DSL and with error handling
+* improved automatic link:type-converter.html[Type Converter]
+implementations
+* method invocations now supported in link:el.html[EL] expressions
+* http://cwiki.apache.org/CAMEL/camel-transport-for-cxf.html[CXF
+transport API] now supported in link:cxf.html[CXF] component, you could
+leverage the power of Camel mediation in Apache CXF
+
+[[Camel1.3.0Release-New]]
+New link:components.html[Components]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* link:amqp.html[AMQP]
+* link:dataset.html[DataSet] for easier load testing
+* link:jcr.html[JCR] for JSR 170 support
+* link:list.html[List] for UI and tooling integration
+* link:stream.html[Stream] for working with input/output streams
+* link:test.html[Test] for easier functional testing
+* link:xquery.html[XQuery] for easy XQuery based transforms for
+link:templating.html[Templating]
+
+[[Camel1.3.0Release-NewDataFormats]]
+New link:data-format.html[Data Formats]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* link:csv.html[CSV]
+* link:xmlbeans.html[XmlBeans]
+* link:xstream.html[XStream]
+
+[[Camel1.3.0Release-New.1]]
+New link:languages.html[Languages]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* link:bean-language.html[Bean Language]
+* link:jxpath.html[JXPath]
+
+[[Camel1.3.0Release-New.2]]
+New link:enterprise-integration-patterns.html[Enterprise Integration
+Patterns]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* link:load-balancer.html[Load Balancer]
+* link:routing-slip.html[Routing Slip]
+
+[[Camel1.3.0Release-KnownIssues]]
+Known Issues
+~~~~~~~~~~~~
+
+Please be aware of the cacheLevelName setting when using the
+link:jms.html[JMS] and link:activemq.html[ActiveMQ] components; the
+defaults have changed recently to work around some bugs in Spring that
+are fixed in version 2.5.x. Please refer to the warnings on the
+link:jms.html[JMS page] for more details.
+
+There is an issue in link:error-handler.html[Error Handler] if you have
+configured 2 or more exception clauses. Camel picks the first clause
+that is an instance of the thrown exception. Chances are that if you
+have configued a top level clause such as java.lang.Exception that Camel
+could pick this clause over a more specialized clause such as
+java.io.Exception for network related issues. The issue is reported in
+CAMEL-410.
+
+[[Camel1.3.0Release-GettingtheDistributions]]
+Getting the Distributions
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+[[Camel1.3.0Release-BinaryDistributions]]
+Binary Distributions
+^^^^^^^^^^^^^^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Description |Download Link |PGP Signature file of download
+|Windows Distribution
+|http://archive.apache.org/dist/activemq/apache-camel/1.3.0/apache-camel-1.3.0.zip[apache-camel-1.3.0.zip]
+|http://archive.apache.org/dist/activemq/apache-camel/1.3.0/apache-camel-1.3.0.zip.asc[apache-camel-1.3.0.zip.asc]
+
+|Unix/Linux/Cygwin Distribution
+|http://archive.apache.org/dist/activemq/apache-camel/1.3.0/apache-camel-1.3.0.tar.gz[apache-camel-1.3.0.tar.gz]
+|http://archive.apache.org/dist/activemq/apache-camel/1.3.0/apache-camel-1.3.0.tar.gz.asc[apache-camel-1.3.0.tar.gz.asc]
+|=======================================================================
+
+[Info]
+====
+ **The above URLs use redirection**
+
+The above URLs use the Apache Mirror system to redirect you to a
+suitable mirror for your download. Some users have experienced issues
+with some versions of browsers (e.g. some Safari browsers). If the
+download doesn't seem to work for you from the above URL then try using
+http://www.mozilla.com/en-US/firefox/[FireFox]
+
+====
+
+[[Camel1.3.0Release-SourceDistributions]]
+Source Distributions
+^^^^^^^^^^^^^^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Description |Download Link |PGP Signature file of download
+|Source for Windows
+|http://archive.apache.org/dist/activemq/apache-camel/1.3.0/apache-camel-1.3.0-src.zip[apache-camel-1.3.0-src.zip]
+|http://archive.apache.org/dist/activemq/apache-camel/1.3.0/apache-camel-1.3.0-src.zip.asc[apache-camel-1.3.0-src.zip.asc]
+
+|Source for Unix/Linux/Cygwin
+|http://archive.apache.org/dist/activemq/apache-camel/1.3.0/apache-camel-1.3.0-src.tar.gz[apache-camel-1.3.0-src.tar.gz]
+|http://archive.apache.org/dist/activemq/apache-camel/1.3.0/apache-camel-1.3.0-src.tar.gz.asc[apache-camel-1.3.0-src.tar.gz.asc]
+|=======================================================================
+
+[[Camel1.3.0Release-GettingtheBinariesusingMaven2]]
+Getting the Binaries using Maven 2
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To use this release in your maven project, the proper dependency
+configuration that you should use in your
+http://maven.apache.org/guides/introduction/introduction-to-the-pom.html[Maven
+POM] is:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<dependency>
+  <groupId>org.apache.camel</groupId>
+  <artifactId>camel-core</artifactId>
+  <version>1.3.0</version>
+</dependency>
+----
+
+[[Camel1.3.0Release-SVNTagCheckout]]
+SVN Tag Checkout
+^^^^^^^^^^^^^^^^
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+svn co https://svn.apache.org/repos/asf/camel/tags/camel-1.3.0
+----
+
+[[Camel1.3.0Release-Changelog]]
+Changelog
+~~~~~~~~~
+
+For a more detailed view of new features and bug fixes, see:
+
+* https://issues.apache.org/jira/secure/ReleaseNote.jspa?projectId=12311211&styleName=Html&version=12315673[JIRA
+Release notes for 1.3.0]

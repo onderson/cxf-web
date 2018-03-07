@@ -1,0 +1,537 @@
+[[ConfluenceContent]]
+[[Camel1.5.0Release-Camel1.5.0release]]
+Camel 1.5.0 release
+-------------------
+
+image:http://activemq.apache.org/camel/download.data/camel-box-v1.0-150x200.png[image]
+
+[[Camel1.5.0Release-NewandNoteworthy]]
+New and Noteworthy
+~~~~~~~~~~~~~~~~~~
+
+Welcome to the 1.5.0 release which approx 266 issues resolved (new
+features, improvements and bug fixes such as...)
+
+* support for link:guice.html[Guice] for dependency injection along with
+a new link:guice-jms-example.html[Guice JMS Example]
+* major improvements in link:ftp2.html[FTP] and link:file2.html[File]
+components
+* link:file2.html[File] consumers now default uses exclusive read
+locking when it consume files, meaning that they wont consume files that
+are in the progress of being written by third part. The FTP consumer has
+this support as well, however it is disabled by default as it requires
+write privileges.
+* link:file2.html[File] and link:ftp2.html[FTP] component supports
+expression to set dynamic filename patterns instead of using the
+`FileComponent.HEADER_FILE_NAME` header. See
+link:file-language.html[File Language] for samples and use cases.
+* important changes in ProducerTemplate (see below)
+* link:exception-clause.html[Exception Clause] now supports marking
+exceptions as being *handled* so callers doesn't receive the caused
+exception, but you can set the response to return instead. This is a
+very important feature.
+* various improvements in link:flatpack.html[Flatpack] and
+link:xmpp.html[XMPP] components
+* minor improvements in link:cxf.html[CXF],
+link:springintegration.html[SpringIntegration], link:http.html[HTTP],
+link:mail.html[Mail] and link:mina.html[Mina] components
+* minor improvements in link:aggregator.html[Aggregator] supporting a
+better fluent builder, etc.
+* link:splitter.html[splitter] now handles streaming avoiding reading
+entire content into memory (consuming very big 1gb files is now
+possible)
+* introduced new link:jt400.html[jt400], link:hl7.html[HL7],
+link:ldap.html[LDAP] and link:smooks.html[Smooks] components
+* introduced link:delay-interceptor.html[Delay Interceptor] to slow down
+processing to show how things is happening nice and slow, so you are not
+bombarded with zillions of logging output.
+* link:mail.html[Mail] can now send html mails with the new
+`contentType` option
+* link:camel-maven-archetypes.html[Camel Maven Archetypes] now available
+in http://m2eclipse.sonatype.org[m2eclipse]
+http://docs.codehaus.org/display/M2ECLIPSE/Creating+Maven+projects[Maven
+project creation]
+* link:how-do-i-run-camel-using-java-webstart.html[Java WebStart
+support]
+* refinements in loading resources using OSGi bundles, should now handle
+different OSGi platforms much better
+* link:type-converter.html[Type Converter] now supports Exchange as 2nd
+parameter to allow converters access to the Exchange and thus the
+link:camelcontext.html[CamelContext] as well. To be used for setting
+encoding in the future.
+* New link:loop.html[Loop] api in link:dsl.html[DSL] allows processing
+of a message a number of times, possibly in different ways.
+* Spring DSL improve
+* improved link:tracer.html[Tracer] formatting and more options for
+configuration
+* improved support for all link:endpoint.html[Endpoint]s, not just
+singletons in link:camelcontext.html[CamelContext].
+* minor tweaks to the link:visualisation.html[Visualisation] generator
+* IBM JDK support (link:does-camel-work-on-ibms-jdk.html[notable
+exceptions])
+
+[[Camel1.5.0Release-New]]
+New link:enterprise-integration-patterns.html[Enterprise Integration
+Patterns]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* link:dynamic-router.html[Dynamic Router]
+
+[[Camel1.5.0Release-New.1]]
+New link:components.html[Components]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* link:jt400.html[jt400] for integration with AS/400 dataqueues
+* link:hl7.html[HL7] for working with the HL7 MLLP protocol and the
+http://www.hl7.org[HL7 model] using the
+http://hl7api.sourceforge.net[HAPI library]
+* link:ldap.html[LDAP] to perform searches in LDAP servers
+* link:smooks.html[Smooks] for working with EDI parsing using the
+http://milyn.codehaus.org/Smooks[Smooks library]
+
+[[Camel1.5.0Release-New.2]]
+New link:dsl.html[DSL]
+^^^^^^^^^^^^^^^^^^^^^^
+
+* link:loop.html[Loop]
+* link:scala-dsl.html[Scala] (work in progress, not fully feature
+complete)
+
+[[Camel1.5.0Release-NewAnnotations]]
+New Annotations
+^^^^^^^^^^^^^^^
+
+* link:pojo-consuming.html[@Consume for POJO Consuming]
+* link:pojo-producing.html[@Produce for POJO Producing]
+* link:recipientlist-annotation.html[@RecipientList] for creating an
+annotation based link:recipient-list.html[Recipient List]
+* link:using-exchange-pattern-annotations.html[Exchange Pattern
+Annotations] for specifing the message exchange pattern
+
+[[Camel1.5.0Release-NewDataFormats]]
+New link:data-format.html[Data Formats]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* link:flatpack.html[Flatpack]
+* link:hl7.html[HL7]
+* link:edi.html[EDI]
+
+[[Camel1.5.0Release-New.3]]
+New link:languages.html[Languages]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* link:constant.html[Constant]
+* link:header.html[Header]
+* link:file-language.html[File Language] really useful for the
+link:file2.html[File] and link:ftp2.html[FTP] component for setting
+dynamic names using patterns
+
+[[Camel1.5.0Release-New.4]]
+New link:examples.html[Examples]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* http://activemq.apache.org/camel/tutorial-axis-camel.html[camel-example-axis]
+* link:guice-jms-example.html[Guice JMS Example]
+
+[[Camel1.5.0Release-APIbreakings]]
+API breakings
+~~~~~~~~~~~~~
+
+* `ProducerTemplate` now throws `RuntimeCamelException` for
+sendBody/requestBody methods.
+* `DefaultTypeConverter.convertTo()` now throws a
+`NoTypeConversionAvailableException` (`RuntimeException`) when it cannot
+find a suitable conversion (see link:type-converter.html[Type
+Converter]).
+* The `addSingletonEndpoint()` and `removeSingletonEndpoint` methods in
+link:camelcontext.html[CamelContext] are now deprecated in favor of
+`addEndpoint` and `removeEndpoint`.
+
+[[Camel1.5.0Release-KnownIssues]]
+Known Issues
+~~~~~~~~~~~~
+
+* link:aggregator.html[Aggregator] always consume directly from the
+endpoint, see
+https://issues.apache.org/activemq/browse/CAMEL-393[CAMEL-393]
+
+[[Camel1.5.0Release-Importantchangestoconsiderwhenupgrading]]
+Important changes to consider when upgrading
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+[[Camel1.5.0Release-ProducerTemplate]]
+ProducerTemplate
+^^^^^^^^^^^^^^^^
+
+The
+http://activemq.apache.org/camel/maven/camel-core/apidocs/org/apache/camel/ProducerTemplate.html[ProducerTemplate]
+has refined its sendBody and requestBody methods to throw
+`RuntimeCamelException`, with the caused exception wrapper, in case the
+Exchange failed with an exception. Also if the exchange has set an
+`FAULT` message then the `FAULT` message is returned.
+
+The old behavior in Camel 1.4 or older was just plain wrong!
+
+[[Camel1.5.0Release-JMX]]
+JMX
+^^^
+
+Option usePlatformMBeanServer has changed its default value from *false*
+to *true*. +
+The naming convention for the JMX
+`ObjectName}}s has changed.  Camel now uses simpler, shorter {{ObjectName`(s).
+
+[[Camel1.5.0Release-TypeConverter]]
+TypeConverter
+^^^^^^^^^^^^^
+
+An implementation of
+http://activemq.apache.org/camel/maven/camel-core/apidocs/org/apache/camel/TypeConverter.html[TypeConverter]
+should now throw a
+http://activemq.apache.org/camel/maven/camel-core/apidocs/org/apache/camel/NoTypeConversionAvailableException.html[NoTypeConversionAvailableException]
+if conversion is not possible. The semantical ambiguity of null (both
+valid result and indication of no conversion) is now resolved, but this
+may impact existing code in that it should now catch the exception
+instead of checking for null.
+
+[[Camel1.5.0Release-setHeaderelementinSpringDSLchanged]]
+setHeader element in Spring DSL changed
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+You can no longer use a 'value' attribute like this to set a header to a
+constant:
+
+[source,brush:,xml;,gutter:,false;,theme:,Default]
+----
+<route>
+  <from uri="seda:a"/>
+  <setHeader headerName="theHeader" value="the value">
+    <expression/>        
+  </setHeader>
+  <to uri="mock:b"/>     
+</route>
+----
+
+Now, you can use a link:constant.html[Constant] expression to do the
+same thing:
+
+[source,brush:,xml;,gutter:,false;,theme:,Default]
+----
+<route>
+  <from uri="seda:a"/>
+  <setHeader headerName="theHeader">
+    <constant>the value</constant>        
+  </setHeader>
+  <to uri="mock:b"/>     
+</route>
+----
+
+Notice that this constant expression is also possible in the Java DSL:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+.setHeader("theHeader", constant("the value"))
+----
+
+[[Camel1.5.0Release-redeliveryPolicyspecificationinSpringDSLchanged]]
+redeliveryPolicy specification in Spring DSL changed
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Instead of
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<redeliveryPolicy>
+  <maximumRedeliveries>1</maximumRedeliveries>
+  ...
+</redeliveryPolicy>
+----
+
+You now set redelivery policy settings with attributes
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<redeliveryPolicy maximumRedeliveries="1" .../>
+----
+
+[[Camel1.5.0Release-DataformatspecificationinSpringDSLchanged]]
+Data format specification in Spring DSL changed
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The way you specify data formats in the Spring DSL has changed. You
+could do this in Camel 1.4:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<camelContext id="camel" xmlns="http://activemq.apache.org/camel/schema/spring">
+  <jaxb id="myJaxb" prettyPrint="true" contextPath="org.apache.camel.example"/>
+  <xstream id="xs" prettyPrint="true"/>
+
+  <route>
+    <from uri="direct:start"/>
+    <marshal ref="myJaxb"/>
+    <to uri="direct:marshalled"/>
+  </route>
+  ...
+----
+
+Now, you specify the same as:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<camelContext id="camel" xmlns="http://activemq.apache.org/camel/schema/spring">
+  <dataFormats>
+    <jaxb id="myJaxb" prettyPrint="true" contextPath="org.apache.camel.example"/>
+    <xstream id="xs" prettyPrint="true"/>
+  </dataFormats>
+
+  <route>
+    <from uri="direct:start"/>
+    <marshal ref="myJaxb"/>
+    <to uri="direct:marshalled"/>
+  </route>
+  ...
+----
+
+[[Camel1.5.0Release-CXFProducer]]
+CXF Producer
+^^^^^^^^^^^^
+
+The result of CXF producer has changed to use MessageContentsList
+instead of Object array to hold the response. +
+If you use the exchange.getOut.getBody(YourType.class), CXFMessage will
+check the list members and chose the most right answer for you.
+
+CXF Producer before Camel 1.5
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+     Object[] oldResult = (Object[])oldExchange.getOut().getBody();
+     BankQuote oldQuote = (BankQuote) oldResult[0];
+----
+
+CXF Produer in Camel 1.5
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+     BankQuote oldQuote = oldExchange.getOut().getBody(BankQuote.class);
+----
+
+Now the CXF Producer(in Camel 1.5) will throw the exception after the
+CXF client gets the exception, in this way you can leverage the Camel
+link:error-handler.html[errorHandler] for handling the exception. +
+If you don't want camel redeliver the message when your producer got the
+common SOAP fault, specially you are using CXF producer and CXF consumer
+as a proxy, you'd better override the Camel default
+link:error-handler.html[errorHandler].
+
+You can do it with DSL
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+     protected RouteBuilder createRouteBuilder() {
+        return new RouteBuilder() {
+            public void configure() {
+                errorHandler(noErrorHandler());
+                from(routerEndpointURI).to("log:org.apache.camel?level=DEBUG").to(serviceEndpointURI);
+            }
+        };
+    }
+----
+
+Or Spring
+
+[source,brush:,xml;,gutter:,false;,theme:,Default]
+----
+   <cxf:cxfEndpoint id="routerEndpoint" address="http://localhost:9003/CamelContext/RouterPort"
+            serviceClass="org.apache.hello_world_soap_http.GreeterImpl"/>
+
+   <cxf:cxfEndpoint id="serviceEndpoint" address="http://localhost:9000/SoapContext/SoapPort"
+            wsdlURL="testutils/hello_world.wsdl"
+            serviceClass="org.apache.hello_world_soap_http.Greeter"
+            endpointName="s:SoapPort"
+            serviceName="s:SOAPService"
+        xmlns:s="http://apache.org/hello_world_soap_http" />
+
+   <camelContext id="camel" xmlns="http://activemq.apache.org/camel/schema/spring">
+    <route errorHandlerRef="noErrorHandler">
+      <from uri="cxf:bean:routerEndpoint" />
+      <to uri="cxf:bean:serviceEndpoint" />
+    </route>
+   </camelContext>
+
+   <bean id="noErrorHandler" class="org.apache.camel.builder.NoErrorHandlerBuilder"/>
+----
+
+[[Camel1.5.0Release-FTPcomponent]]
+FTP component
+^^^^^^^^^^^^^
+
+The option `consumer.recursive` has changed the default value from
+*true* to *false*.
+
+Now throws `FtpOperationFailedException` with the FTP error code and
+reason. For instance error code 530 is not authorized. This applies for
+both consumer and producer. The consumer will now also regard failing
+move or rename operations as a severe error throw a
+`FtpOperationFailedException` instead of `WARN` logging. As a consumer
+you will *not* receive an Exchange, as opposed to the situation in Camel
+1.4.0. Bottom line: all the FTP operations should succeed before the
+consumer will process the Exchange.
+
+[[Camel1.5.0Release-FileConsumer]]
+File Consumer
+^^^^^^^^^^^^^
+
+The option `consumer.recursive` has changed the default value from
+*true* to *false*.
+
+[[Camel1.5.0Release-HttpProducer]]
+Http Producer
+^^^^^^^^^^^^^
+
+Now the http producer will throw a `HttpOperationFailedException` if the
+response code is not 1xx or 2xx. You can get the status code, status
+line and location for the exception. +
+In the Camel < 1.5.0 , http producer does not check the response code
+and puts the response message into the out message.
+
+Http producer has better algorithm to compute if either GET or POST
+should be used.
+
+[[Camel1.5.0Release-camel-mina]]
+camel-mina
+^^^^^^^^^^
+
+In Camel 1.5 the sync option has changed its default value from *false*
+to *true*, as we felt it was confusing for end-users when they used Mina
+to call remote servers and Camel wouldn't wait for the response. To
+remedy this you had to add the sync=true option before it worked, we
+want this to work out-of-the-box without having to specify this option.
+
+[[Camel1.5.0Release-camel-mail]]
+camel-mail
+^^^^^^^^^^
+
+In Camel 1.5 the following default options has changed in camel-mail:
+
+* `deleteProcessedMessages` is now *false* as we felt Camel should not
+delete mails on the mail server by default.
+* `processOnlyUnseenMessages` is now *true* as we felt Camel should only
+poll new mails by default.
+
+[[Camel1.5.0Release-removeOutHeaderDSLmethodremoved]]
+removeOutHeader DSL method removed
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Since any exchange coming into the removeOutHeader processor would have
+an IN message only, this method was useless and so was removed.
+
+[[Camel1.5.0Release-andAggregationCollection]]
+link:aggregator.html[Aggregator] and `AggregationCollection`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The AggregationCollection used by link:aggregator.html[Aggregator] is
+changed to an interface instead of a class. This allows end-users to
+provide their own collections that isn't a subclass of the default. The
+old AggregationCollection class is renamed to
+DefaultAggregationCollection.
+
+Aggregator must be configured directly on the consumer:
+
+* This is valid: `from("foo").aggregate("bar")`
+* This is *not* valid: `from("foo").setHeader("id").aggreagate("bar")` +
+See known issues.
+
+[[Camel1.5.0Release-component]]
+link:spring-event.html[Spring Event] component
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The `event` name (scheme) has been renamed to `spring-event`
+
+[[Camel1.5.0Release-GettingtheDistributions]]
+Getting the Distributions
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+[[Camel1.5.0Release-BinaryDistributions]]
+Binary Distributions
+^^^^^^^^^^^^^^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Description |Download Link |PGP Signature file of download
+|Windows Distribution
+|http://archive.apache.org/dist/activemq/apache-camel/1.5.0/apache-camel-1.5.0.zip[apache-camel-1.5.0.zip]
+|http://archive.apache.org/dist/activemq/apache-camel/1.5.0/apache-camel-1.5.0.zip.asc[apache-camel-1.5.0.zip.asc]
+
+|Unix/Linux/Cygwin Distribution
+|http://archive.apache.org/dist/activemq/apache-camel/1.5.0/apache-camel-1.5.0.tar.gz[apache-camel-1.5.0.tar.gz]
+|http://archive.apache.org/dist/activemq/apache-camel/1.5.0/apache-camel-1.5.0.tar.gz.asc[apache-camel-1.5.0.tar.gz.asc]
+|=======================================================================
+
+[Info]
+====
+ **The above URLs use redirection**
+
+The above URLs use the Apache Mirror system to redirect you to a
+suitable mirror for your download. Some users have experienced issues
+with some versions of browsers (e.g. some Safari browsers). If the
+download doesn't seem to work for you from the above URL then try using
+http://www.mozilla.com/en-US/firefox/[FireFox]
+
+====
+
+[[Camel1.5.0Release-SourceDistributions]]
+Source Distributions
+^^^^^^^^^^^^^^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Description |Download Link |PGP Signature file of download
+|Source for Windows
+|http://archive.apache.org/dist/activemq/apache-camel/1.5.0/apache-camel-1.5.0-src.zip[apache-camel-1.5.0-src.zip]
+|http://archive.apache.org/dist/activemq/apache-camel/1.5.0/apache-camel-1.5.0-src.zip.asc[apache-camel-1.5.0-src.zip.asc]
+|=======================================================================
+
+[width="100%",cols="34%,33%,33%",]
+|=======================================================================
+|Source for Unix/Linux/Cygwin
+|http://archive.apache.org/dist/activemq/apache-camel/1.5.0/apache-camel-1.5.0-src.tar.gz[apache-camel-1.5.0-src.tar.gz]
+|http://archive.apache.org/dist/activemq/apache-camel/1.5.0/apache-camel-1.5.0-src.tar.gz.asc[apache-camel-1.5.0-src.tar.gz.asc]
+|=======================================================================
+
+[[Camel1.5.0Release-GettingtheBinariesusingMaven2]]
+Getting the Binaries using Maven 2
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To use this release in your maven project, the proper dependency
+configuration that you should use in your
+http://maven.apache.org/guides/introduction/introduction-to-the-pom.html[Maven
+POM] is:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<dependency>
+  <groupId>org.apache.camel</groupId>
+  <artifactId>camel-core</artifactId>
+  <version>1.5.0</version>
+</dependency>
+----
+
+[[Camel1.5.0Release-SVNTagCheckout]]
+SVN Tag Checkout
+^^^^^^^^^^^^^^^^
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+svn co http://svn.apache.org/repos/asf/activemq/camel/tags/camel-1.5.0
+----
+
+[[Camel1.5.0Release-Changelog]]
+Changelog
+~~~~~~~~~
+
+For a more detailed view of new features and bug fixes, see:
+
+* http://issues.apache.org/jira/secure/ReleaseNote.jspa?projectId=12311211&styleName=Html&version=12315675[JIRA
+Release notes for 1.5.0]

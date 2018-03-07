@@ -1,0 +1,63 @@
+[[ConfluenceContent]]
+[[MessagingMapper-MessagingMapper]]
+Messaging Mapper
+^^^^^^^^^^^^^^^^
+
+Camel supports the
+http://www.enterpriseintegrationpatterns.com/MessagingMapper.html[Messaging
+Mapper] from the link:enterprise-integration-patterns.html[EIP patterns]
+by using either link:message-translator.html[Message Translator] pattern
+or the link:type-converter.html[Type Converter] module.
+
+image:http://www.enterpriseintegrationpatterns.com/img/MessagingMapperClassDiagram.gif[image]
+
+[[MessagingMapper-Example]]
+Example
++++++++
+
+The following example demonstrates the use of a link:bean.html[Bean]
+component to map between two messaging system
+
+*Using the link:fluent-builders.html[Fluent Builders]*
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from("activemq:foo")
+    .beanRef("transformerBean", "transform")
+    .to("jms:bar");
+----
+
+ 
+
+**Using the link:spring-xml-extensions.html[Spring XML Extensions]**
+
+[source,brush:,xml;,gutter:,false;,theme:,Default]
+----
+<route>
+    <from uri="activemq:foo"/>
+    <bean ref="transformerBean" method="transform" />
+    <to uri="jms:bar"/>
+</route>
+----
+
+[[MessagingMapper-Seealso]]
+See also
+++++++++
+
+* link:message-translator.html[Message Translator]
+* link:type-converter.html[Type Converter]
+* link:cxf.html[CXF] for JAX-WS support for binding business logic to
+messaging & web services
+* link:pojo.html[Pojo]
+* link:bean.html[Bean]
+
+[[MessagingMapper-UsingThisPattern]]
+Using This Pattern
+++++++++++++++++++
+
+If you would like to use this EIP Pattern then please read the
+link:getting-started.html[Getting Started], you may also find the
+link:architecture.html[Architecture] useful particularly the description
+of link:endpoint.html[Endpoint] and link:uris.html[URIs]. Then you could
+try out some of the link:examples.html[Examples] first before trying
+this pattern out.

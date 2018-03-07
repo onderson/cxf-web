@@ -1,0 +1,3 @@
+[[ConfluenceContent]]
+See the up-to-date documentation at the Apache Camel site on
+github: https://github.com/apache/camel/blob/master/CONTRIBUTING.md

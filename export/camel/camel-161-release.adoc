@@ -1,0 +1,173 @@
+[[ConfluenceContent]]
+[[Camel1.6.1Release-Camel1.6.1release]]
+Camel 1.6.1 release
+-------------------
+
+image:http://camel.apache.org/download.data/camel-box-v1.0-150x200.png[image]
+
+[[Camel1.6.1Release-NewandNoteworthy]]
+New and Noteworthy
+~~~~~~~~~~~~~~~~~~
+
+Welcome to the 1.6.1 release which approx 93 issues resolved (new
+features, improvements and bug fixes such as...)
+
+* Performance enhancement when sending high load of messages through
+Camel
+* Fixes for thread safety for link:ldap.html[LDAP], Validation,
+link:jaxb.html[JAXB] data format.
+* Use Nexus for releases.
+* Fixed issue with start/stop state machine.
+* Upgraded to link:cxf.html[CXF] 2.2.
+* Security improvements for link:jetty.html[Jetty].
+* link:hl7.html[HL7] fixes on Windows platforms.
+* Fixes for header propagation in link:bean.html[Bean] component.
+* Fixes for using injected link:endpoint.html[Endpoint].
+* Message Exchange Pattern can now be changed directly in the DSL.
+
+[[Camel1.6.1Release-New]]
+New link:enterprise-integration-patterns.html[Enterprise Integration
+Patterns]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* None
+
+[[Camel1.6.1Release-New.1]]
+New link:components.html[Components]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* None
+
+[[Camel1.6.1Release-New.2]]
+New link:dsl.html[DSL]
+^^^^^^^^^^^^^^^^^^^^^^
+
+* None
+
+[[Camel1.6.1Release-NewAnnotations]]
+New Annotations
+^^^^^^^^^^^^^^^
+
+* None
+
+[[Camel1.6.1Release-NewDataFormats]]
+New link:data-format.html[Data Formats]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* GZIP
+
+[[Camel1.6.1Release-New.3]]
+New link:languages.html[Languages]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* None
+
+[[Camel1.6.1Release-New.4]]
+New link:examples.html[Examples]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* None
+
+[[Camel1.6.1Release-APIbreakings]]
+API breakings
+~~~~~~~~~~~~~
+
+* From Camel 1.6.0 the camel-cxf producer's serviceClass parameter
+should be Interface, before that you could specify the serviceClass as a
+Class or Interface.
+* From Camel 1.6.0 the camel-jetty producer is removed and camel-jetty
+doesn't need the dependent jetty-client module.
+
+[[Camel1.6.1Release-KnownIssues]]
+Known Issues
+~~~~~~~~~~~~
+
+See known issues from previous releases.
+
+[[Camel1.6.1Release-Importantchangestoconsiderwhenupgrading]]
+Important changes to consider when upgrading
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+[[Camel1.6.1Release-GettingtheDistributions]]
+Getting the Distributions
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+[[Camel1.6.1Release-BinaryDistributions]]
+Binary Distributions
+^^^^^^^^^^^^^^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Description |Download Link |PGP Signature file of download
+|Windows Distribution
+|http://archive.apache.org/dist/camel/apache-camel/1.6.1/apache-camel-1.6.1.zip[apache-camel-1.6.1.zip]
+|http://archive.apache.org/dist/camel/apache-camel/1.6.1/apache-camel-1.6.1.zip.asc[apache-camel-1.6.1.zip.asc]
+
+|Unix/Linux/Cygwin Distribution
+|http://archive.apache.org/dist/camel/apache-camel/1.6.1/apache-camel-1.6.1.tar.gz[apache-camel-1.6.1.tar.gz]
+|http://archive.apache.org/dist/camel/apache-camel/1.6.1/apache-camel-1.6.1.tar.gz.asc[apache-camel-1.6.1.tar.gz.asc]
+|=======================================================================
+
+[Info]
+====
+ **The above URLs use redirection**
+
+The above URLs use the Apache Mirror system to redirect you to a
+suitable mirror for your download. Some users have experienced issues
+with some versions of browsers (e.g. some Safari browsers). If the
+download doesn't seem to work for you from the above URL then try using
+http://www.mozilla.com/en-US/firefox/[FireFox]
+
+====
+
+[[Camel1.6.1Release-SourceDistributions]]
+Source Distributions
+^^^^^^^^^^^^^^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Description |Download Link |PGP Signature file of download
+|Source for Windows
+|http://archive.apache.org/dist/camel/apache-camel/1.6.1/apache-camel-1.6.1-src.zip[apache-camel-1.6.1-src.zip]
+|http://archive.apache.org/dist/camel/apache-camel/1.6.1/apache-camel-1.6.1-src.zip.asc[apache-camel-1.6.1-src.zip.asc]
+
+|Source for Unix/Linux/Cygwin
+|http://archive.apache.org/dist/camel/apache-camel/1.6.1/apache-camel-1.6.1-src.tar.gz[apache-camel-1.6.1-src.tar.gz]
+|http://archive.apache.org/dist/camel/apache-camel/1.6.1/apache-camel-1.6.1-src.tar.gz.asc[apache-camel-1.6.1-src.tar.gz.asc]
+|=======================================================================
+
+[[Camel1.6.1Release-GettingtheBinariesusingMaven2]]
+Getting the Binaries using Maven 2
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To use this release in your maven project, the proper dependency
+configuration that you should use in your
+http://maven.apache.org/guides/introduction/introduction-to-the-pom.html[Maven
+POM] is:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<dependency>
+  <groupId>org.apache.camel</groupId>
+  <artifactId>camel-core</artifactId>
+  <version>1.6.1</version>
+</dependency>
+----
+
+[[Camel1.6.1Release-SVNTagCheckout]]
+SVN Tag Checkout
+^^^^^^^^^^^^^^^^
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+svn co http://svn.apache.org/repos/asf/camel/tags/camel-1.6.1
+----
+
+[[Camel1.6.1Release-Changelog]]
+Changelog
+~~~~~~~~~
+
+For a more detailed view of new features and bug fixes, see:
+
+* http://issues.apache.org/jira/secure/ReleaseNote.jspa?projectId=12311211&styleName=Html&version=12315678[JIRA
+Release notes for 1.6.1]

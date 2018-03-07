@@ -1,0 +1,81 @@
+[[ConfluenceContent]]
+This document describes various recipes for working with Camel
+
+* link:bean-integration.html[Bean Integration] describes how to work
+with beans and Camel in a loosely coupled way so that your beans do not
+have to depend on any Camel APIs
+** link:annotation-based-expression-language.html[Annotation Based
+Expression Language] binds expressions to method parameters
+** link:bean-binding.html[Bean Binding] defines which methods are
+invoked and how the Message is converted into the parameters of the
+method when it is invoked
+** link:bean-injection.html[Bean Injection] for injecting Camel related
+resources into your POJOs
+** link:parameter-binding-annotations.html[Parameter Binding
+Annotations] for extracting various headers, properties or payloads from
+a Message
+** link:pojo-consuming.html[POJO Consuming] for consuming and possibly
+routing messages from Camel
+** link:pojo-producing.html[POJO Producing] for producing camel messages
+from your POJOs
+** link:recipientlist-annotation.html[RecipientList Annotation] for
+creating a Recipient List from a POJO method
+** link:using-exchange-pattern-annotations.html[Using Exchange Pattern
+Annotations] describes how pattern annotations can be used to change the
+behaviour of method invocations
+* link:hiding-middleware.html[Hiding Middleware] describes how to avoid
+your business logic being coupled to any particular middleware APIs
+allowing you to easily switch from in JVM link:seda.html[SEDA] to
+link:jms.html[JMS], link:activemq.html[ActiveMQ],
+link:hibernate.html[Hibernate], link:jpa.html[JPA],
+link:jdbc.html[JDBC], link:ibatis.html[iBatis] or
+link:javaspace.html[JavaSpace] etc.
+* link:visualisation.html[Visualisation] describes how to visualise your
+link:enterprise-integration-patterns.html[Enterprise Integration
+Patterns] to help you understand your routing rules
+* link:bam.html[Business Activity Monitoring (BAM)] for monitoring
+business processes across systems
+* link:etl.html[Extract Transform Load (ETL)] to load data into systems
+or databases
+* link:testing.html[Testing] for testing distributed and asynchronous
+systems using a messaging approach
+** link:camel-test.html[Camel Test] for creating test cases using a
+single Java class for all your configuration and routing
+** link:spring-testing.html[Spring Testing] uses Spring Test together
+with either XML or Java Config to dependency inject your test classes
+** link:guice.html[Guice] uses Guice to dependency inject your test
+classes
+* link:templating.html[Templating] is a great way to create service
+stubs to be able to test your system without some back end system.
+* link:database.html[Database] for working with databases
+* link:parallel-processing-and-ordering.html[Parallel Processing and
+Ordering] on how using parallel processing and link:seda.html[SEDA] or
+link:jms.html[JMS] based load balancing can be achieved.
+* link:asynchronous-processing.html[Asynchronous Processing] in Camel
+Routes.
+* link:implementing-virtual-topics-on-other-jms-providers.html[Implementing
+Virtual Topics on other JMS providers] shows how to get the effect of
+Virtual Topics and avoid issues with JMS durable topics
+* link:camel-transport-for-cxf.html[Camel Transport for CXF] describes
+how to put the Camel context into the CXF transport layer.
+* link:fine-grained-control-over-a-channel.html[Fine Grained Control
+Over a Channel] describes how to deliver a sequence of messages over a
+single channel and then stopping any more messages being sent over that
+channel. Typically used for sending data over a socket and then closing
+the socket.
+* link:eventnotifier-to-log-details-about-all-sent-exchanges.html[EventNotifier
+to log details about all sent Exchanges] shows how to let Camels
+`EventNotifier` log all sent to endpoint events and how long time it
+took.
+* link:loading-routes-from-xml-files.html[Loading routes from XML files]
+into an existing link:camelcontext.html[CamelContext].
+* Using link:mdc-logging.html[MDC logging] with Camel
+* link:running-camel-standalone-and-have-it-keep-running.html[Running
+Camel standalone and have it keep running] shows how to keep Camel
+running when you run it standalone.
+* link:hazelcast-idempotent-repository-tutorial.html[Hazelcast
+Idempotent Repository Tutorial] shows how to avoid to consume duplicated
+messages in a clustered environment.
+* link:how-to-use-camel-as-a-http-proxy-between-a-client-and-server.html[How
+to use Camel as a HTTP proxy between a client and server] shows how to
+use Camel as a HTTP adapter/proxy between a client and HTTP service.

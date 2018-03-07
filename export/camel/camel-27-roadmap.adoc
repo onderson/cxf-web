@@ -1,0 +1,84 @@
+[[ConfluenceContent]]
+[[Camel2.7-Roadmap-Camel2.7roadmap]]
+Camel 2.7 roadmap
+~~~~~~~~~~~~~~~~~
+
+This is a roadmap which details the overall and major goals for Camel
+2.7. Fell free to discuss this at the Camel
+link:mailing-lists.html[Mailing Lists] if you have ideas or feedback. +
+The goals on this page was intended to be introduced in
+link:camel-30-ideas.html[Camel 3.0]. After discussing this on the
+http://camel.465427.n5.nabble.com/DISCUSS-Dropping-support-for-java-1-5-from-camel-2-7-0-onwards-tp3354712p3354712.html[Developer
+List] we decided to bring forward some of the goals for 3.0 to 2.7.
+Those goals is listed on this page:
+
+[[Camel2.7-Roadmap-JDK1.6+]]
+JDK 1.6+
+++++++++
+
+Camel 2.7 should bump the JDK minimum version to 1.6. +
+Camel 1.x - 2.6.0 supports JDK 1.5+.
+
+*Status: Done*
+
+[[Camel2.7-Roadmap-Spring3.x]]
+Spring 3.x
+++++++++++
+
+Camel 2.7 should bump the minimum version of Spring to 3.0+. +
+Camel 1.x - 2.6.0 supports Spring 2.0+
+
+*Status: Done*
+
+[[Camel2.7-Roadmap-Logging]]
+Logging
++++++++
+
+We should switch from `commons-logging` to `slf4j`
+
+*Status: Done*
+
+[[Camel2.7-Roadmap-JUnit]]
+JUnit
++++++
+
+Use JUnit 4.x by default. However JUnit 4.x is backwards compatible with
+JUnit 3.x. The change would be to remove the JUnit 3.x support in
+`camel-test` JAR if that's desirable.
+
+*Status: Done*
+
+[[Camel2.7-Roadmap-camel-osgi-test]]
+camel-osgi-test
++++++++++++++++
+
+When testing your Camel apps with OSGi you may use PaxExam for that. We
+should create a test kit for osgi, like we have camel-test for regular
+junit testing. The test kit should make it easy for end users to have
+their apps tested with OSGi. We already have pieces in the
+`tests/camel-itest-osgi`. We just need to clean and shape it up so its
+ready for end users as well. And of course add documentation as well. +
+And then we should use it in `camel-itest-osgi` of course.
+
+*Status: Postponed*
+
+[[Camel2.7-Roadmap-Improveunittesting]]
+Improve unit testing
+++++++++++++++++++++
+
+It should be easier to mock endpoints, replace parts of routes and
+whatnot. This allows you to leave your routes untouched and use the test
+kit to perform unit testing your routes. Currently the easiest approach
+is to add mocks into your routes which isn't desirable in some
+situations. Instead you should be able to _tell_ Camel which endpoints
+should be mocked and what parts of the routes should be replaced with an
+alternative part. This is an ongoing process which we hope to improve in
+future releases as well.
+
+*Status: Done*
+
+[[Camel2.7-Roadmap-SeeAlso]]
+See Also
+~~~~~~~~
+
+link:camel-30-ideas.html[Camel 3.0 - Ideas]

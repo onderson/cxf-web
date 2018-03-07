@@ -1,0 +1,31 @@
+[[ConfluenceContent]]
+[[Documentation-Documentation]]
+Documentation
+~~~~~~~~~~~~~
+
+* link:architecture.html[Architecture]
+* link:tutorials.html[Tutorials]
+* link:cookbook.html[Cookbook]
+* link:books.html[Books]
+* link:components.html[Components]
+* link:camel-dsl.html[Camel DSL]
+* link:enterprise-integration-patterns.html[Enterprise Integration
+Patterns]
+* link:soa-patterns.html[SOA Patterns]
+* link:manual.html[Manual]
+* link:user-guide.html[User Guide]
+* link:tools.html[Tools]
+
+[[Documentation-OtherSourcesofDocumentationandInformation]]
+Other Sources of Documentation and Information
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+There are several companies that provide extra documentation, examples,
+tutorials, etc... that users may find useful. See the
+link:commercial-camel-offerings.html[Commercial Camel Offerings] page
+for more details.
+
+Also, many users have created excellent blog posts and other articles
+that may provide extra information. See the
+link:tutorials.html[Tutorials] and link:articles.html[Articles] pages
+for listings.

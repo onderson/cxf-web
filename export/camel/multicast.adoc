@@ -1,0 +1,194 @@
+[[ConfluenceContent]]
+[[Multicast-Multicast]]
+Multicast
+^^^^^^^^^
+
+The Multicast allows to route the same message to a number of endpoints
+and process them in a different way. The main difference between the
+Multicast and Splitter is that Splitter will split the message into
+several pieces but the Multicast will not modify the request message.
+
+[[Multicast-Options]]
+Options
+^^^^^^^
+
+confluenceTableSmall
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Name |Default Value |Description
+|`strategyRef` |  |Refers to an
+http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/processor/aggregate/AggregationStrategy.html[AggregationStrategy]
+to be used to assemble the replies from the multicasts, into a single
+outgoing message from the link:multicast.html[Multicast]. By default
+Camel will use the last reply as the outgoing message. From *Camel 2.12*
+onwards you can also use a POJO as the `AggregationStrategy`, see the
+link:aggregator2.html[Aggregate] page for more details. If an exception
+is thrown from the aggregate method in the AggregationStrategy, then by
+default, that exception is not handled by the error handler. The error
+handler can be enabled to react if enabling the shareUnitOfWork option.
+
+|`strategyMethodName` |  |*Camel 2.12:* This option can be used to
+explicit declare the method name to use, when using POJOs as the
+`AggregationStrategy`. See the link:aggregator2.html[Aggregate] page for
+more details.
+
+|`strategyMethodAllowNull` |`false` |*Camel 2.12:* If this option is
+`false` then the aggregate method is not used if there was no data to
+enrich. If this option is `true` then `null` values is used as the
+`oldExchange` (when no data to enrich), when using POJOs as the
+`AggregationStrategy`. See the link:aggregator2.html[Aggregate] page for
+more details.
+
+|`parallelProcessing` |`false` |If enabled then sending messages to the
+multicasts occurs concurrently. Note the caller thread will still wait
+until all messages has been fully processed, before it continues. Its
+only the sending and processing the replies from the multicasts which
+happens concurrently. | 
+
+|`parallelAggregate` |`false` |*Camel 2.14:* If enabled then the
+`aggregate` method on `AggregationStrategy` can be called concurrently.
+Notice that this would require the implementation of
+`AggregationStrategy` to be implemented as thread-safe. By default this
+is `false` meaning that Camel synchronizes the call to the `aggregate`
+method. Though in some use-cases this can be used to archive higher
+performance when the `AggregationStrategy` is implemented as
+thread-safe.
+
+|`executorServiceRef` |  |Refers to a custom
+link:threading-model.html[Thread Pool] to be used for parallel
+processing. Notice if you set this option, then parallel processing is
+automatic implied, and you do not have to enable that option as well.
+
+|`stopOnException` |`false` |*Camel 2.2:* Whether or not to stop
+continue processing immediately when an exception occurred. If disable,
+then Camel will send the message to all multicasts regardless if one of
+them failed. You can deal with exceptions in the
+http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/processor/aggregate/AggregationStrategy.html[AggregationStrategy]
+class where you have full control how to handle that.
+
+|`streaming` |`false` |If enabled then Camel will process replies
+out-of-order, eg in the order they come back. If disabled, Camel will
+process replies in the same order as multicasted.
+
+|`timeout` |  |*Camel 2.5:* Sets a total timeout specified in millis. If
+the link:multicast.html[Multicast] hasn't been able to send and process
+all replies within the given timeframe, then the timeout triggers and
+the link:multicast.html[Multicast] breaks out and continues. Notice if
+you provide a
+http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/processor/aggregate/TimeoutAwareAggregationStrategy.html[TimeoutAwareAggregationStrategy]
+then the `timeout` method is invoked before breaking out. If the timeout
+is reached with running tasks still remaining, certain tasks for which
+it is difficult for Camel to shut down in a graceful manner may continue
+to run. So use this option with a bit of care. We may be able to improve
+this functionality in future Camel releases.
+
+|`onPrepareRef` |  |*Camel 2.8:* Refers to a custom
+link:processor.html[Processor] to prepare the copy of the
+link:exchange.html[Exchange] each multicast will receive. This allows
+you to do any custom logic, such as deep-cloning the message payload if
+that's needed etc.
+
+|`shareUnitOfWork` |`false` |*Camel 2.8:* Whether the unit of work
+should be shared. See the same option on link:splitter.html[Splitter]
+for more details.
+|=======================================================================
+
+[[Multicast-Example]]
+Example
++++++++
+
+The following example shows how to take a request from the *direct:a*
+endpoint , then multicast these request to *direct:x*, *direct:y*,
+*direct:z*.
+
+*Using the link:fluent-builders.html[Fluent
+Builders]*\{snippet:id=example|lang=java|url=camel/trunk/camel-core/src/test/java/org/apache/camel/processor/MulticastTest.java}By
+default Multicast invokes each endpoint sequentially. If parallel
+processing is desired, simply use
+
+from("direct:a").multicast().parallelProcessing().to("direct:x",
+"direct:y", "direct:z");
+
+In case of using InOut MEP, an AggregationStrategy is used for
+aggregating all reply messages. The default is to only use the latest
+reply message and discard any earlier replies. The aggregation strategy
+is configurable:
+
+from("direct:start") .multicast(new MyAggregationStrategy())
+.parallelProcessing().timeout(500).to("direct:a", "direct:b",
+"direct:c") .end() .to("mock:result");
+
+[[Multicast-Stopprocessingincaseofexception]]
+Stop processing in case of exception
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available as of Camel 2.1*
+
+The link:multicast.html[Multicast] will by default continue to process
+the entire link:exchange.html[Exchange] even in case one of the
+multicasted messages will thrown an exception during routing. +
+For example if you want to multicast to 3 destinations and the 2nd
+destination fails by an exception. What Camel does by default is to
+process the remainder destinations. You have the chance to remedy or
+handle this in the `AggregationStrategy`.
+
+But sometimes you just want Camel to stop and let the exception be
+propagated back, and let the Camel error handler handle it. You can do
+this in Camel 2.1 by specifying that it should stop in case of an
+exception occurred. This is done by the `stopOnException` option as
+shown below:
+
+from("direct:start") .multicast() .stopOnException().to("direct:foo",
+"direct:bar", "direct:baz") .end() .to("mock:result");
+from("direct:foo").to("mock:foo"); from("direct:bar").process(new
+MyProcessor()).to("mock:bar"); from("direct:baz").to("mock:baz");
+
+And using XML DSL you specify it as follows:
+
+xml <route> <from uri="direct:start"/> <multicast
+stopOnException="true"> <to uri="direct:foo"/> <to uri="direct:bar"/>
+<to uri="direct:baz"/> </multicast> <to uri="mock:result"/> </route>
+<route> <from uri="direct:foo"/> <to uri="mock:foo"/> </route> <route>
+<from uri="direct:bar"/> <process ref="myProcessor"/> <to
+uri="mock:bar"/> </route> <route> <from uri="direct:baz"/> <to
+uri="mock:baz"/> </route>
+
+[[Multicast-UsingonPreparetoexecutecustomlogicwhenpreparingmessages]]
+Using onPrepare to execute custom logic when preparing messages
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available as of Camel 2.8*
+
+The link:multicast.html[Multicast] will copy the source
+link:exchange.html[Exchange] and multicast each copy. However the copy
+is a shallow copy, so in case you have mutateable message bodies, then
+any changes will be visible by the other copied messages. If you want to
+use a deep clone copy then you need to use a custom `onPrepare` which
+allows you to do this using the link:processor.html[Processor]
+interface.
+
+Notice the `onPrepare` can be used for any kind of custom logic which
+you would like to execute before the link:exchange.html[Exchange] is
+being multicasted.
+
+Design for immutable
+
+Its best practice to design for immutable objects.
+
+For example if you have a mutable message body as this Animal
+class:\{snippet:id=e1|lang=java|title=Animal|url=camel/trunk/camel-core/src/test/java/org/apache/camel/processor/Animal.java}Then
+we can create a deep clone processor which clones the message
+body:\{snippet:id=e1|lang=java|title=AnimalDeepClonePrepare|url=camel/trunk/camel-core/src/test/java/org/apache/camel/processor/AnimalDeepClonePrepare.java}Then
+we can use the AnimalDeepClonePrepare class in the
+link:multicast.html[Multicast] route using the `onPrepare` option as
+shown:\{snippet:id=e1|lang=java|title=Multicast using
+onPrepare|url=camel/trunk/camel-core/src/test/java/org/apache/camel/processor/MulticastOnPrepareTest.java}And
+the same example in XML DSL\{snippet:id=e1|lang=xml|title=Multicast
+using
+onPrepare|url=camel/trunk/components/camel-spring/src/test/resources/org/apache/camel/spring/processor/MulticastOnPrepareTest.xml}Notice
+the `onPrepare` option is also available on other link:eip.html[EIP]s
+such as link:splitter.html[Splitter], link:recipient-list.html[Recipient
+List], and link:wire-tap.html[Wire Tap].
+
+link:using-this-pattern.html[Using This Pattern]

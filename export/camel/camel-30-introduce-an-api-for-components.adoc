@@ -1,0 +1,35 @@
+[[ConfluenceContent]]
+Currently each component needs to depend on the camel-core. So it sucks
+in a lot more than it really needs.
+
+The idea is to define a minimal API that contains everything a typical
+component needs. This API should be as independent of the camel
+implementation as possible. +
+Optionally we could aim for an API that is so general that it can also
+be a base for CXF and Servicemix.
+
+The main issue currently is the CamelContext. It references to everthing
+else and so makes it necessary to suck in all camel-core. So what we
+need to do is create a subset that I call RuntimeCamelContext. This
+should only contain the things needed at runtime. It should also only
+refrence to interfaces so we do not suck in implementations.
+
+It may also be a good idea to define specialized interfaces for parts of
+the CamelContext. For example we could have an exchange Factory. Most
+endpoints need the CamelContext only to create exchanges so this may be
+everything they need.
+
+So what should the API contain:
+
+* Exchange
+* Message
+* Component
+* Endpoint
+* Producer
+* Consumer
+* RuntimeCamelContext
+
+What should the API not contain:
+
+* CamelContext: The camelcontext currently references to almost
+everything

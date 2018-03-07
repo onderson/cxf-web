@@ -1,0 +1,130 @@
+[[ConfluenceContent]]
+[[Class-ClassComponent]]
+Class Component
+~~~~~~~~~~~~~~~
+
+*Available as of Camel 2.4*
+
+The *class:* component binds beans to Camel message exchanges. It works
+in the same way as the link:bean.html[Bean] component but instead of
+looking up beans from a link:registry.html[Registry] it creates the bean
+based on the class name.
+
+[[Class-URIformat]]
+URI format
+^^^^^^^^^^
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+class:className[?options]
+----
+
+Where *className* is the fully qualified class name to create and use as
+bean.
+
+[[Class-Options]]
+Options
+^^^^^^^
+
+[width="100%",cols="25%,25%,25%,25%",options="header",]
+|=======================================================================
+|Name |Type |Default |Description
+|`method` |`String` |`null` |The method name that bean will be invoked.
+If not provided, Camel will try to pick the method itself. In case of
+ambiguity an exception is thrown. See link:bean-binding.html[Bean
+Binding] for more details.
+
+|`multiParameterArray` |`boolean` |`false` |How to treat the parameters
+which are passed from the message body; if it is `true`, the In message
+body should be an array of parameters.
+
+|`bean.xxx` |  |`null` |*Camel 2.17:* To configure additional options on
+the create bean instance from the class name. For example to configure a
+foo option on the bean, use bean.foo=123.
+|=======================================================================
+
+You can append query options to the URI in the following format,
+`?option=value&option=value&...`
+
+[[Class-Using]]
+Using
+^^^^^
+
+You simply use the *class* component just as the link:bean.html[Bean]
+component but by specifying the fully qualified classname instead. +
+For example to use the `MyFooBean` you have to do as follows:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+    from("direct:start").to("class:org.apache.camel.component.bean.MyFooBean").to("mock:result");
+----
+
+You can also specify which method to invoke on the `MyFooBean`, for
+example `hello`:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+    from("direct:start").to("class:org.apache.camel.component.bean.MyFooBean?method=hello").to("mock:result");
+----
+
+[[Class-Settingpropertiesonthecreatedinstance]]
+Setting properties on the created instance
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In the endpoint uri you can specify properties to set on the created
+instance, for example if it has a `setPrefix` method:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+   // Camel 2.17 onwards
+   from("direct:start")
+        .to("class:org.apache.camel.component.bean.MyPrefixBean?bean.prefix=Bye")
+        .to("mock:result");
+ 
+   // Camel 2.16 and older 
+   from("direct:start")
+        .to("class:org.apache.camel.component.bean.MyPrefixBean?prefix=Bye")
+        .to("mock:result");
+----
+
+And you can also use the `#` syntax to refer to properties to be looked
+up in the link:registry.html[Registry].
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+    // Camel 2.17 onwards
+    from("direct:start")
+        .to("class:org.apache.camel.component.bean.MyPrefixBean?bean.cool=#foo")
+        .to("mock:result");
+
+    // Camel 2.16 and older
+    from("direct:start")
+        .to("class:org.apache.camel.component.bean.MyPrefixBean?cool=#foo")
+        .to("mock:result");
+----
+
+Which will lookup a bean from the link:registry.html[Registry] with the
+id `foo` and invoke the `setCool` method on the created instance of the
+`MyPrefixBean` class.
+
+[Tip]
+====
+ **See more**
+
+See more details at the link:bean.html[Bean] component as the *class*
+component works in much the same way.
+
+====
+
+[[Class-SeeAlso]]
+See Also
+^^^^^^^^
+
+* link:configuring-camel.html[Configuring Camel]
+* link:component.html[Component]
+* link:endpoint.html[Endpoint]
+* link:getting-started.html[Getting Started]
+
+* link:bean.html[Bean]
+* link:bean-binding.html[Bean Binding]
+* link:bean-integration.html[Bean Integration]

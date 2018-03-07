@@ -1,0 +1,8 @@
+[[ConfluenceContent]]
+Camel uses http://www.slf4j.org/[sfl4j] which allows you to configure
+logging via, among others:
+
+* http://logging.apache.org/log4j/[Log4j]
+* http://logback.qos.ch/[Logback]
+* http://java.sun.com/j2se/1.4.2/docs/api/java/util/logging/package-summary.html[JDK
+Util Logging logging]

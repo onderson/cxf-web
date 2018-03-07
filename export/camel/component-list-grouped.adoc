@@ -1,0 +1,2068 @@
+[[ConfluenceContent]]
+[[ComponentListGrouped-AninformalgroupingofCamelcomponents.]]
+An informal grouping of Camel components.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This list was refined from the main components page in support of
+establishing information for the following poster:
+
+* The Apache Camel Components Poster
+(http://gliesian.com/camel/ApacheCamelComponents.pdf[PDF],
+http://gliesian.com/camel/ApacheCamelComponentsCropMarksAndBleed.pdf[PDF
+w/ crops and bleed],
+http://gliesian.com/camel/ApacheCamelComponents.jpg[JPG image],
+http://fineartamerica.com/featured/apache-camel-components-poster-gliesian-llc.html[Printed])
+_by Gliesian LLC._ (October, 2013)
+
+[[ComponentListGrouped-AutomatingTasks]]
+Automating Tasks
+^^^^^^^^^^^^^^^^
+
+[width="100%",cols="50%,50%",options="header",]
+|=======================================================================
+|Component / ArtifactId / URI |Description
+a|
+link:timer.html[Timer] / camel-core
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+timer:timerName[?<options>]
+----
+
+ |Used to generate message exchanges when a timer fires. Events can only
+be consumed from this endpoint.
+
+a|
+link:quartz.html[Quartz] / camel-quartz
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+quartz://groupName/timerName[?<options>]
+----
+
+ |Provides a scheduled delivery of messages using the
+http://www.quartz-scheduler.org/[Quartz 1.x scheduler].
+
+a|
+link:quartz2.html[Quartz2] / camel-quartz2
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+quartz2://groupName/timerName[?<options>]
+----
+
+ |Provides a scheduled delivery of messages using the
+http://www.quartz-scheduler.org/[Quartz 2.x scheduler].
+|=======================================================================
+
+[[ComponentListGrouped-Amazon]]
+Amazon
+^^^^^^
+
+[width="100%",cols="50%,50%",options="header",]
+|=======================================================================
+|Component / ArtifactId / URI |Description
+a|
+link:aws-cw.html[AWS-CW] / link:aws.html[camel-aws]
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+aws-cw://namespace[?<options>]
+----
+
+ |For working with http://aws.amazon.com/cloudwatch/[Amazon's CloudWatch
+(CW)].
+
+a|
+link:aws-ddb.html[AWS-DDB] / link:aws.html[camel-aws]
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+aws-ddb://tableName[?<options>]
+----
+
+ |For working with http://aws.amazon.com/dynamodb/[Amazon's DynamoDB
+(DDB)].
+
+a|
+link:aws-sdb.html[AWS-SDB] / link:aws.html[camel-aws]
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+aws-sdb://domainName[?<options>]
+----
+
+ |For working with http://aws.amazon.com/simpledb/[Amazon's SimpleDB
+(SDB)].
+
+a|
+link:aws-ses.html[AWS-SES] / link:aws.html[camel-aws]
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+aws-ses://from[?<options>]
+----
+
+ |For working with http://aws.amazon.com/ses/[Amazon's Simple Email
+Service (SES)].
+
+a|
+link:aws-sns.html[AWS-SNS] / link:aws.html[camel-aws]
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+aws-sns://topicName[?<options>]
+----
+
+ |For Messaging with http://aws.amazon.com/sns/[Amazon's Simple
+Notification Service (SNS)].
+
+a|
+link:aws-sqs.html[AWS-SQS] / link:aws.html[camel-aws]
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+aws-sqs://queueName[?<options>]
+----
+
+ |For Messaging with http://aws.amazon.com/sqs/[Amazon's Simple Queue
+Service (SQS)].
+
+a|
+link:aws-s3.html[AWS-S3] / link:aws.html[camel-aws]
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+aws-s3://bucketName[?<options>]
+----
+
+ |For working with http://aws.amazon.com/s3/[Amazon's Simple Storage
+Service (S3)].
+|=======================================================================
+
+[[ComponentListGrouped-Basics]]
+Basics
+^^^^^^
+
+[width="100%",cols="50%,50%",options="header",]
+|=======================================================================
+|Component / ArtifactId / URI |Description
+a|
+link:bean.html[Bean] / camel-core
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+bean:beanName[?<options>]
+----
+
+ |Uses the link:bean-binding.html[Bean Binding] to bind message
+exchanges to beans in the link:registry.html[Registry]. Is also used for
+exposing and invoking Plain Old Java Objects (POJOs).
+
+a|
+link:class.html[Class] / camel-core
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+class:className[?<options>]
+----
+
+ |Uses the link:bean-binding.html[Bean Binding] to bind message
+exchanges to beans based on the class name. Is also used for exposing
+and invoking POJOs.
+
+a|
+link:context.html[Context] / camel-context
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+[context:]camelContextId:localEndpointName[?<options>]
+----
+
+ |Used to refer to endpoints within a separate CamelContext to provide a
+simple link:context.html[black box composition] approach so that routes
+can be combined into a CamelContext and then used as a black box
+component inside other routes in other CamelContext.
+
+a|
+link:dataformat-component.html[Data Format] / camel-core
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+dataformat:name:<marshal|unmarshal>[?<options>]
+----
+
+ |For working with link:data-format.html[Data Format]s as if it was a
+regular Component supporting Endpoints and URIs.
+
+a|
+link:exec.html[Exec] / camel-exec
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+exec://executable[?<options>]
+----
+
+ |For executing system commands.
+
+a|
+link:language.html[Language] / camel-core
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+language://languageName[:script][?<options>]
+----
+
+ |Executes link:languages.html[Languages] scripts.
+
+a|
+link:printer.html[Printer] / camel-printer
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+lpr://hostName[:port]/printerPath[?<options>]
+----
+
+ |Facilitates creation of printer endpoints to local, remote and
+wireless printers. The endpoints provide the ability to print camel
+directed payloads when utilized on camel routes.
+
+a|
+link:properties.html[Properties] / camel-core
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+properties://key[?<options>]
+----
+
+ |Facilitates using property placeholders directly in endpoint URI
+definitions.
+
+a|
+link:ref.html[Ref] / camel-core
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+ref:name
+----
+
+ |Component for lookup of existing endpoints bound in the
+link:registry.html[Registry].
+|=======================================================================
+
+[[ComponentListGrouped-Chat]]
+Chat
+^^^^
+
+[width="100%",cols="50%,50%",options="header",]
+|====================================================================
+|Component / ArtifactId / URI |Description
+a|
+link:irc.html[IRC] / camel-irc
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+irc:[login@]hostName[:port]/#room[?<options>]
+----
+
+ |For Internet Relay Chat (IRC) communication.
+a|
+link:xmpp.html[XMPP] / camel-xmpp
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+xmpp://[login@]hostname[:port][/participant][?<options>]
+----
+
+ |Working with the Extensible Messaging and Presence Protocol (XMPP).
+|====================================================================
+
+[[ComponentListGrouped-Clusters]]
+Clusters
+^^^^^^^^
+
+[width="100%",cols="50%,50%",options="header",]
+|=======================================================================
+|Component / ArtifactId / URI |Description
+a|
+link:jgroups.html[JGroups] / camel-jgroups in
+http://code.google.com/p/camel-extra/[camel-extra]
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+jgroups://clusterName[?<options>]
+----
+
+ |Provides exchange of messages between Camel infrastructure and JGroups
+clusters.
+
+a|
+link:zookeeper.html[Zookeeper] / camel-zookeeper
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+zookeeper://zookeeperServer[:port][/path][?<options>]
+----
+
+ |Working with http://hadoop.apache.org/zookeeper/[ZooKeeper] clusters.
+|=======================================================================
+
+[[ComponentListGrouped-ContentRepositories]]
+Content Repositories
+^^^^^^^^^^^^^^^^^^^^
+
+[width="100%",cols="50%,50%",options="header",]
+|=======================================================================
+|Component / ArtifactId / URI |Description
+a|
+link:cmis.html[CMIS] / camel-cmis
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+cmis://cmisServerUrl[?<options>]
+----
+
+ |Uses the http://chemistry.apache.org/java/opencmis.html[Apache
+Chemistry] client API to interface with Content Management
+Interoperability Services (CMIS).
+
+a|
+link:jcr.html[JCR] / camel-jcr
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+jcr://user:password@repository/path/to/node[?<options>]
+----
+
+ |Storing a message in a Java Content Repository (JCR) compliant
+repository like http://jackrabbit.apache.org[Apache Jackrabbit].
+|=======================================================================
+
+[[ComponentListGrouped-EndpointCommunications]]
+Endpoint Communications
+^^^^^^^^^^^^^^^^^^^^^^^
+
+[width="100%",cols="50%,50%",options="header",]
+|=======================================================================
+|Component / ArtifactId / URI |Description
+a|
+link:direct.html[Direct] / camel-core
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+direct:someName[?<options>]
+----
+
+ |Synchronous call to another endpoint from *same* CamelContext.
+
+a|
+link:direct-vm.html[Direct-VM] / camel-core
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+direct-vm:someName[?<options>]
+----
+
+ |Synchronous call to another endpoint in another CamelContext running
+in the same Java virtual machine (JVM).
+
+a|
+link:disruptor.html[Disruptor] / camel-disruptor
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+disruptor:someName[?<option>]
+----
+
+ |Provides asynchronous SEDA behavior much as the standard SEDA
+Component, but utilizes a Disruptor instead of a BlockingQueue.
+
+a|
+link:disruptor.html[Disruptor VM] / camel-disruptor
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+disruptor-vm:someName[?<option>]
+----
+
+ |Same as Disruptor, but the buffers of the Disrupter VMm endpoints also
+provides support for communication across CamelContexts instances so you
+can use this mechanism to communicate across web applications.
+
+a|
+link:seda.html[SEDA] / camel-core
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+seda:someName[?<options>]
+----
+
+ |Asynchronous call to another endpoint in the same Camel Context;
+staged event-driven architecture (SEDA).
+
+a|
+link:vm.html[VM] / camel-core
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+vm:queueName[?<options>]
+----
+
+ |Asynchronous call to another endpoint in the same JVM.
+|=======================================================================
+
+[[ComponentListGrouped-ESB]]
+ESB
+^^^
+
+[width="100%",cols="50%,50%",options="header",]
+|=======================================================================
+|Component / ArtifactId / URI |Description
+a|
+link:jbi.html[JBI] / servicemix-camel in org.apache.servicemix
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+jbi:serviceName
+----
+
+ |For Java Business Integration (JBI) integration such as working with
+http://servicemix.apache.org[Apache ServiceMix].
+
+a|
+link:nmr.html[NMR] / apache-servicemix-nmr in org.apache.servicemix.nmr
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+nmr://serviceName
+----
+
+ |Integration with the Normalized Message Router bus in Apache
+ServiceMix.
+
+a|
+https://cwiki.apache.org/confluence/pages/createpage.action?spaceKey=CAMEL&title=Vert.x&linkCreation=true&fromPageId=34021146[Vert.x]
+/ camel-vertx
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+vertx:eventBusName
+----
+
+ |Working with the Vert.x event bus.
+|=======================================================================
+
+[[ComponentListGrouped-Feeds]]
+Feeds
+^^^^^
+
+[width="100%",cols="50%,50%",options="header",]
+|=======================================================================
+|Component / ArtifactId / URI |Description
+a|
+link:atom.html[Atom] / camel-atom
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+atom:atomUri[?<options>]
+----
+
+ |Working with http://incubator.apache.org/abdera/[Apache Abdera] for
+atom integration, such as consuming an atom feed.
+
+a|
+link:rss.html[RSS] / camel-rss
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+rss:uri[?<options>]
+----
+
+ |Working with http://rometools.org/[ROME] for Rich Site Summary (RSS)
+integration.
+|=======================================================================
+
+[[ComponentListGrouped-FileI/OandTransfer]]
+File I/O and Transfer
+^^^^^^^^^^^^^^^^^^^^^
+
+[width="100%",cols="50%,50%",options="header",]
+|=======================================================================
+|Component / ArtifactId / URI |Description
+a|
+link:file2.html[File] / camel-core
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+file://nameOfFileOrDirectory[?<options>]
+----
+
+ |Sending messages to a file or polling a file or directory.
+
+a|
+link:flatpack.html[Flatpack] / camel-flatpack
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+flatpack:[fixed|delim]:configFile[?<options>]
+----
+
+ |Processing fixed width or delimited files or messages using the
+http://flatpack.sourceforge.net[FlatPack library].
+
+a|
+link:ftp2.html[FTP] / camel-ftp
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+ftp:contextPath[?<options>]
+----
+
+ |Sending and receiving files over File Transfer Protocol (FTP).
+
+a|
+link:ftp2.html[FTPS] / camel-ftp
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+ftps://[username@]hostName[:port]/directoryName[?<options>]
+----
+
+ |Sending and receiving files over FTP Secure (TLS and SSL).
+
+a|
+link:hdfs.html[HDFS] / camel-hdfs
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+hdfs://hostName[:port][/path][?<options>]
+----
+
+ |For reading/writing from/to an Hadoop Distributed File System (HDFS)
+filesystem.
+
+a|
+link:jsch.html[Jsch] / camel-jsch
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+scp://hostName[:port]/destination[?<options>]
+----
+
+ |Support for the scp protocol using the Client API of the Java Secure
+Channel (JSch) project.
+
+a|
+link:ftp2.html[SFTP] / camel-ftp
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+sftp://[username@]hostName[:port]/directoryName[?<options>]
+----
+
+ |Sending and receiving files over FTP Secure (FTP and SSH).
+
+a|
+link:stream.html[Stream] / camel-stream
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+stream:<in|out|err|file|header|url>[?<options>]
+----
+
+ |Reading or writing to a stream.
+|=======================================================================
+
+[[ComponentListGrouped-Google]]
+Google
+^^^^^^
+
+[width="100%",cols="50%,50%",options="header",]
+|=======================================================================
+|Component / ArtifactId / URI |Description
+a|
+link:gauth.html[GAuth] / link:gae.html[camel-gae]
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+gauth://name[?<options>]
+----
+
+ |Used by web applications to implement an
+http://code.google.com/apis/accounts/docs/OAuth.html[OAuth] consumer.
+
+a|
+link:ghttp.html[GHttp] / link:gae.html[camel-gae]
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+ghttp:contextPath[?<options>]
+----
+
+ |Provides connectivity to the
+http://code.google.com/appengine/docs/java/urlfetch/[URL fetch service]
+of Google App Engine but can also be used to receive messages from
+servlets.
+
+a|
+link:glogin.html[GLogin] / link:gae.html[camel-gae]
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+glogin://hostName[:port][?<options>]
+----
+
+ |Used by Camel applications outside Google App Engine (GAE) for
+programmatic login to GAE applications.
+
+a|
+link:gtask.html[GTask] / link:gae.html[camel-gae]
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+gtask://queueName[?<options>]
+----
+
+ |Supports asynchronous message processing on Google App Engine by using
+the http://code.google.com/appengine/docs/java/taskqueue/[task queueing
+service] as message queue.
+
+a|
+link:gmail.html[GMail] / link:gae.html[camel-gae]
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+gmail://user@g[oogle]mail.com[?<options>]
+----
+
+ |Supports sending of emails via the
+http://code.google.com/appengine/docs/java/mail/[mail service] of Google
+App Engine.
+
+a|
+link:guava-eventbus.html[Guava EventBus] / camel-guava-eventbus
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+guava-eventbus:busName[?<options>]
+----
+
+ |The
+http://docs.guava-libraries.googlecode.com/git/javadoc/com/google/common/eventbus/package-summary.html[Google
+Guava EventBus] allows publish-subscribe style communication between
+components without requiring the components to explicitly register with
+one another (and thus be aware of each other). This component provides
+integration bridge between Camel and
+http://docs.guava-libraries.googlecode.com/git/javadoc/com/google/common/eventbus/package-summary.html[Google
+Guava EventBus] infrastructure.
+|=======================================================================
+
+[[ComponentListGrouped-HTTP]]
+HTTP
+^^^^
+
+[width="100%",cols="50%,50%",options="header",]
+|=======================================================================
+|Component / ArtifactId / URI |Description
+a|
+link:ahc.html[AHC] / camel-ahc
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+ahc:http[s]://hostName[:port][/resourceUri][?<options>]
+----
+
+ |To call external HTTP services using
+http://github.com/sonatype/async-http-client[Async Http Client].
+
+a|
+link:cometd.html[Cometd] / camel-cometd
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+cometd://hostName:port/channelName[?<options>]
+----
+
+ |HTTP-based event routing bus used to deliver messages using the
+http://docs.codehaus.org/display/JETTY/Cometd+(aka+Bayeux)[Jetty Cometd
+implementation] of the
+http://svn.xantus.org/shortbus/trunk/bayeux/bayeux.html[Bayeux
+Protocol].
+
+a|
+link:http.html[HTTP] / camel-http
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+http:hostName[:port][/resourceUri][?<options>]
+----
+
+ |For calling out to external HTTP servers using Apache HTTP Client 3.x.
+
+a|
+link:http4.html[HTTP4] / camel-http4
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+http4:hostName[:port][/resourceUri][?<options>]
+----
+
+ |For calling out to external HTTP servers using Apache HTTP Client 4.x.
+
+a|
+link:jetty.html[Jetty] / camel-jetty
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+jetty:hostName[:port][/resourceUri][?<options>]
+----
+
+ |For exposing services over HTTP.
+
+a|
+link:servlet.html[Servlet] / camel-servlet
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+servlet:relativePath[?<options>]
+----
+
+ |For exposing services over HTTP through the Servlet which is deployed
+into the Web container.
+|=======================================================================
+
+[[ComponentListGrouped-JavaMessageService]]
+Java Message Service
+^^^^^^^^^^^^^^^^^^^^
+
+[width="100%",cols="50%,50%",options="header",]
+|=======================================================================
+|Component / ArtifactId / URI |Description
+a|
+link:activemq.html[ActiveMQ] / activemq-camel in org.apache.activemq
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+activemq:[topic:]destinationName
+----
+
+ |For JMS Messaging with http://activemq.apache.org/[Apache ActiveMQ]
+
+a|
+link:jms.html[JMS] / camel-jms
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+jms:[queue:|topic:]destinationName[?<options>]
+----
+
+ |Working with JMS provider.
+
+a|
+link:rabbitmq.html[RabbitMQ] / camel-rabbitmq
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+rabbitmq://hostname[:port]/exchangeName[?<options>]
+----
+
+ |For JMS Messaging with RabbitMQ.
+
+a|
+link:sjms.html[SJMS] / camel-sjms
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+sjms:[queue:|topic:]destinationName[?<options>]
+----
+
+ |From the ground upwards implementation of a JMS client.
+
+a|
+link:stomp.html[Stomp] / camel-stomp
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+stomp:queue:destinationName[?<options>]
+----
+
+ |For communicating with http://stomp.github.io/[Stomp] compliant
+message brokers, like http://activemq.apache.org[Apache ActiveMQ] or
+http://activemq.apache.org/apollo/[ActiveMQ Apollo.]
+
+a|
+link:zeromq.html[ZeroMQ] / camel-zeromq in
+http://code.google.com/p/camel-extra/[camel-extra].
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+zeromq:<tcp|ipc>://hostName:port
+----
+
+ |For JMS Messaging with http://zeromq.org[ZeroMQ].
+|=======================================================================
+
+[[ComponentListGrouped-LDAP]]
+LDAP
+^^^^
+
+[width="100%",cols="50%,50%",options="header",]
+|=======================================================================
+|Component / ArtifactId / URI |Description
+a|
+link:ldap.html[LDAP] / camel-ldap
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+ldap:hostName[:port][?<options>]
+----
+
+ |Performing searches on Lightweight Directory Access Protocol (LDAP)
+servers.
+
+a|
+link:spring-ldap.html[Spring LDAP] / camel-spring-ldap
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+spring-ldap:springLdapTemplateBean[?<options>]
+----
+
+ |Camel wrapper for http://www.springsource.org/ldap[Spring LDAP].
+Spring LDAP is a Java library for simplifying LDAP operations, based on
+the pattern of Spring's JdbcTemplate.
+|=======================================================================
+
+[[ComponentListGrouped-Mail]]
+Mail
+^^^^
+
+[width="100%",cols="50%,50%",options="header",]
+|=======================================================================
+|Component / ArtifactId / URI |Description
+a|
+link:mail.html[IMAP] / camel-mail
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+imap://[username@]hostName[:port][?<options>]
+----
+
+ |Receiving email using Internet Message Access Protocol (IMAP).
+
+a|
+link:mail.html[IMAPS] / camel-mail
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+imaps://[username@]hostName[:port][?<options>]
+----
+
+ |Receiving email using secured
+http://en.wikipedia.org/wiki/Internet_Message_Access_Protocol[IMAP.]
+
+a|
+link:mail.html[POP3] / camel-mail
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+pop3://[username@]hostName port][?<options>]
+----
+
+ |Receiving email using Post Office Protocol (POP3) and JavaMail.
+
+a|
+link:mail.html[POP3S] / camel-mail
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+pop3s://[username@]hostName port][?<options>]
+----
+
+ |Receiving email using secured POP3 and JavaMail.
+
+a|
+link:mail.html[SMTP] / camel-mail
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+smtp://[username@]hostName[:port][?<options>]
+----
+
+ |Sending email using Simple Mail Transfer Protocol (SMTP) and JavaMail.
+
+a|
+link:mail.html[SMTPS] / camel-mail
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+smtps://[username@]hostName[:port][?<options>]
+----
+
+ |Sending email using secured SMTP and JavaMail.
+|=======================================================================
+
+[[ComponentListGrouped-MaintenanceandMonitoring]]
+Maintenance and Monitoring
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+[width="100%",cols="50%,50%",options="header",]
+|=======================================================================
+|Component / ArtifactId / URI |Description
+a|
+link:browse.html[Browse] / camel-core
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+browse:someName
+----
+
+ |Provides a simple link:browsableendpoint.html[BrowsableEndpoint] which
+can be useful for testing, visualisation tools or debugging. The
+exchanges sent to the endpoint are all available to be browsed.
+
+a|
+link:controlbus-component.html[ControlBus] / camel-core
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+controlbus:command[?<options>]
+----
+
+ |link:controlbus.html[ControlBus] EIP that allows to send messages to
+link:endpoint.html[Endpoint]s for managing and monitoring your Camel
+applications.
+
+a|
+link:jmx.html[JMX] / camel-jmx
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+jmx://platform[?<options>]
+----
+
+ |For working with Java Management Extensions (JMX) notification
+listeners.
+
+a|
+link:log.html[Log] / camel-core
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+log:loggingCategory[?<options>]
+----
+
+ |Uses Jakarta Commons Logging to log the message exchange to some
+underlying logging system like log4j.
+
+a|
+https://cwiki.apache.org/confluence/display/CAMEL/Metrics+Component[Metrics] /
+camel-metrics
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+metrics:[meter|counter|histogram|timer]:metricname[?options]
+----
+
+ | Uses http://metrics.codahale.com/[Metrics] to collect application
+statistics directly from Camel routes.
+
+a|
+link:nagios.html[Nagios] / camel-nagios
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+nagios://hostName[:port][?<options>]
+----
+
+ |Sending passive checks to http://www.nagios.org/[Nagios] using
+http://code.google.com/p/jsendnsca/[JSendNSCA.]. Nagios supports IT
+Infrastruture Monitoring.
+
+a|
+link:snmp.html[SNMP] / camel-snmp
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+snmp://hostName[:port][?<options>]
+----
+
+ |Polling OID values and receiving traps using SNMP via
+http://snmp4j.com[SNMP4J] library.
+|=======================================================================
+
+[[ComponentListGrouped-Messaging]]
+Messaging
+^^^^^^^^^
+
+[width="100%",cols="50%,50%",options="header",]
+|=======================================================================
+|Component / ArtifactId / URI |Description
+a|
+link:amqp.html[AMQP] / camel-amqp
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+amqp:[queue:|topic:]destinationName[?<options>]
+----
+
+ |For Messaging with the Advanced Message Queuing Protocol (AMQP).
+
+a|
+link:esper.html[Esper] / camel-esper in
+http://code.google.com/p/camel-extra/[camel-extra]
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+esper:name[?<options>]
+----
+
+ |Working with the http://esper.codehaus.org[Esper Library] for Event
+Stream Processing.
+
+a|
+link:javaspace.html[JavaSpace] / camel-javaspace
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+javaspace:jini://hostName[?<options>]
+----
+
+ |Sending and receiving messages through
+http://java.sun.com/products/jini/2.1/doc/specs/html/js-spec.html[JavaSpace.]
+
+a|
+link:jt400.html[JT/400] / camel-jt400
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+jt400://user:pwd@system/<path_to_dtaq>[?<options>]
+----
+
+ |For integrating with data queues on an AS/400 (i.e., System i, IBM i,
+i5, etc.) systems.
+
+a|
+link:kestrel.html[Kestrel] / camel-kestrel
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+kestrel://[addresslist/]queueName[?<options>]
+----
+
+ |For producing to or consuming from
+https://github.com/robey/kestrel[Kestrel] queues.
+
+a|
+link:mqtt.html[MQTT] / camel-mqtt
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+mqtt:name[?<options>]
+----
+
+ |Component for communicating with MQ Telemetry Transport (MQTT)
+machine-to-machine (M2M) message brokers.
+
+a|
+link:sip.html[Sip] / camel-sip
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+sip://user@hostName[:port][?<options>]
+----
+
+ |Publish/Subscribe communication capability using the Session
+Initiation Protocol (SIP) protocol.
+
+a|
+link:sip.html[SIPS] / camel-sip
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+sips://user@hostName[:port][?<options>]
+----
+
+ |Publish/Subscribe communication capability using the secured Session
+Initiation Protocol (SIP) protocol.
+
+a|
+link:smpp.html[SMPP] / camel-smpp
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+smpp://[username@]hostName[:port][?<options>]
+----
+
+ |To send and receive SMS using Short Messaging Service Center using the
+http://code.google.com/p/jsmpp/[JSMPP library.]
+
+a|
+link:smpp.html[SMPPS] / camel-smpp
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+smpps://[username@]hostName[:port][?<options>]
+----
+
+ |To send and receive secured SMS using Short Messaging Service Center
+using the http://code.google.com/p/jsmpp/[JSMPP library.]
+
+a|
+link:quickfix.html[Quickfix] / camel-quickfix
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+quickfix:configFile[?<options>]
+----
+
+ |Implementation of the QuickFix for Java engine which allow to
+send/receive http://www.fixprotocol.org[FIX] messages.
+|=======================================================================
+
+[[ComponentListGrouped-Networking]]
+Networking
+^^^^^^^^^^
+
+[width="100%",cols="50%,50%",options="header",]
+|=======================================================================
+|Component / ArtifactId / URI |Description
+a|
+link:dns.html[DNS] / camel-dns
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+dns:operation[?<options>]
+----
+
+ |To lookup domain information and run Domain Name System (DNS) queries
+using http://www.xbill.org/dnsjava/[DNSJava].
+
+a|
+link:hl7.html[HL7] / camel-hl7
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+mina2:tcp://hostName[:port][?<options>]
+----
+
+ |For working with the HL7 MLLP protocol and the HL7 model using the
+http://hl7api.sourceforge.net[HAPI library.]
+
+a|
+link:mina.html[MINA] / camel-mina
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+mina:<tcp|udp|vm>:hostName[:port][?<options>]
+----
+
+ |Working with Apache Multipurpose Infrastructure for Network
+Applications (MINA) 1.x. Transmission Control Protocol (TCP), User
+Datagram Protocol (UDP) and Virtual Machine (VM) protocol are supported.
+
+a|
+link:mina2.html[MINA2] / camel-mina2
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+mina2:<tcp|udp|vm>:hostName[:port][?<options>]
+----
+
+ |Working with Apache MINA 2.x. Transmission Control Protocol (TCP),
+User Datagram Protocol (UDP) and Virtual Machine (VM) protocol are
+supported.
+
+a|
+link:netty.html[Netty] / camel-netty
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+netty:<tcp|udp>//hostName[:port][?<options>]
+----
+
+ |Working with TCP and UDP protocols using Java NIO based capabilities
+offered by the http://netty.io/[Netty] project.
+
+a|
+link:netty-http.html[Netty HTTP] / camel-netty-http
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+netty-http:http:[port]/contextPath[?<options>]
+----
+
+ |Netty HTTP server and client using the http://netty.io/[Netty]
+project.
+|=======================================================================
+
+[[ComponentListGrouped-OSGi]]
+OSGi
+^^^^
+
+[width="100%",cols="50%,50%",options="header",]
+|====================================================
+|Component / ArtifactId / URI |Description
+a|
+link:eventadmin.html[EventAdmin] / camel-eventadmin
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+eventadmin:topic[?<options>]
+----
+
+ |Receiving OSGi EventAdmin events.
+a|
+link:pax-logging.html[Pax Logging] / camel-paxlogging
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+paxlogging:appender
+----
+
+ |Receiving Pax-Logging events in OSGi.
+|====================================================
+
+[[ComponentListGrouped-Persistence]]
+Persistence
+^^^^^^^^^^^
+
+[width="100%",cols="50%,50%",options="header",]
+|=======================================================================
+|Component / ArtifactId / URI |Description
+a|
+link:couchdb.html[CouchDB] / camel-couchdb
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+couchdb:hostName[:port]/database[?<options>]
+----
+
+ |To integrate with http://couchdb.apache.org/[Apache CouchDB].
+
+a|
+link:db4o.html[Db4o] / camel-db4o in
+http://code.google.com/p/camel-extra/[camel-extra]
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+db4o://className
+----
+
+ |For using a db4o datastore as a queue via the
+http://www.db4o.com/[db4o] (database for objects) library.
+
+a|
+link:ejb.html[EJB] / camel-ejb
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+ejb:ejbName[?<options>]
+----
+
+ |Uses the link:bean-binding.html[Bean Binding] to bind message
+exchanges to Enterprise Java Beans (EJBs). It works like the
+link:bean.html[Bean] component but just for accessing EJBs. Supports EJB
+3.0 onwards.
+
+a|
+link:hbase.html[HBase] / camel-hbase
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+hbase://table[?<options>]
+----
+
+ |For reading/writing from/to an http://hadoop.apache.org/hbase/[HBase]
+store (Hadoop database).
+
+a|
+link:hibernate.html[Hibernate] / camel-hibernate in
+http://code.google.com/p/camel-extra/[camel-extra]
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+hibernate://entityName[?<options>]
+----
+
+ |For using a database as a queue via the
+http://www.hibernate.org/[Hibernate] library.
+
+a|
+link:ibatis.html[iBATIS] / camel-ibatis
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+ibatis://statementName[?<options>]
+----
+
+ |Performs a query, poll, insert, update or delete in a relational
+database using http://ibatis.apache.org/[Apache iBATIS].
+
+a|
+link:jdbc.html[JDBC] / camel-jdbc
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+jdbc:dataSourceName[?<options>]
+----
+
+ |For performing Java Database Connectivity (JDBC) queries and
+operations.
+
+a|
+link:jpa.html[JPA] / camel-jpa
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+jpa://entityName[?<options>]
+----
+
+ |For using a database as a queue via the Java Persistence API (JPA)
+specification for working with http://openjpa.apache.org/[OpenJPA],
+http://www.hibernate.org/[Hibernate] or TopLink.
+
+a|
+link:krati.html[Krati] / camel-krati
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+krati://datastorePath[?<options>]
+----
+
+ |For producing to or consuming to http://sna-projects.com/krati/[Krati]
+datastores.
+
+a|
+link:mongodb.html[MongoDB] / camel-mongodb
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+mongodb:connectionBean[?<options>]
+----
+
+ |Interacts with http://www.mongodb.org/[MongoDB] databases and
+collections. Offers producer endpoints to perform CRUD-style operations
+and more against databases and collections, as well as consumer
+endpoints to listen on collections and dispatch objects to Camel routes.
+
+a|
+link:mybatis.html[MyBatis] / camel-mybatis
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+mybatis://statementName[?<options>]
+----
+
+ |Performs a query, poll, insert, update or delete in a relational
+database using http://mybatis.org/[MyBatis].
+
+a|
+link:sql-component.html[SQL] / camel-sql
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+sql:queryCommand[?<options>]
+----
+
+ |Performing Structured Query Language (SQL) queries using JDBC.
+
+a|
+link:spring-neo4j.html[Spring Neo4j] / camel-spring-neo4j in
+http://code.google.com/p/camel-extra/[camel-extra]
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+spring-neo4j:http://hostName[:port]/database[?options]
+----
+
+ |Component for producing to Neo4j datastore using the
+http://www.springsource.org/spring-data/neo4j[Spring Data Neo4j]
+library.
+|=======================================================================
+
+[[ComponentListGrouped-PlatformSupport]]
+Platform Support
+^^^^^^^^^^^^^^^^
+
+[width="100%",cols="50%,50%",options="header",]
+|=======================================================================
+|Component / ArtifactId / URI |Description
+a|
+http://www.activiti.org/[Activiti] / activiti-camel
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+activiti:camelProcess:serviceTask
+----
+
+ |For working with http://www.activiti.org/[Activiti], a light-weight
+workflow and Business Process Management (BPM) platform which supports
+BPMN 2.
+
+a|
+link:apns.html[APNS] / camel-apns
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+apns:<notify|consumer>[?<options>]
+----
+
+ |For sending notifications to Apple iOS devices.
+
+a|
+link:salesforce.html[Salesforce] / camel-salesforce
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+salesforce:topic[?<options>]
+----
+
+ |To integrate with Salesforce.
+
+a|
+link:sap-netweaver.html[SAP NetWeaver] / camel-sap-netweaver
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+sap-netweaver:hostName[:port][?<options>]
+----
+
+ |To integrate with http://scn.sap.com/docs/DOC-31221[SAP NetWeaver
+Gateway.]
+|=======================================================================
+
+[[ComponentListGrouped-RemoteServices]]
+Remote Services
+^^^^^^^^^^^^^^^
+
+[width="100%",cols="50%,50%",options="header",]
+|=======================================================================
+|Component / ArtifactId / URI |Description
+a|
+link:avro.html[Avro] / camel-avro
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+avro:[transport]:[hostName]:[port][/messageName][?<options>]
+----
+
+ |Working with http://avro.apache.org/[Apache Avro] for data
+serialization.
+
+a|
+link:jclouds.html[jclouds] / camel-jclouds
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+jclouds:<blobstore|compute>:[provider id][?<options>]
+----
+
+ |For interacting with cloud compute & blobstore service via
+http://www.jclouds.org[jclouds.]
+
+a|
+link:jcifs.html[JCIFS] / camel-jcifs in
+http://code.google.com/p/camel-extra/[camel-extra]
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+smb://userName@hostName/shareName[?<options>]
+----
+
+ |This component provides access to remote file systems over the
+CIFS/SMB networking protocol by using the http://jcifs.samba.org/[JCIFS]
+library.
+
+a|
+link:rmi.html[RMI] / camel-rmi
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+rmi://hostName[:port][?<options>]
+----
+
+ |Working with Remote Method Invocation (RMI).
+
+a|
+link:ssh.html[SSH] component / camel-ssh
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+ssh:[username[:password]@]hostName[:port][?<options>]
+----
+
+ |For sending commands to a SSH server.
+|=======================================================================
+
+[[ComponentListGrouped-SearchEngines]]
+Search Engines
+^^^^^^^^^^^^^^
+
+[width="100%",cols="50%,50%",options="header",]
+|=======================================================================
+|Component / ArtifactId / URI |Description
+a|
+link:elasticsearch.html[ElasticSearch] / camel-elasticsearch
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+elasticsearch://clusterName[?<options>]
+----
+
+ |For interfacing with an http://elasticsearch.org[ElasticSearch]
+server.
+
+a|
+link:lucene.html[Lucene] / camel-lucene
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+lucene:searcherName:<insert|query>[?<options>]
+----
+
+ |Uses Apache Lucene to perform Java-based indexing and full text based
+searches using advanced analysis/tokenization capabilities.
+
+a|
+link:solr.html[Solr] / camel-solr
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+solr://hostName[:port]/solr[?<options>]
+----
+
+ |Uses the http://wiki.apache.org/solr/Solrj[Solrj] client API to
+interface with an http://lucene.apache.org/solr/[Apache Lucene Solr]
+server.
+|=======================================================================
+
+[[ComponentListGrouped-Security]]
+Security
+^^^^^^^^
+
+[width="100%",cols="50%,50%",options="header",]
+|=======================================================================
+|Component / ArtifactId / URI |Description
+a|
+link:crypto-digital-signatures.html[Crypto (Digital Signatures)] /
+camel-crypto
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+crypto:<sign|verify>:name[?<options>]
+----
+
+ |Used to sign and verify exchanges using the Signature Service of the
+Java Cryptographic Extension.
+
+a|
+link:xml-security-component.html[XML Security] / camel-xmlsecurity
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+xmlsecurity:<sign|verify>:name[?<options>]
+----
+
+ |Used to sign and verify exchanges using the XML signature
+specification.
+|=======================================================================
+
+[[ComponentListGrouped-SocialMedia]]
+Social Media
+^^^^^^^^^^^^
+
+[width="100%",cols="50%,50%",options="header",]
+|=======================================================================
+|Component / ArtifactId / URI |Description
+a|
+link:facebook.html[Facebook] / camel-facebook
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+facebook://endpoint[?<options>]
+----
+
+ |Providing access to all of the Facebook APIs accessible using
+http://facebook4j.org/en/index.html[Facebook4J.]
+
+a|
+link:twitter.html[Twitter] / camel-twitter
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+twitter://endpoint[?<options>]
+----
+
+ |Enables the most useful features of the Twitter API by encapsulating
+Twitter4J.
+
+a|
+link:yammer.html[Yammer] / camel-yammer
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+yammer://function[?<options>]
+----
+
+ |Allows you to interact with the http://yammer.com[Yammer] enterprise
+social network.
+|=======================================================================
+
+[[ComponentListGrouped-Specialsupport]]
+Special support
+^^^^^^^^^^^^^^^
+
+[width="100%",cols="50%,50%",options="header",]
+|=======================================================================
+|Component / ArtifactId / URI |Description
+a|
+link:cache.html[Cache] / camel-cache
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+cache://cacheName[?<options>]
+----
+
+ |The cache component facilitates creation of caching endpoints and
+processors using http://ehcache.org/[EHCache] as the cache
+implementation.
+
+a|
+link:geocoder.html[Geocoder] / camel-geocoder
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+geocoder:<address|latlng:latitude,longitude>[?<options>]
+----
+
+ |Supports looking up geocoders for an address, or reverse lookup
+geocoders from an address.
+
+a|
+link:hazelcast-component.html[Hazelcast] /
+link:hazelcast-component.html[camel-hazelcast]
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+hazelcast://[type]:cachename[?<options>]
+----
+
+ |http://www.hazelcast.com[Hazelcast] is a data grid supporting map,
+multimap, SEDA, queue, set, atomic number and simple clusters.
+
+a|
+link:rcode.html[RCode] / camel-rcode in
+http://code.google.com/p/camel-extra/[camel-extra]
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+rcode://host[:port]/operation[?options]
+----
+
+ |Uses http://www.rforge.net/Rserve/[Rserve] to integrate Camel with the
+statistics environment http://www.r-project.org/[R.]
+
+a|
+link:routebox.html[Routebox] / camel-routebox
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+routebox:routeBoxName[?<options>]
+----
+
+ |Facilitates the creation of specialized endpoints that offer
+encapsulation and a strategy/map based indirection service to a
+collection of camel routes hosted in an automatically created or user
+injected camel context.
+
+a|
+link:weather.html[Weather] / camel-weather
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+weather://name[?<options>]
+----
+
+ |Polls the weather information from http://openweathermap.org[Open
+Weather Map.]
+|=======================================================================
+
+[[ComponentListGrouped-Spring]]
+Spring
+^^^^^^
+
+[width="100%",cols="50%,50%",options="header",]
+|=======================================================================
+|Component / ArtifactId / URI |Description
+a|
+link:spring-event.html[Spring Event] / camel-spring
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+spring-event://default
+----
+
+ |Working with Spring Application Events.
+
+a|
+link:springbatch.html[Spring Batch] / camel-spring-batch
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+spring-batch:jobName[?<options>]
+----
+
+ |To bridge Camel and http://www.springsource.org/spring-batch[Spring
+Batch.]
+
+a|
+link:springintegration.html[Spring Integration] /
+camel-spring-integration
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+spring-integration:defaultChannelName[?<options>]
+----
+
+ |The bridge component of Camel and
+http://www.springframework.org/spring-integration[Spring Integration.]
+
+a|
+link:spring-redis.html[Spring Redis] / camel-spring-redis
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+spring-redis://hostName:port[?<options>]
+----
+
+ |Component for consuming and producing from a http://redis.io[Redis.]
+key-value store.
+|=======================================================================
+
+[[ComponentListGrouped-Templates]]
+Templates
+^^^^^^^^^
+
+[width="100%",cols="50%,50%",options="header",]
+|=======================================================================
+|Component / ArtifactId / URI |Description
+a|
+link:freemarker.html[FreeMarker] / camel-freemarker
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+freemarker:templateName[?<options>]
+----
+
+ |Generates a response using a http://freemarker.org/[FreeMarker]
+template.
+
+a|
+link:mustache.html[Mustache] / camel-mustache
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+mustache:templateName[?<options>]
+----
+
+ |Generates a response using a http://mustache.github.io/[Mustache]
+template.
+
+a|
+link:mvel-component.html[MVEL] / camel-mvel
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+mvel:templateName[?<options>]
+----
+
+ |Generates a response using an MVFLEX Expression Language
+(http://mvel.codehaus.org/[MVEL]) template.
+
+a|
+http://scalate.fusesource.org/camel.html[Scalate] / scalate-camel in
+org.fusesource.scalate
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+scalate:templateName
+----
+
+ |Generates a response using a http://scalate.fusesource.org/[Scalate]
+template.
+
+a|
+link:stringtemplate.html[StringTemplate] / camel-stringtemplate
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+string-template:templateName[?<options>]
+----
+
+ |Generates a response using a http://www.stringtemplate.org/[String
+Template.]
+
+a|
+link:velocity.html[Velocity] / camel-velocity
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+velocity:templateName[?options]
+----
+
+ |Generates a response using an http://velocity.apache.org/[Apache
+Velocity] template
+|=======================================================================
+
+[[ComponentListGrouped-Testing]]
+Testing
+^^^^^^^
+
+[width="100%",cols="50%,50%",options="header",]
+|=======================================================================
+|Component / ArtifactId / URI |Description
+a|
+link:dataset.html[DataSet] / camel-core
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+dataset:name[?<options>]
+----
+
+ |For load and soak testing the
+http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/component/dataset/DataSet.html[DataSet]
+provides a way to create huge numbers of messages for sending to
+link:components.html[Components] or asserting that they are consumed
+correctly.
+
+a|
+link:mock.html[Mock] / camel-core
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+mock:name[?<options>]
+----
+
+ |For testing routes and mediation rules using mocks.
+
+a|
+link:stub.html[Stub] / camel-core
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+stub:someOtherCamelUri[?<options>]
+----
+
+ |Allows you to link:stub.html[stub out some physical middleware
+endpoint] for easier testing or debugging.
+
+a|
+link:test.html[Test] / camel-spring
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+test:expectedMessagesEndpointUri[?<options>]
+----
+
+ |Creates a link:mock.html[Mock] endpoint which expects to receive all
+the message bodies that could be polled from the given underlying
+endpoint.
+|=======================================================================
+
+[[ComponentListGrouped-WebServices]]
+Web Services
+^^^^^^^^^^^^
+
+[width="100%",cols="50%,50%",options="header",]
+|=======================================================================
+|Component / ArtifactId / URI |Description
+a|
+link:cxf.html[CXF] / camel-cxf
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+cxf:<bean:cxfEndpoint|//someAddress>[?<options>]
+----
+
+ |Working with http://apache.org/cxf/[Apache CXF] for web services
+integration.
+
+a|
+link:cxf-bean-component.html[CXF Bean] / camel-cxf
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+cxfbean:serviceBeanRef[?<options>]
+----
+
+ |Proceess the exchange using a JAX-WS or JAX-RS annotated bean from the
+registry.
+
+a|
+link:cxfrs.html[CXFRS] / camel-cxf
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+cxfrs:<bean:rsEndpoint|//someAddress>[?<options>]
+----
+
+ |Working with http://apache.org/cxf/[Apache CXF] for RESTful services
+integration.
+
+a|
+link:restlet.html[Restlet] / camel-restlet
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+restlet:restletUrl[?<options>]
+----
+
+ |Component for consuming and producing Restful resources using
+http://www.restlet.org[Restlet.]
+
+a|
+link:rest-swagger-component.html[REST Swagger] / camel-rest-swagger
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+rest-swagger:[specificationUri#]opreationId[?<options>]
+----
+
+ |Component for accessing REST resources using
+http://swagger.io/[Swagger] specification as configuration.
+
+a|
+link:spring-web-services.html[Spring Web Services] / camel-spring-ws
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+spring-ws:[mapping-type:]someAddress[?<options>]
+----
+
+ |Client-side support for accessing web services, and server-side
+support for creating your own contract-first web services using
+http://static.springsource.org/spring-ws/sites/1.5/[Spring Web
+Services.]
+
+a|
+link:websocket.html[Websocket] / camel-websocket
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+websocket://hostname[:port][/resourceUri][?<options>]
+----
+
+ |Communicating with
+http://wiki.eclipse.org/Jetty/Feature/WebSockets[Websocket] clients.
+|=======================================================================
+
+[[ComponentListGrouped-XML]]
+XML
+^^^
+
+[width="100%",cols="50%,50%",options="header",]
+|=======================================================================
+|Component / ArtifactId / URI |Description
+a|
+link:bean-validator.html[Bean Validator] / camel-bean-validator
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+bean-validator:something[?<options>]
+----
+
+ |Validates the payload of a message using the Java Validation API (JSR
+303).
+http://docs.jboss.org/hibernate/stable/validator/reference/en/html_single/[Hibernate
+Validator.] is the reference implementation.
+
+a|
+link:fop.html[FOP] / camel-fop
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+fop:outputFormat[?<options>]
+----
+
+ |Renders the message into different output formats using Formatting
+Objects Processor (FOP), which is driven by XSL formatting objects
+(XSL-FO).
+
+a|
+link:msv.html[MSV] / camel-msv
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+msv:someLocalOrRemoteResource[?<options>]
+----
+
+ |Validates the payload of a message using the
+https://msv.dev.java.net/[MSV Library.]
+
+a|
+link:jing.html[RNC] / camel-jing
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+rnc:/relativeOrAbsoluteUri[?<options>]
+----
+
+ |Validates the payload of a message using
+http://relaxng.org/compact-tutorial-20030326.html[RelaxNG Compact
+Syntax.]
+
+a|
+link:jing.html[RNG] / camel-jing
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+rng:/relativeOrAbsoluteUri[?<options>]
+----
+
+ |Validates the payload of a message using http://relaxng.org/[RelaxNG.]
+
+a|
+link:stax.html[StAX] / camel-stax
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+stax:(contentHandlerClassName|#myHandler)
+----
+
+ |Process messages through a Simple API for XML (SAX)
+http://download.oracle.com/javase/6/docs/api/org/xml/sax/ContentHandler.html[ContentHandler].
+
+a|
+link:xquery-endpoint.html[XQuery] / camel-saxon
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+xquery:someXQueryResource
+----
+
+ |Generates a response using an link:xquery.html[XQuery] template.
+
+a|
+link:xslt.html[XSLT] / camel-core
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+xslt:templateName[?<options>]
+----
+
+ |Generates a response using a Extensible Stylesheet Language
+Transformations (XSLT) template.
+
+a|
+link:validation.html[Validation] / camel-core
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+validation:someLocalOrRemoteResource[?<options>]
+----
+
+ |Validates the payload of a message using
+http://www.w3.org/XML/Schema[XML Schema] and Java API for XML Processing
+(JAXP) Validation.
+|=======================================================================

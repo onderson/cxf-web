@@ -1,0 +1,45 @@
+[[ConfluenceContent]]
+[[Normalizer-Normalizer]]
+Normalizer
+^^^^^^^^^^
+
+Camel supports the
+http://www.enterpriseintegrationpatterns.com/Normalizer.html[Normalizer]
+from the link:enterprise-integration-patterns.html[EIP patterns] by
+using a link:message-router.html[Message Router] in front of a number of
+link:message-translator.html[Message Translator] instances.
+
+image:http://www.enterpriseintegrationpatterns.com/img/NormalizerDetail.gif[image]
+
+[[Normalizer-Example]]
+Example
++++++++
+
+This example shows a Message Normalizer that converts two types of XML
+messages into a common format. Messages in this common format are then
+filtered.
+
+*Using the link:fluent-builders.html[Fluent Builders]*
+
+\{snippet:id=example|lang=java|url=camel/trunk/camel-core/src/test/java/org/apache/camel/processor/NormalizerTest.java}
+
+In this case we're using a Java bean as the normalizer. The class looks
+like this
+
+\{snippet:id=example|lang=java|url=camel/trunk/camel-core/src/test/java/org/apache/camel/processor/MyNormalizer.java}
+
+*Using the link:spring-xml-extensions.html[Spring XML Extensions]*
+
+The same example in the Spring DSL
+
+\{snippet:id=example|lang=xml|url=camel/trunk/components/camel-spring/src/test/resources/org/apache/camel/spring/processor/normalizer.xml}
+
+[[Normalizer-SeeAlso]]
+See Also
+++++++++
+
+* link:message-router.html[Message Router]
+* link:content-based-router.html[Content Based Router]
+* link:message-translator.html[Message Translator]
+
+link:using-this-pattern.html[Using This Pattern]

@@ -1,0 +1,63 @@
+[[ConfluenceContent]]
+[[CafeExample-CafeExample]]
+Cafe Example
+~~~~~~~~~~~~
+
+This example shows how to use Camel to implement a Cafe use case.
+
+First It uses the splitter to dispatch the order, then sends the orders
+to barista by checking if the coffee is hot or cold. When the coffee is
+ready, we use a aggregate to gather the drinks for waiter to deliver.
+
+Here is the route builder code for it.
+
+[[CafeExample-Running]]
+Running
+^^^^^^^
+
+You will need to compile this example first:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+  mvn compile
+----
+
+The example should run if you type:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+  mvn exec:java 
+----
+
+To stop the server hit ctrl + c
+
+[[CafeExample-Sampleoutput]]
+Sample output
+^^^^^^^^^^^^^
+
+When the client is running it outputs all requests and responses on the
+screen.
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+
+Camel thread 4: seda://coldDrinks?concurrentConsumers=2 prepared cold drink #1 for order #2: iced 2 shot ESPRESSO
+Camel thread 3: seda://hotDrinks?concurrentConsumers=3 prepared hot drink #1 for order #2: hot 2 shot MOCHA
+Camel thread 1: seda://hotDrinks?concurrentConsumers=3 prepared hot drink #2 for order #2: hot 4 shot CAPPUCCINO
+Camel thread 2: seda://hotDrinks?concurrentConsumers=3 prepared hot drink #3 for order #2: hot 4 shot LATTE
+-----------------------
+Order #2
+Iced ESPRESSO, 2 shots.
+Hot MOCHA, 2 shots.
+Hot CAPPUCCINO, 4 shots.
+Hot LATTE, 4 shots.
+-----------------------
+----
+
+[[CafeExample-SeeAlso]]
+See Also
+^^^^^^^^
+
+* link:examples.html[Examples]
+* link:toasync.html[ToAsync]
+* link:http-async-example.html[HTTP Async Example]

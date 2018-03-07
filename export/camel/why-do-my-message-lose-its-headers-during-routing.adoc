@@ -1,0 +1,6 @@
+[[ConfluenceContent]]
+[[Whydomymessageloseitsheadersduringrouting?-Whydomymessageloseitsheadersduringrouting?]]
+Why do my message lose its headers during routing?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+See this link:using-getin-or-getout-methods-on-exchange.html[FAQ entry]

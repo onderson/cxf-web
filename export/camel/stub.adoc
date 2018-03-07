@@ -1,0 +1,49 @@
+[[ConfluenceContent]]
+[[Stub-StubComponent]]
+Stub Component
+~~~~~~~~~~~~~~
+
+*Available as of Camel 2.10*
+
+The *stub:* component provides a simple way to stub out any physical
+endpoints while in development or testing, allowing you for example to
+run a route without needing to actually connect to a specific
+link:mail.html[SMTP] or link:http.html[Http] endpoint. Just add *stub:*
+in front of any endpoint URI to stub out the endpoint.
+
+Internally the Stub component creates link:vm.html[VM] endpoints. The
+main difference between link:stub.html[Stub] and link:vm.html[VM] is
+that link:vm.html[VM] will validate the URI and parameters you give it,
+so putting vm: in front of a typical URI with query arguments will
+usually fail. Stub won't though, as it basically ignores all query
+parameters to let you quickly stub out one or more endpoints in your
+route temporarily.
+
+[[Stub-URIformat]]
+URI format
+^^^^^^^^^^
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+stub:someUri
+----
+
+Where *`someUri`* can be any URI with any query parameters.
+
+[[Stub-Examples]]
+Examples
+^^^^^^^^
+
+Here are a few samples:
+
+* stub:smtp://somehost.foo.com?user=whatnot&something=else
+* stub:http://somehost.bar.com/something
+
+[[Stub-SeeAlso]]
+See Also
+^^^^^^^^
+
+* link:configuring-camel.html[Configuring Camel]
+* link:component.html[Component]
+* link:endpoint.html[Endpoint]
+* link:getting-started.html[Getting Started]

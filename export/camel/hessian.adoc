@@ -1,0 +1,104 @@
+[[ConfluenceContent]]
+Hessian Data Format provides marshalling an unmarshialling
+using http://caucho.com/resin-3.1/doc/hessian-2.0-spec.xtp[Hessian ]protocol
+developed by http://caucho.com/[Caucho].
+
+Hessian is a platform and language independent,
+binary serialization protocol.
+
+[Info]
+====
+
+
+Available since Camel 2.17
+
+====
+
+[[Hessian-UsingHessianDataFormat]]
+Using Hessian Data Format
+-------------------------
+
+[[Hessian-Mavensetup]]
+Maven setup
+~~~~~~~~~~~
+
+Include following dependency in your `pom.xml` file:
+
+....
+<dependency>
+ <groupId>org.apache.camel</groupId>
+ <artifactId>camel-hessian</artifactId>
+ <version>x.y.z</version>
+</dependency>
+....
+
+replacing `x.y.z` with your version of Camel core.
+
+[[Hessian-JavaDSL]]
+Java DSL
+~~~~~~~~
+
+[[Hessian-Marshalling]]
+Marshalling
+^^^^^^^^^^^
+
+....
+from("direct:in")
+ .marshal().hessian();
+....
+
+[[Hessian-Unmarshalling]]
+Unmarshalling
+^^^^^^^^^^^^^
+
+....
+from("direct:back")
+ .unmarshal().hessian();
+....
+
+[[Hessian-SpringDSL]]
+Spring DSL
+~~~~~~~~~~
+
+[[Hessian-Marshalling.1]]
+Marshalling
+^^^^^^^^^^^
+
+....
+<camelContext id="camel" xmlns="http://camel.apache.org/schema/spring">
+ <route>
+ <from uri="direct:in"/>
+ <marshal ref="hessian"/>
+ </route>
+</camelContext>
+....
+
+[[Hessian-Unmarshalling.1]]
+Unmarshalling
+^^^^^^^^^^^^^
+
+....
+<camelContext id="camel" xmlns="http://camel.apache.org/schema/spring">
+ <route>
+   <from uri="direct:back"/>
+   <unmarshal ref="hessian"/>
+ </route>
+</camelContext>
+....
+
+[[Hessian-Dependencies]]
+Dependencies
+~~~~~~~~~~~~
+
+Hessian Data Format internally relies on Hessian library provided by
+Caucho
+
+....
+<dependency>
+  <groupId>com.caucho</groupId>
+  <artifactId>hessian</artifactId>
+  <version>4.0.38</version>
+</dependency>
+....
+
+ +

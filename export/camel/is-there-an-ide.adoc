@@ -1,0 +1,16 @@
+[[ConfluenceContent]]
+[[IsthereanIDE-IsthereanIDEforeditingCamelroutes?]]
+Is there an IDE for editing Camel routes?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Apache Camel offers no IDE out of the box.
+
+You could use your Java IDE for smart completion when creating
+link:routes.html[Java routing rules] via the link:dsl.html[DSL] which
+will give you smart completion in Java code. +
+Or you can use your XML IDE (with XSD smart completion) to edit the
+link:spring.html[routing rules in XML] using the
+link:xml-configuration.html[Xml Configuration]
+
+Some of the link:commercial-camel-offerings.html[Commercial Companies]
+offers IDE's and other tooling for Camel.

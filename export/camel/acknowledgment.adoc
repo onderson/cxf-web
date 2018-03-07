@@ -1,0 +1,20 @@
+[[ConfluenceContent]]
+Many thanks to the following organizations for helping the Camel
+project.
+
+[width="100%",cols="50%,50%",]
+|=======================================================================
+|image:http://www.structure101.com/structure101-java/images/webapp.gif[image]
+|http://www.headwaysoftware.com/[Headway Software] provided free
+licenses of
+http://www.headwaysoftware.com/products/structure101/index.php[Structure101]
+for analyzing and managing the
+http://www.structure101.com/structure101-java/tracker/camel/1.2.0/summary.html[architecture
+of Camel] Java code.
+
+|image:http://tomcat.apache.org/images/yjp.gif[image]
+|https://www.yourkit.com/[YourKit], LLC kindly provide free licenses for
+the YourKit Java Profiler to open source projects. YourKit Java Profiler
+is primarily used to investigate performance and memory leak issues
+reported in Apache Camel.
+|=======================================================================

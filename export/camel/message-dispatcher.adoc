@@ -1,0 +1,103 @@
+[[ConfluenceContent]]
+[[MessageDispatcher-MessageDispatcher]]
+Message Dispatcher
+^^^^^^^^^^^^^^^^^^
+
+Camel supports the
+http://www.enterpriseintegrationpatterns.com/MessageDispatcher.html[Message
+Dispatcher] from the link:enterprise-integration-patterns.html[EIP
+patterns] using various approaches.
+
+image:http://www.enterpriseintegrationpatterns.com/img/MessageDispatcher.gif[image]
+
+You can use a component like link:jms.html[JMS] with selectors to
+implement a link:selective-consumer.html[Selective Consumer] as the
+Message Dispatcher implementation. Or you can use an
+link:endpoint.html[Endpoint] as the Message Dispatcher itself and then
+use a link:content-based-router.html[Content Based Router] as the
+Message Dispatcher.
+
+ 
+
+[[MessageDispatcher-Example]]
+Example
++++++++
+
+The following example demonstrates
+http://www.enterpriseintegrationpatterns.com/MessageDispatcher.html[Message
+Dispatcher] pattern using the link:competing-consumers.html[Competing
+Consumers] functionality of the link:jms.html[JMS] component to offload
+messages to a link:content-based-router.html[Content Based Router] and
+custom link:processor.html[Processors] registered in the
+Camel link:registry.html[Registry] running in separate threads from
+originating consumer.
+
+ 
+
+*Using the link:fluent-builders.html[Fluent Builders]*
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from("jms:queue:foo?concurrentConsumers=5")
+    .threads(5)
+    .choice()
+        .when(header("type").isEqualTo("A")) 
+            .processRef("messageDispatchProcessorA")
+        .when(header("type").isEqualTo("B"))
+            .processRef("messageDispatchProcessorB")
+        .when(header("type").isEqualTo("C"))
+            .processRef("messageDispatchProcessorC")        
+        .otherwise()
+            .to("jms:queue:invalidMessageType");
+----
+
+ 
+
+**Using the link:spring-xml-extensions.html[Spring XML Extensions]**
+
+[source,brush:,xml;,gutter:,false;,theme:,Default]
+----
+<route>
+    <from uri="jms:queue:foo?concurrentConsumers=5"/>
+    <threads poolSize="5">
+        <choice>
+            <when>
+                <simple>${in.header.type} == 'A'</simple>
+                <to ref="messageDispatchProcessorA"/>
+            </when>
+            <when>
+                <simple>${in.header.type} == 'B'</simple>
+                <to ref="messageDispatchProcessorB"/>
+            </when>
+            <when>
+                <simple>${in.header.type} == 'C'</simple>
+                <to ref="messageDispatchProcessorC"/>
+            </when>
+            <otherwise>
+                <to uri="jms:queue:invalidMessageType"/>
+        </choice>
+    </threads>
+</route>
+----
+
+[[MessageDispatcher-SeeAlso]]
+See Also
+++++++++
+
+* link:jms.html[JMS]
+* link:selective-consumer.html[Selective Consumer]
+* link:content-based-router.html[Content Based Router]
+* link:endpoint.html[Endpoint]
+
+ 
+
+[[MessageDispatcher-UsingThisPattern]]
+Using This Pattern
+++++++++++++++++++
+
+If you would like to use this EIP Pattern then please read the
+link:getting-started.html[Getting Started], you may also find the
+link:architecture.html[Architecture] useful particularly the description
+of link:endpoint.html[Endpoint] and link:uris.html[URIs]. Then you could
+try out some of the link:examples.html[Examples] first before trying
+this pattern out.

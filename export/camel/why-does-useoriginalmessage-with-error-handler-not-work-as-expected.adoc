@@ -1,0 +1,18 @@
+[[ConfluenceContent]]
+[[WhydoesuseOriginalMessagewitherrorhandlernotworkasexpected?-WhydoesuseOriginalMessagewitherrorhandlernotworkasexpected?]]
+Why does useOriginalMessage with error handler not work as expected?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If you use the link:exception-clause.html[useOriginalMessage] option
+from the Camel link:exception-clause.html[Error Handler] then it matters
+if you use this with link:eip.html[EIP]s such as
+
+* link:recipient-list.html[Recipient List]
+* link:splitter.html[Splitter]
+* link:multicast.html[Multicast]
+
+Then the option `shareUnitOfWork` on these link:eip.html[EIP]s influence
+the message in use by the `useOriginalMessage` option.
+
+See more details at link:splitter.html[Splitter] and further below with
+the examples explaining this in more detail.

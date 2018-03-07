@@ -1,0 +1,144 @@
+[[ConfluenceContent]]
+image:http://activemq.apache.org/camel/download.data/camel-box-v1.0-150x200.png[image]
+
+[[Camel1.1.0Release-NewandNoteworthy]]
+New and Noteworthy
+~~~~~~~~~~~~~~~~~~
+
+Welcome to the 1.1.0 release which includes a number of new features,
+improvements and bug fixes.
+
+* hugely improved link:bean-integration.html[Bean Integration] to work
+nicely with beans and Camel; making Camel even less intrusive
+* improved link:spring.html[Spring] XML support using JAXB2 and
+code-generating a nice link:xml-reference.html[XML Schema]
+* new link:enterprise-integration-patterns.html[Enterprise Integration
+Patterns] like link:aggregator.html[Aggregator],
+link:throttler.html[Throttler], link:delayer.html[Delayer]
+* new link:languages-supported.html[Languages Supported] such as
+link:el.html[EL] and link:ognl.html[OGNL]
+* new link:components.html[Components] like link:vm.html[VM],
+link:spring-event.html[Spring Event], link:log.html[Log],
+link:validation.html[Validation], link:jing.html[Jing],
+link:msv.html[MSV]
+* new link:examples.html[Examples] such as
+link:spring-example.html[Spring Example], link:etl-example.html[ETL
+Example] and link:bam-example.html[BAM Example]
+* improved distributed testing with via the link:mock.html[Mock]
+component
+* new link:camel-maven-plugin.html[Camel Maven Plugin] for easier
+running of Camel routes and link:examples.html[Examples] in Maven
+
+[[Camel1.1.0Release-KnownIssues]]
+Known Issues
+~~~~~~~~~~~~
+
+When upgrading please make sure you check your spring.xml file as a few
+minor changes have occurred in the XML Schema as a result of the move to
+JAXB2. In particular if you are configuring Java based
+link:dsl.html[DSL] rules in Spring you need to change the *packages*
+attribute to be one or more *package* elements.
+
+e.g. in Camel 1.0.0
+
+[source,brush:,xml;,gutter:,false;,theme:,Default]
+----
+<camelContext packages="foo,bar" ...>
+  ...
+</camelContext>
+----
+
+this is now replaced in Camel 1.1.x or later
+
+[source,brush:,xml;,gutter:,false;,theme:,Default]
+----
+<camelContext ...>
+  <package>foo</package>
+  <package>bar</package>
+  ...
+</camelContext>
+----
+
+[[Camel1.1.0Release-GettingtheBinaryDistributions]]
+Getting the Binary Distributions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Description |Download Link |PGP Signature file of download
+|Windows Distribution
+|http://archive.apache.org/dist/activemq/apache-camel/1.1.0/apache-camel-1.1.0.zip[apache-camel-1.1.0.zip]
+|http://archive.apache.org/dist/activemq/apache-camel/1.1.0/apache-camel-1.1.0.zip.asc[apache-camel-1.1.0.zip.asc]
+
+|Unix/Linux/Cygwin Distribution
+|http://archive.apache.org/dist/activemq/apache-camel/1.1.0/apache-camel-1.1.0.tar.gz[apache-camel-1.1.0.tar.gz]
+|http://archive.apache.org/dist/activemq/apache-camel/1.1.0/apache-camel-1.1.0.tar.gz.asc[apache-camel-1.1.0.tar.gz.asc]
+|=======================================================================
+
+[Info]
+====
+ **The above URLs use redirection**
+
+The above URLs use the Apache Mirror system to redirect you to a
+suitable mirror for your download. Some users have experienced issues
+with some versions of browsers (e.g. some Safari browsers). If the
+download doesn't seem to work for you from the above URL then try using
+http://www.mozilla.com/en-US/firefox/[FireFox]
+
+====
+
+[[Camel1.1.0Release-GettingtheBinariesusingMaven2]]
+Getting the Binaries using Maven 2
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To use this release in your maven project, the proper dependency
+configuration that you should use in your
+http://maven.apache.org/guides/introduction/introduction-to-the-pom.html[Maven
+POM] is:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<dependency>
+  <groupId>org.apache.camel</groupId>
+  <artifactId>camel-core</artifactId>
+  <version>1.1.0</version>
+</dependency>
+----
+
+[[Camel1.1.0Release-GettingtheSourceCode]]
+Getting the Source Code
+~~~~~~~~~~~~~~~~~~~~~~~
+
+[[Camel1.1.0Release-SourceDistributions]]
+Source Distributions
+^^^^^^^^^^^^^^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Description |Download Link |PGP Signature file of download
+|Source for Windows
+|http://archive.apache.org/dist/activemq/apache-camel/1.1.0/apache-camel-1.1.0-src.zip[apache-camel-1.1.0-src.zip]
+|http://archive.apache.org/dist/activemq/apache-camel/1.1.0/apache-camel-1.1.0-src.zip.asc[apache-camel-1.1.0-src.zip.asc]
+
+|Source for Unix/Linux/Cygwin
+|http://archive.apache.org/dist/activemq/apache-camel/1.1.0/apache-camel-1.1.0-src.tar.gz[apache-camel-1.1.0-src.tar.gz]
+|http://archive.apache.org/dist/activemq/apache-camel/1.1.0/apache-camel-1.1.0-src.tar.gz.asc[apache-camel-1.1.0-src.tar.gz.asc]
+|=======================================================================
+
+[[Camel1.1.0Release-SVNTagCheckout]]
+SVN Tag Checkout
+^^^^^^^^^^^^^^^^
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+svn co https://svn.apache.org/repos/asf/activemq/camel/tags/camel-1.1.0
+----
+
+[[Camel1.1.0Release-Changelog]]
+Changelog
+~~~~~~~~~
+
+For a more detailed view of new features and bug fixes, see:
+
+* https://issues.apache.org/jira/secure/ReleaseNote.jspa?projectId=12311211&styleName=Html&version=12315671[JIRA
+Release notes for 1.1.0]

@@ -1,0 +1,177 @@
+[[ConfluenceContent]]
+[[Camel1.6.2Release-Camel1.6.2release]]
+Camel 1.6.2 release
+-------------------
+
+image:http://camel.apache.org/download.data/camel-box-v1.0-150x200.png[image]
+
+[[Camel1.6.2Release-NewandNoteworthy]]
+New and Noteworthy
+~~~~~~~~~~~~~~~~~~
+
+Welcome to the 1.6.2 release which approx 101 issues resolved (new
+features, improvements and bug fixes such as...)
+
+* Fixes for OSGi bundles.
+* Support multiple camel versions in OSGi containers.
+* Fixed Karaf features for a few components
+* Fixed rollback for transactional routes in camel-cxf.
+* Fixed and improved examples.
+* Fixed issue with start/stop state machine.
+* Logging improvements.
+* Improvements and fixes in multiple components link:mail.html[Mail],
+link:mina.html[MINA], link:irc.html[IRC], link:http.html[HTTP],
+link:jms.html[JMS].
+* Cleanup of CamelNamespaceHandler.
+* Compatibility with Spring 2.0.x in link:jms.html[JMS],
+link:spring.html[Spring], link:mail.html[Mail].
+* Removed the uber-jar from the Camel distro.
+* Build system improvements and fixes.
+
+[[Camel1.6.2Release-New]]
+New link:enterprise-integration-patterns.html[Enterprise Integration
+Patterns]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* None
+
+[[Camel1.6.2Release-New.1]]
+New link:components.html[Components]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* None
+
+[[Camel1.6.2Release-New.2]]
+New link:dsl.html[DSL]
+^^^^^^^^^^^^^^^^^^^^^^
+
+* None
+
+[[Camel1.6.2Release-NewAnnotations]]
+New Annotations
+^^^^^^^^^^^^^^^
+
+* None
+
+[[Camel1.6.2Release-NewDataFormats]]
+New link:data-format.html[Data Formats]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* None
+
+[[Camel1.6.2Release-New.3]]
+New link:languages.html[Languages]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* None
+
+[[Camel1.6.2Release-New.4]]
+New link:examples.html[Examples]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* None
+
+[[Camel1.6.2Release-APIbreakings]]
+API breakings
+~~~~~~~~~~~~~
+
+* None
+
+[[Camel1.6.2Release-KnownIssues]]
+Known Issues
+~~~~~~~~~~~~
+
+See known issues from previous releases.
+
+[[Camel1.6.2Release-Importantchangestoconsiderwhenupgrading]]
+Important changes to consider when upgrading
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The uber-jar is not shipped anymore. You must include the required camel
+components.
+
+[[Camel1.6.2Release-GettingtheDistributions]]
+Getting the Distributions
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+[[Camel1.6.2Release-BinaryDistributions]]
+Binary Distributions
+^^^^^^^^^^^^^^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Description |Download Link |PGP Signature file of download
+|Windows Distribution
+|http://archive.apache.org/dist/camel/apache-camel/1.6.2/apache-camel-1.6.2.zip[apache-camel-1.6.2.zip]
+|http://archive.apache.org/dist/camel/apache-camel/1.6.2/apache-camel-1.6.2.zip.asc[apache-camel-1.6.2.zip.asc]
+
+|Unix/Linux/Cygwin Distribution
+|http://archive.apache.org/dist/camel/apache-camel/1.6.2/apache-camel-1.6.2.tar.gz[apache-camel-1.6.2.tar.gz]
+|http://archive.apache.org/dist/camel/apache-camel/1.6.2/apache-camel-1.6.2.tar.gz.asc[apache-camel-1.6.2.tar.gz.asc]
+|=======================================================================
+
+[Info]
+====
+ **The above URLs use redirection**
+
+The above URLs use the Apache Mirror system to redirect you to a
+suitable mirror for your download. Some users have experienced issues
+with some versions of browsers (e.g. some Safari browsers). If the
+download doesn't seem to work for you from the above URL then try using
+http://www.mozilla.com/en-US/firefox/[FireFox]
+
+====
+
+[[Camel1.6.2Release-SourceDistributions]]
+Source Distributions
+^^^^^^^^^^^^^^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Description |Download Link |PGP Signature file of download
+|Source for Windows
+|http://archive.apache.org/dist/camel/apache-camel/1.6.2/apache-camel-1.6.2-src.zip[apache-camel-1.6.2-src.zip]
+|http://archive.apache.org/dist/camel/apache-camel/1.6.2/apache-camel-1.6.2-src.zip.asc[apache-camel-1.6.2-src.zip.asc]
+
+|Source for Unix/Linux/Cygwin
+|http://archive.apache.org/dist/camel/apache-camel/1.6.2/apache-camel-1.6.2-src.tar.gz[apache-camel-1.6.2-src.tar.gz]
+|http://archive.apache.org/dist/camel/apache-camel/1.6.2/apache-camel-1.6.2-src.tar.gz.asc[apache-camel-1.6.2-src.tar.gz.asc]
+|=======================================================================
+
+[[Camel1.6.2Release-GettingtheBinariesusingMaven2]]
+Getting the Binaries using Maven 2
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To use this release in your maven project, the proper dependency
+configuration that you should use in your
+http://maven.apache.org/guides/introduction/introduction-to-the-pom.html[Maven
+POM] is:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+ 
+<dependency> 
+<groupId>org.apache.camel</groupId> 
+<artifactId>camel-core</artifactId> 
+<version>1.6.2</version> 
+</dependency> 
+----
+
+[[Camel1.6.2Release-SVNTagCheckout]]
+SVN Tag Checkout
+^^^^^^^^^^^^^^^^
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+ 
+svn co http://svn.apache.org/repos/asf/camel/tags/camel-1.6.2 
+----
+
+[[Camel1.6.2Release-Changelog]]
+Changelog
+~~~~~~~~~
+
+For a more detailed view of new features and bug fixes, see:
+
+* https://issues.apache.org/jira/secure/ReleaseNote.jspa?projectId=12311211&styleName=Html&version=12315679[JIRA
+Release notes for 1.6.2]

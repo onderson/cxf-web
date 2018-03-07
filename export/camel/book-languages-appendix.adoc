@@ -1,0 +1,3837 @@
+[[ConfluenceContent]]
+[[chapter-languages-supported-Appendix]][[BookLanguagesAppendix-LanguagesSupportedAppendix]]
+Languages Supported Appendix
+----------------------------
+
+To support flexible and powerful
+link:enterprise-integration-patterns.html[Enterprise Integration
+Patterns] Camel supports various Languages to create an
+link:expression.html[Expression] or link:predicate.html[Predicate]
+within either the link:dsl.html[Routing Domain Specific Language] or the
+link:xml-configuration.html[Xml Configuration]. The following languages
+are supported
+
+[[BookLanguagesAppendix-BeanLanguage]]
+Bean Language
+~~~~~~~~~~~~~
+
+The purpose of the Bean Language is to be able to implement an
+link:expression.html[Expression] or link:predicate.html[Predicate] using
+a simple method on a bean. The bean name is resolved using a
+link:registry.html[Registry], such as the
+link:spring.html[Spring] *`ApplicationContext`*, then a method is
+invoked to evaluate the link:expression.html[Expression] or
+link:predicate.html[Predicate]. If no method name is provided then one
+is chosen using the rules for link:bean-binding.html[Bean Binding];
+using the type of the message body and using any annotations on the bean
+methods.
+
+The link:bean-binding.html[Bean Binding] rules are used to bind the
+link:message.html[Message] Exchange to the method parameters; so you can
+annotate the bean to extract headers or other expressions such as
+link:xpath.html[XPath] or link:xquery.html[XQuery] from the message.
+
+[[BookLanguagesAppendix-UsingBeanExpressionsinJava]]
+Using Bean Expressions in Java
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from("activemq:topic:OrdersTopic")
+  .filter().method("myBean", "isGoldCustomer")
+    .to("activemq:BigSpendersQueue");
+----
+
+[[BookLanguagesAppendix-UsingBeanExpressionsinSpringXML]]
+Using Bean Expressions in Spring XML
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+[source,brush:,xml;,gutter:,false;,theme:,Default]
+----
+<route>
+  <from uri="activemq:topic:OrdersTopic"/>
+  <filter>
+    <method ref="myBean" method="isGoldCustomer"/>
+    <to uri="activemq:BigSpendersQueue"/>
+  </filter>
+</route>
+----
+
+[Warning]
+====
+ **Bean Attribute Now Deprecated**
+
+The *`bean`* attribute of the method expression element is now
+deprecated. Use the *`ref`* attribute instead.
+
+====
+
+[[BookLanguagesAppendix-WritingtheExpressionBean]]
+Writing the Expression Bean
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The bean in the above examples is just any old Java Bean with a method
+called *`isGoldCustomer()`* that returns some object that is easily
+converted to a *`boolean`* value in this case, as its used as a
+predicate.
+
+Example:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+public class MyBean {
+  public boolean isGoldCustomer(Exchange exchange) {
+     // ...
+  }
+}
+----
+
+We can also use the link:bean-integration.html[Bean Integration]
+annotations.
+
+Example:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+public boolean isGoldCustomer(String body) {...}
+----
+
+or
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+public boolean isGoldCustomer(@Header(name = "foo") Integer fooHeader) {...}
+----
+
+So you can bind parameters of the method to the Exchange, the
+link:message.html[Message] or individual headers, properties, the body
+or other expressions.
+
+[[BookLanguagesAppendix-Non-RegistryBeans]]
+Non-Registry Beans
+^^^^^^^^^^^^^^^^^^
+
+The link:bean-language.html[Bean Language] also supports invoking beans
+that isn't registered in the link:registry.html[Registry]. This is
+usable for quickly to invoke a bean from Java DSL where you don't need
+to register the bean in the link:registry.html[Registry] such as the
+link:spring.html[Spring] *`ApplicationContext`*. Camel can instantiate
+the bean and invoke the method if given a class or invoke an already
+existing instance.
+
+Example:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from("activemq:topic:OrdersTopic")
+  .filter().expression(BeanLanguage(MyBean.class, "isGoldCustomer"))
+  .to("activemq:BigSpendersQueue");
+----
+
+The 2nd parameter *`isGoldCustomer`* is an optional parameter to
+explicit set the method name to invoke. If not provided Camel will try
+to invoke the most suitable method. If case of ambiguity Camel will
+thrown an Exception. In these situations the 2nd parameter can solve
+this problem. Also the code is more readable if the method name is
+provided. The 1st parameter can also be an existing instance of a Bean
+such as:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+private MyBean my;
+
+from("activemq:topic:OrdersTopic")
+  .filter().expression(BeanLanguage.bean(my, "isGoldCustomer"))
+  .to("activemq:BigSpendersQueue");
+----
+
+In *Camel 2.2*: you can avoid the *`BeanLanguage`* and have it just as:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+private MyBean my;
+
+from("activemq:topic:OrdersTopic")
+  .filter().expression(bean(my, "isGoldCustomer"))
+  .to("activemq:BigSpendersQueue");
+----
+
+Which also can be done in a bit shorter and nice way:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+private MyBean my;
+
+from("activemq:topic:OrdersTopic")
+  .filter().method(my, "isGoldCustomer")
+  .to("activemq:BigSpendersQueue");
+----
+
+[[BookLanguagesAppendix-OtherExamples]]
+Other Examples
+^^^^^^^^^^^^^^
+
+We have some test cases you can look at if it'll help
+
+* http://svn.apache.org/repos/asf/camel/trunk/camel-core/src/test/java/org/apache/camel/processor/MethodFilterTest.java[MethodFilterTest]
+is a JUnit test case showing the Java link:dsl.html[DSL] use of the bean
+expression being used in a filter
+* http://svn.apache.org/repos/asf/camel/trunk/components/camel-spring/src/test/resources/org/apache/camel/spring/processor/aggregator.xml[aggregator.xml]
+is a Spring XML test case for the link:aggregator.html[Aggregator] which
+uses a bean method call to test for the completion of the aggregation.
+
+[[BookLanguagesAppendix-Dependencies]]
+Dependencies
+^^^^^^^^^^^^
+
+The Bean language is part of *`camel-core`*.
+
+[[BookLanguagesAppendix-ConstantExpressionLanguage]]
+Constant Expression Language
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The Constant Expression Language is really just a way to specify
+constant strings as a type of expression.
+
+[[BookLanguagesAppendix-Exampleusage]]
+Example usage
+^^^^^^^^^^^^^
+
+The *`setHeader`* element of the Spring DSL can utilize a constant
+expression like:
+
+[source,brush:,xml;,gutter:,false;,theme:,Default]
+----
+<route>
+  <from uri="seda:a"/>
+  <setHeader headerName="theHeader">
+    <constant>the value</constant>        
+  </setHeader>
+  <to uri="mock:b"/>     
+</route>
+----
+
+In this case, the link:message.html[Message] coming from the *`seda:a`*
+link:endpoint.html[Endpoint] will have *`theHeader`* header set to the
+constant value *`the value`*.
+
+And the same example using Java DSL:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from("seda:a")
+  .setHeader("theHeader", constant("the value"))
+  .to("mock:b");
+----
+
+[[BookLanguagesAppendix-Dependencies.1]]
+Dependencies
+^^^^^^^^^^^^
+
+The Constant language is part of *`camel-core`*.
+
+[[BookLanguagesAppendix-EL]]
+EL
+~~
+
+Camel supports the unified JSP and JSF Expression Language via the
+http://juel.sourceforge.net/[JUEL] to allow an
+link:expression.html[Expression] or link:predicate.html[Predicate] to be
+used in the link:dsl.html[DSL] or link:xml-configuration.html[Xml
+Configuration].
+
+For example you could use EL inside a link:message-filter.html[Message
+Filter] in XML
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<route>
+  <from uri="seda:foo"/>
+  <filter>
+    <el>${in.headers.foo == 'bar'}</el>
+    <to uri="seda:bar"/>
+  </filter>
+</route>
+----
+
+You could also use slightly different syntax, e.g. if the header name is
+not a valid identifier:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<route>
+  <from uri="seda:foo"/>
+  <filter>
+    <el>${in.headers['My Header'] == 'bar'}</el>
+    <to uri="seda:bar"/>
+  </filter>
+</route>
+----
+
+You could use EL to create an link:predicate.html[Predicate] in a
+link:message-filter.html[Message Filter] or as an
+link:expression.html[Expression] for a
+link:recipient-list.html[Recipient List]
+
+[[BookLanguagesAppendix-Variables]]
+Variables
+^^^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================
+|Variable |Type |Description
+|exchange |Exchange |the Exchange object
+|in |Message |the exchange.in message
+|out |Message |the exchange.out message
+|=======================================
+
+[[BookLanguagesAppendix-Samples]]
+Samples
+^^^^^^^
+
+You can use EL dot notation to invoke operations. If you for instance
+have a body that contains a POJO that has a `getFamiliyName` method then
+you can construct the syntax as follows:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+"${in.body.familyName}"
+----
+
+[[BookLanguagesAppendix-Dependencies.2]]
+Dependencies
+^^^^^^^^^^^^
+
+To use EL in your camel routes you need to add the a dependency on
+*camel-juel* which implements the EL language.
+
+If you use maven you could just add the following to your pom.xml,
+substituting the version number for the latest & greatest release (see
+link:download.html[the download page for the latest versions]).
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<dependency>
+  <groupId>org.apache.camel</groupId>
+  <artifactId>camel-juel</artifactId>
+  <version>x.x.x</version>
+</dependency>
+----
+
+Otherwise you'll also need to include
+http://repo2.maven.org/maven2/de/odysseus/juel/juel/2.1.3/juel-2.1.3.jar[JUEL].
+
+[[BookLanguagesAppendix-HeaderExpressionLanguage]]
+Header Expression Language
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The Header Expression Language allows you to extract values of named
+headers.
+
+[[BookLanguagesAppendix-Exampleusage.1]]
+Example usage
+^^^^^^^^^^^^^
+
+The recipientList element of the Spring DSL can utilize a header
+expression like:
+
+\{snippet:id=e1|lang=xml|url=camel/trunk/components/camel-spring/src/test/resources/org/apache/camel/spring/processor/recipientListWithStringDelimitedHeader.xml}
+
+In this case, the list of recipients are contained in the header
+'myHeader'.
+
+And the same example in Java DSL:
+
+\{snippet:id=example|lang=java|url=camel/trunk/camel-core/src/test/java/org/apache/camel/processor/RecipientListWithStringDelimitedHeaderTest.java}
+
+And with a slightly different syntax where you use the builder to the
+fullest (i.e. avoid using parameters but using stacked operations,
+notice that header is not a parameter but a stacked method call)
+
+java from("direct:a").recipientList().header("myHeader");
+
+[[BookLanguagesAppendix-Dependencies.3]]
+Dependencies
+^^^^^^^^^^^^
+
+The Header language is part of *camel-core*.
+
+[[BookLanguagesAppendix-JXPath]]
+JXPath
+~~~~~~
+
+Camel supports http://commons.apache.org/jxpath/[JXPath] to allow
+link:xpath.html[XPath] expressions to be used on beans in an
+link:expression.html[Expression] or link:predicate.html[Predicate] to be
+used in the link:dsl.html[DSL] or link:xml-configuration.html[Xml
+Configuration]. For example you could use JXPath to create an
+link:predicate.html[Predicate] in a link:message-filter.html[Message
+Filter] or as an link:expression.html[Expression] for a
+link:recipient-list.html[Recipient List].
+
+You can use XPath expressions directly using smart completion in your
+IDE as follows
+
+from("queue:foo").filter(). jxpath("/in/body/foo"). to("queue:bar")
+
+[[BookLanguagesAppendix-Variables.1]]
+Variables
+^^^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|======================================
+|Variable |Type |Description
+|*this* |Exchange |the Exchange object
+|in |Message |the exchange.in message
+|out |Message |the exchange.out message
+|======================================
+
+[[BookLanguagesAppendix-Options]]
+Options
+^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Option |Type |Description
+|lenient |boolean |*Camel 2.11/2.10.5:* Allows to turn lenient on the
+JXPathContext. When turned on this allows the JXPath expression to
+evaluate against expressions and message bodies which may be invalid /
+missing data. See more details at the
+http://commons.apache.org/proper/commons-jxpath//users-guide.html#Lenient_Mode[JXPath
+Documentation] This option is by default false.
+|=======================================================================
+
+[[BookLanguagesAppendix-UsingXMLconfiguration]]
+Using XML configuration
+^^^^^^^^^^^^^^^^^^^^^^^
+
+If you prefer to configure your routes in your link:spring.html[Spring]
+XML file then you can use JXPath expressions as follows
+
+xml <beans xmlns="http://www.springframework.org/schema/beans"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation=" http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans.xsd
+http://camel.apache.org/schema/spring
+http://camel.apache.org/schema/spring/camel-spring.xsd"> <camelContext
+id="camel" xmlns="http://activemq.apache.org/camel/schema/spring">
+<route> <from uri="activemq:MyQueue"/> <filter> <jxpath>in/body/name =
+'James'</xpath> <to uri="mqseries:SomeOtherQueue"/> </filter> </route>
+</camelContext> </beans>
+
+[[BookLanguagesAppendix-Examples]]
+Examples
+^^^^^^^^
+
+Here is a simple
+http://svn.apache.org/repos/asf/camel/trunk/components/camel-jxpath/src/test/java/org/apache/camel/language/jxpath/JXPathFilterTest.java[example]
+using a JXPath expression as a predicate in a
+link:message-filter.html[Message Filter]
+
+\{snippet:id=example|lang=java|url=camel/trunk/components/camel-jxpath/src/test/java/org/apache/camel/language/jxpath/JXPathFilterTest.java}
+
+[[BookLanguagesAppendix-JXPathinjection]]
+JXPath injection
+~~~~~~~~~~~~~~~~
+
+You can use link:bean-integration.html[Bean Integration] to invoke a
+method on a bean and use various languages such as JXPath to extract a
+value from the message and bind it to a method parameter.
+
+For example
+
+public class Foo \{ @MessageDriven(uri = "activemq:my.queue") public
+void doSomething(@JXPath("in/body/foo") String correlationID, @Body
+String body) \{ // process the inbound message here } }
+
+[[BookLanguagesAppendix-Loadingscriptfromexternalresource]]
+Loading script from external resource
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available as of Camel 2.11*
+
+You can externalize the script and have Camel load it from a resource
+such as `"classpath:"`, `"file:"`, or `"http:"`. +
+This is done using the following syntax: `"resource:scheme:location"`,
+eg to refer to a file on the classpath you can do:
+
+.setHeader("myHeader").jxpath("resource:classpath:myjxpath.txt")
+
+[[BookLanguagesAppendix-Dependencies.4]]
+Dependencies
+^^^^^^^^^^^^
+
+To use JXpath in your camel routes you need to add the a dependency on
+*camel-jxpath* which implements the JXpath language.
+
+If you use maven you could just add the following to your pom.xml,
+substituting the version number for the latest & greatest release (see
+link:download.html[the download page for the latest versions]).
+
+<dependency> <groupId>org.apache.camel</groupId>
+<artifactId>camel-jxpath</artifactId> <version>x.x.x</version>
+</dependency>
+
+Otherwise, you'll also need
+http://repo2.maven.org/maven2/commons-jxpath/commons-jxpath/1.3/commons-jxpath-1.3.jar[Commons
+JXPath].
+
+[[BookLanguagesAppendix-Mvel]]
+Mvel
+~~~~
+
+Camel allows Mvel to be used as an link:expression.html[Expression] or
+link:predicate.html[Predicate] the link:dsl.html[DSL] or
+link:xml-configuration.html[Xml Configuration].
+
+You could use Mvel to create an link:predicate.html[Predicate] in a
+link:message-filter.html[Message Filter] or as an
+link:expression.html[Expression] for a
+link:recipient-list.html[Recipient List]
+
+You can use Mvel dot notation to invoke operations. If you for instance
+have a body that contains a POJO that has a `getFamiliyName` method then
+you can construct the syntax as follows:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+"request.body.familyName"
+   // or 
+"getRequest().getBody().getFamilyName()"
+----
+
+[[BookLanguagesAppendix-Variables.2]]
+Variables
+^^^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Variable |Type |Description
+|*this* |Exchange |the Exchange is the root object
+
+|exchange |Exchange |the Exchange object
+
+|exception |Throwable |the Exchange exception (if any)
+
+|exchangeId |String |the exchange id
+
+|fault |Message |the Fault message (if any)
+
+|request |Message |the exchange.in message
+
+|response |Message |the exchange.out message (if any)
+
+|properties |Map |the exchange properties
+
+|property(name) |Object |the property by the given name
+
+|property(name, type) |Type |the property by the given name as the given
+type
+|=======================================================================
+
+[[BookLanguagesAppendix-Samples.1]]
+Samples
+^^^^^^^
+
+For example you could use Mvel inside a link:message-filter.html[Message
+Filter] in XML
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<route>
+  <from uri="seda:foo"/>
+  <filter>
+    <mvel>request.headers.foo == 'bar'</mvel>
+    <to uri="seda:bar"/>
+  </filter>
+</route>
+----
+
+And the sample using Java DSL:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+   from("seda:foo").filter().mvel("request.headers.foo == 'bar'").to("seda:bar");
+----
+
+[[BookLanguagesAppendix-Loadingscriptfromexternalresource.1]]
+Loading script from external resource
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available as of Camel 2.11*
+
+You can externalize the script and have Camel load it from a resource
+such as `"classpath:"`, `"file:"`, or `"http:"`. +
+This is done using the following syntax: `"resource:scheme:location"`,
+eg to refer to a file on the classpath you can do:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+.setHeader("myHeader").mvel("resource:classpath:script.mvel")
+----
+
+[[BookLanguagesAppendix-Dependencies.5]]
+Dependencies
+^^^^^^^^^^^^
+
+To use Mvel in your camel routes you need to add the a dependency on
+*camel-mvel* which implements the Mvel language.
+
+If you use maven you could just add the following to your pom.xml,
+substituting the version number for the latest & greatest release (see
+link:download.html[the download page for the latest versions]).
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<dependency>
+  <groupId>org.apache.camel</groupId>
+  <artifactId>camel-mvel</artifactId>
+  <version>x.x.x</version>
+</dependency>
+----
+
+[[BookLanguagesAppendix-OGNL]]
+OGNL
+~~~~
+
+Camel allows http://commons.apache.org/proper/commons-ognl/[OGNL] to be
+used as an link:expression.html[Expression] or
+link:predicate.html[Predicate] the link:dsl.html[DSL] or
+link:xml-configuration.html[Xml Configuration].
+
+You could use OGNL to create an link:predicate.html[Predicate] in a
+link:message-filter.html[Message Filter] or as an
+link:expression.html[Expression] for a
+link:recipient-list.html[Recipient List]
+
+You can use OGNL dot notation to invoke operations. If you for instance
+have a body that contains a POJO that has a `getFamilyName` method then
+you can construct the syntax as follows:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+"request.body.familyName"
+   // or 
+"getRequest().getBody().getFamilyName()"
+----
+
+[[BookLanguagesAppendix-Variables.3]]
+Variables
+^^^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Variable |Type |Description
+|*this* |Exchange |the Exchange is the root object
+
+|exchange |Exchange |the Exchange object
+
+|exception |Throwable |the Exchange exception (if any)
+
+|exchangeId |String |the exchange id
+
+|fault |Message |the Fault message (if any)
+
+|request |Message |the exchange.in message
+
+|response |Message |the exchange.out message (if any)
+
+|properties |Map |the exchange properties
+
+|property(name) |Object |the property by the given name
+
+|property(name, type) |Type |the property by the given name as the given
+type
+|=======================================================================
+
+[[BookLanguagesAppendix-Samples.2]]
+Samples
+^^^^^^^
+
+For example you could use OGNL inside a link:message-filter.html[Message
+Filter] in XML
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<route>
+  <from uri="seda:foo"/>
+  <filter>
+    <ognl>request.headers.foo == 'bar'</ognl>
+    <to uri="seda:bar"/>
+  </filter>
+</route>
+----
+
+And the sample using Java DSL:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+   from("seda:foo").filter().ognl("request.headers.foo == 'bar'").to("seda:bar");
+----
+
+[[BookLanguagesAppendix-Loadingscriptfromexternalresource.2]]
+Loading script from external resource
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available as of Camel 2.11*
+
+You can externalize the script and have Camel load it from a resource
+such as `"classpath:"`, `"file:"`, or `"http:"`. +
+This is done using the following syntax: `"resource:scheme:location"`,
+eg to refer to a file on the classpath you can do:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+.setHeader("myHeader").ognl("resource:classpath:myognl.txt")
+----
+
+[[BookLanguagesAppendix-Dependencies.6]]
+Dependencies
+^^^^^^^^^^^^
+
+To use OGNL in your camel routes you need to add the a dependency on
+*camel-ognl* which implements the OGNL language.
+
+If you use maven you could just add the following to your pom.xml,
+substituting the version number for the latest & greatest release (see
+link:download.html[the download page for the latest versions]).
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<dependency>
+  <groupId>org.apache.camel</groupId>
+  <artifactId>camel-ognl</artifactId>
+  <version>x.x.x</version>
+</dependency>
+----
+
+Otherwise, you'll also need
+http://repo2.maven.org/maven2/org/apache/servicemix/bundles/org.apache.servicemix.bundles.ognl/2.7.3_4/org.apache.servicemix.bundles.ognl-2.7.3_4.jar[OGNL]
+
+[[BookLanguagesAppendix-PropertyExpressionLanguage]]
+Property Expression Language
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The Property Expression Language allows you to extract values of named
+exchange properties.
+
+From *Camel 2.15* onwards the property language has been renamed to
+exchangeProperty to avoid ambiguity, confusion and clash with properties
+as a general term. So use exchangeProperty instead of property when
+using Camel 2.15 onwards.
+
+ 
+
+[[BookLanguagesAppendix-Exampleusage.2]]
+Example usage
+^^^^^^^^^^^^^
+
+The recipientList element of the Spring DSL can utilize a property
+expression like:
+
+\{snippet:id=e1|lang=xml|url=camel/trunk/components/camel-spring/src/test/resources/org/apache/camel/spring/processor/recipientListWithStringDelimitedProperty.xml}
+
+In this case, the list of recipients are contained in the property
+'myProperty'.
+
+And the same example in Java DSL:
+
+\{snippet:id=example|lang=java|url=camel/trunk/camel-core/src/test/java/org/apache/camel/processor/RecipientListWithStringDelimitedPropertyTest.java}
+
+And with a slightly different syntax where you use the builder to the
+fullest (i.e. avoid using parameters but using stacked operations,
+notice that property is not a parameter but a stacked method call)
+
+java from("direct:a").recipientList().property("myProperty");
+
+[[BookLanguagesAppendix-Dependencies.7]]
+Dependencies
+^^^^^^^^^^^^
+
+The Property language is part of *camel-core*.
+
+[[BookLanguagesAppendix-ScriptingLanguages]]
+Scripting Languages
+~~~~~~~~~~~~~~~~~~~
+
+Camel supports a number of scripting languages which can be used to
+create an link:expression.html[Expression] or
+link:predicate.html[Predicate] via the standard
+http://jcp.org/en/jsr/detail?id=223[JSR 223] which is a standard part of
+Java 6.
+
+The following scripting languages are integrated into the DSL:
+
+[width="100%",cols="50%,50%",options="header",]
+|========================
+|Language |DSL keyword
+|EL |`el`
+|Groovy |`groovy`
+|JavaScript |`javaScript`
+|JoSQL |`sql`
+|JXPath |`jxpath`
+|MVEL |`mvel`
+|OGNL |`ognl`
+|PHP |`php`
+|Python |`python`
+|Ruby |`ruby`
+|XPath |`xpath`
+|XQuery |`xquery`
+|========================
+
+However any http://jcp.org/en/jsr/detail?id=223[JSR 223] scripting
+language can be used using the generic DSL methods.
+
+[[BookLanguagesAppendix-ScriptContextOptions]]
+`ScriptContext` Options
+^^^^^^^^^^^^^^^^^^^^^^^
+
+ 
+
+The `JSR-223` scripting language's *`ScriptContext`* is pre-configured
+with the following attributes all set at *`ENGINE_SCOPE`*.
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Attribute |Type |Value
+|`camelContext` + |`org.apache.camel.CamelContext` |The Camel Context.
+
+|`context` |`org.apache.camel.CamelContext` |The Camel Context (cannot
+be used in groovy).
+
+|`exchange` |`org.apache.camel.Exchange` |The current Exchange.
+
+|`properties` |`org.apache.camel.builder.script.PropertiesFunction`
+|*Camel 2.9:* Function with a *`resolve`* method to make it easier to
+use Camels link:properties.html[Properties] component from scripts. See
+further below for example.
+
+|`request` |`org.apache.camel.Message` |The *`IN`* message.
+
+|`response` |`org.apache.camel.Message` |*Deprecated*: The *`OUT`*
+message. The *`OUT`* message is *`null`* by default. Use the *`IN`*
+message instead.
+|=======================================================================
+
+See link:scripting-languages.html[Scripting Languages] for the list of
+languages with explicit DSL support.
+
+[[BookLanguagesAppendix-PassingAdditionalArgumentstotheScriptingEngine]]
+Passing Additional Arguments to the `ScriptingEngine`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available from Camel 2.8*
+
+You can provide additional arguments to the *`ScriptingEngine`* using a
+header on the Camel message with the key *`CamelScriptArguments`*.
+
+Example:\{snippet:id=e1|lang=java|url=camel/trunk/components/camel-script/src/test/java/org/apache/camel/builder/script/JavaScriptExpressionTest.java}
+
+[[BookLanguagesAppendix-UsingPropertiesFunction]]
+Using Properties Function
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available from Camel 2.9*
+
+If you need to use the link:properties.html[Properties] component from a
+script to lookup property placeholders, then its a bit cumbersome to do
+so. For example, to set a header name *`myHeader`* with a value from a
+property placeholder, whose key is taken from a header named *`foo`*.
+
+.setHeader("myHeader").groovy("context.resolvePropertyPlaceholders('\{\{'
++ request.headers.get('foo') + '}}')")
+
+From *Camel 2.9*: you can now use the properties function and the same
+example is simpler:
+
+java.setHeader("myHeader").groovy("properties.resolve(request.headers.get('foo'))")
+
+[[BookLanguagesAppendix-LoadingScriptFromExternalResource]]
+Loading Script From External Resource
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available from Camel 2.11*
+
+You can externalize the script and have Camel load it from a resource
+such as *`classpath:`*, *`file:`*, or *`http:`*. This is done using the
+following syntax: *`resource:scheme:location`* e.g. to refer to a file
+on the classpath you can do:
+
+java.setHeader("myHeader").groovy("resource:classpath:mygroovy.groovy")
+
+[[BookLanguagesAppendix-HowtoGettheResultfromMultipleStatementsScript]]
+How to Get the Result from Multiple Statements Script
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available from Camel 2.14*
+
+The script engine's eval method returns a *`null`* when it runs a
+multi-statement script. However, Camel can look up the value of a
+script's result by using the key *`result`* from the value set. When
+writing a multi-statement script set the value of the *`result`*
+variable as the script return value.
+
+textbar = "baz"; # some other statements ... # camel take the result
+value as the script evaluation result result = body * 2 + 1
+
+ 
+
+[[BookLanguagesAppendix-Dependencies.8]]
+Dependencies
+^^^^^^^^^^^^
+
+To use scripting languages in your camel routes you need to add the a
+dependency on *`camel-script`* which integrates the JSR-223 scripting
+engine.
+
+If you use maven you could just add the following to your *`pom.xml`*,
+substituting the version number for the latest & greatest release (see
+link:download.html[the download page for the latest versions]).
+
+xml<dependency> <groupId>org.apache.camel</groupId>
+<artifactId>camel-script</artifactId> <version>x.x.x</version>
+</dependency>
+
+[[BookLanguagesAppendix-SeeAlso]]
+See Also
+~~~~~~~~
+
+* link:languages.html[Languages]
+* link:dsl.html[DSL]
+* link:xml-configuration.html[Xml Configuration]
+
+[[BookLanguagesAppendix-BeanShell]]
+BeanShell
+~~~~~~~~~
+
+Camel supports http://www.beanshell.org/[BeanShell] among other
+link:scripting-languages.html[Scripting Languages] to allow an
+link:expression.html[Expression] or link:predicate.html[Predicate] to be
+used in the link:dsl.html[DSL] or link:xml-configuration.html[Xml
+Configuration].
+
+To use a BeanShell expression use the following Java code:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+...choice()
+    .when(script("beanshell", "request.getHeaders().get(\"foo\").equals(\"bar\")"))
+       .to("...")
+----
+
+Or the something like this in your Spring XML:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<filter>
+  <language language="beanshell">request.getHeaders().get("Foo") == null</language>
+  ...
+----
+
+**BeanShell Issues**
+
+You must use BeanShell 2.0b5 or greater. Note that as of 2.0b5 BeanShell
+cannot compile scripts, which causes Camel releases before 2.6 to fail
+when configured with BeanShell expressions.
+
+You could follow the examples above to create an
+link:predicate.html[Predicate] in a link:message-filter.html[Message
+Filter] or as an link:expression.html[Expression] for a
+link:recipient-list.html[Recipient List]
+
+[[BookLanguagesAppendix-ScriptContextOptions.1]]
+`ScriptContext` Options
+^^^^^^^^^^^^^^^^^^^^^^^
+
+ 
+
+The `JSR-223` scripting language's *`ScriptContext`* is pre-configured
+with the following attributes all set at *`ENGINE_SCOPE`*.
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Attribute |Type |Value
+|`camelContext` + |`org.apache.camel.CamelContext` |The Camel Context.
+
+|`context` |`org.apache.camel.CamelContext` |The Camel Context (cannot
+be used in groovy).
+
+|`exchange` |`org.apache.camel.Exchange` |The current Exchange.
+
+|`properties` |`org.apache.camel.builder.script.PropertiesFunction`
+|*Camel 2.9:* Function with a *`resolve`* method to make it easier to
+use Camels link:properties.html[Properties] component from scripts. See
+further below for example.
+
+|`request` |`org.apache.camel.Message` |The *`IN`* message.
+
+|`response` |`org.apache.camel.Message` |*Deprecated*: The *`OUT`*
+message. The *`OUT`* message is *`null`* by default. Use the *`IN`*
+message instead.
+|=======================================================================
+
+See link:scripting-languages.html[Scripting Languages] for the list of
+languages with explicit DSL support.
+
+[[BookLanguagesAppendix-PassingAdditionalArgumentstotheScriptingEngine.1]]
+Passing Additional Arguments to the `ScriptingEngine`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available from Camel 2.8*
+
+You can provide additional arguments to the *`ScriptingEngine`* using a
+header on the Camel message with the key *`CamelScriptArguments`*.
+
+Example:\{snippet:id=e1|lang=java|url=camel/trunk/components/camel-script/src/test/java/org/apache/camel/builder/script/JavaScriptExpressionTest.java}
+
+[[BookLanguagesAppendix-UsingPropertiesFunction.1]]
+Using Properties Function
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available from Camel 2.9*
+
+If you need to use the link:properties.html[Properties] component from a
+script to lookup property placeholders, then its a bit cumbersome to do
+so. For example, to set a header name *`myHeader`* with a value from a
+property placeholder, whose key is taken from a header named *`foo`*.
+
+.setHeader("myHeader").groovy("context.resolvePropertyPlaceholders('\{\{'
++ request.headers.get('foo') + '}}')")
+
+From *Camel 2.9*: you can now use the properties function and the same
+example is simpler:
+
+java.setHeader("myHeader").groovy("properties.resolve(request.headers.get('foo'))")
+
+[[BookLanguagesAppendix-LoadingScriptFromExternalResource.1]]
+Loading Script From External Resource
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available from Camel 2.11*
+
+You can externalize the script and have Camel load it from a resource
+such as *`classpath:`*, *`file:`*, or *`http:`*. This is done using the
+following syntax: *`resource:scheme:location`* e.g. to refer to a file
+on the classpath you can do:
+
+java.setHeader("myHeader").groovy("resource:classpath:mygroovy.groovy")
+
+[[BookLanguagesAppendix-HowtoGettheResultfromMultipleStatementsScript.1]]
+How to Get the Result from Multiple Statements Script
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available from Camel 2.14*
+
+The script engine's eval method returns a *`null`* when it runs a
+multi-statement script. However, Camel can look up the value of a
+script's result by using the key *`result`* from the value set. When
+writing a multi-statement script set the value of the *`result`*
+variable as the script return value.
+
+textbar = "baz"; # some other statements ... # camel take the result
+value as the script evaluation result result = body * 2 + 1
+
+ 
+
+[[BookLanguagesAppendix-Dependencies.9]]
+Dependencies
+^^^^^^^^^^^^
+
+To use scripting languages in your camel routes you need to add the a
+dependency on *`camel-script`* which integrates the JSR-223 scripting
+engine.
+
+If you use maven you could just add the following to your *`pom.xml`*,
+substituting the version number for the latest & greatest release (see
+link:download.html[the download page for the latest versions]).
+
+xml<dependency> <groupId>org.apache.camel</groupId>
+<artifactId>camel-script</artifactId> <version>x.x.x</version>
+</dependency>
+
+[[BookLanguagesAppendix-JavaScript]]
+JavaScript
+~~~~~~~~~~
+
+Camel supports
+http://en.wikipedia.org/wiki/JavaScript[JavaScript/ECMAScript] among
+other link:scripting-languages.html[Scripting Languages] to allow an
+link:expression.html[Expression] or link:predicate.html[Predicate] to be
+used in the link:dsl.html[DSL] or link:xml-configuration.html[Xml
+Configuration].
+
+To use a JavaScript expression use the following Java code
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+... javaScript("someJavaScriptExpression") ... 
+----
+
+For example you could use the *javaScript* function to create an
+link:predicate.html[Predicate] in a link:message-filter.html[Message
+Filter] or as an link:expression.html[Expression] for a
+link:recipient-list.html[Recipient List]
+
+[[BookLanguagesAppendix-Example]]
+Example
+^^^^^^^
+
+In the sample below we use JavaScript to create a
+link:predicate.html[Predicate] use in the route path, to route exchanges
+from admin users to a special queue.
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+    from("direct:start")
+        .choice()
+            .when().javaScript("request.headers.get('user') == 'admin'").to("seda:adminQueue")
+        .otherwise()
+            .to("seda:regularQueue");
+----
+
+And a Spring DSL sample as well:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+    <route>
+        <from uri="direct:start"/>
+        <choice>
+            <when>
+                <javaScript>request.headers.get('user') == 'admin'</javaScript>
+                <to uri="seda:adminQueue"/>
+            </when>
+            <otherwise>
+                <to uri="seda:regularQueue"/>
+            </otherwise>
+        </choice>
+    </route>
+----
+
+[[BookLanguagesAppendix-ScriptContextOptions.2]]
+`ScriptContext` Options
+^^^^^^^^^^^^^^^^^^^^^^^
+
+ 
+
+The `JSR-223` scripting language's *`ScriptContext`* is pre-configured
+with the following attributes all set at *`ENGINE_SCOPE`*.
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Attribute |Type |Value
+|`camelContext` + |`org.apache.camel.CamelContext` |The Camel Context.
+
+|`context` |`org.apache.camel.CamelContext` |The Camel Context (cannot
+be used in groovy).
+
+|`exchange` |`org.apache.camel.Exchange` |The current Exchange.
+
+|`properties` |`org.apache.camel.builder.script.PropertiesFunction`
+|*Camel 2.9:* Function with a *`resolve`* method to make it easier to
+use Camels link:properties.html[Properties] component from scripts. See
+further below for example.
+
+|`request` |`org.apache.camel.Message` |The *`IN`* message.
+
+|`response` |`org.apache.camel.Message` |*Deprecated*: The *`OUT`*
+message. The *`OUT`* message is *`null`* by default. Use the *`IN`*
+message instead.
+|=======================================================================
+
+See link:scripting-languages.html[Scripting Languages] for the list of
+languages with explicit DSL support.
+
+[[BookLanguagesAppendix-PassingAdditionalArgumentstotheScriptingEngine.2]]
+Passing Additional Arguments to the `ScriptingEngine`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available from Camel 2.8*
+
+You can provide additional arguments to the *`ScriptingEngine`* using a
+header on the Camel message with the key *`CamelScriptArguments`*.
+
+Example:\{snippet:id=e1|lang=java|url=camel/trunk/components/camel-script/src/test/java/org/apache/camel/builder/script/JavaScriptExpressionTest.java}
+
+[[BookLanguagesAppendix-UsingPropertiesFunction.2]]
+Using Properties Function
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available from Camel 2.9*
+
+If you need to use the link:properties.html[Properties] component from a
+script to lookup property placeholders, then its a bit cumbersome to do
+so. For example, to set a header name *`myHeader`* with a value from a
+property placeholder, whose key is taken from a header named *`foo`*.
+
+.setHeader("myHeader").groovy("context.resolvePropertyPlaceholders('\{\{'
++ request.headers.get('foo') + '}}')")
+
+From *Camel 2.9*: you can now use the properties function and the same
+example is simpler:
+
+java.setHeader("myHeader").groovy("properties.resolve(request.headers.get('foo'))")
+
+[[BookLanguagesAppendix-LoadingScriptFromExternalResource.2]]
+Loading Script From External Resource
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available from Camel 2.11*
+
+You can externalize the script and have Camel load it from a resource
+such as *`classpath:`*, *`file:`*, or *`http:`*. This is done using the
+following syntax: *`resource:scheme:location`* e.g. to refer to a file
+on the classpath you can do:
+
+java.setHeader("myHeader").groovy("resource:classpath:mygroovy.groovy")
+
+[[BookLanguagesAppendix-HowtoGettheResultfromMultipleStatementsScript.2]]
+How to Get the Result from Multiple Statements Script
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available from Camel 2.14*
+
+The script engine's eval method returns a *`null`* when it runs a
+multi-statement script. However, Camel can look up the value of a
+script's result by using the key *`result`* from the value set. When
+writing a multi-statement script set the value of the *`result`*
+variable as the script return value.
+
+textbar = "baz"; # some other statements ... # camel take the result
+value as the script evaluation result result = body * 2 + 1
+
+ 
+
+[[BookLanguagesAppendix-Dependencies.10]]
+Dependencies
+^^^^^^^^^^^^
+
+To use scripting languages in your camel routes you need to add the a
+dependency on *`camel-script`* which integrates the JSR-223 scripting
+engine.
+
+If you use maven you could just add the following to your *`pom.xml`*,
+substituting the version number for the latest & greatest release (see
+link:download.html[the download page for the latest versions]).
+
+xml<dependency> <groupId>org.apache.camel</groupId>
+<artifactId>camel-script</artifactId> <version>x.x.x</version>
+</dependency>
+
+[[BookLanguagesAppendix-Groovy]]
+Groovy
+~~~~~~
+
+Camel supports http://groovy.codehaus.org/[Groovy] among other
+link:scripting-languages.html[Scripting Languages] to allow an
+link:expression.html[Expression] or link:predicate.html[Predicate] to be
+used in the link:dsl.html[DSL] or link:xml-configuration.html[Xml
+Configuration].
+
+To use a Groovy expression use the following Java code
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+... groovy("someGroovyExpression") ... 
+----
+
+For example you could use the *groovy* function to create an
+link:predicate.html[Predicate] in a link:message-filter.html[Message
+Filter] or as an link:expression.html[Expression] for a
+link:recipient-list.html[Recipient List]
+
+[[BookLanguagesAppendix-Dependency]]
+Dependency
+^^^^^^^^^^
+
+You should add the camel-groovy dependeny when using Groovy language
+with Camel. The generic camel-script is not optimized for best Groovy
+experience, and hence you should add camel-groovy as dependency.
+
+[[BookLanguagesAppendix-CustomizingGroovyShell]]
+Customizing Groovy Shell
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+Sometimes you may need to use custom `GroovyShell` instance in your
+Groovy expressions. To provide custom `GroovyShell`, add implementation
+of the `org.apache.camel.language.groovy.GroovyShellFactory` SPI
+interface to your Camel registry. For example after adding the following
+bean to your Spring context...
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+public class CustomGroovyShellFactory implements GroovyShellFactory {
+ 
+  public GroovyShell createGroovyShell(Exchange exchange) {
+    ImportCustomizer importCustomizer = new ImportCustomizer();
+    importCustomizer.addStaticStars("com.example.Utils");
+    CompilerConfiguration configuration = new CompilerConfiguration();
+    configuration.addCompilationCustomizers(importCustomizer);
+    return new GroovyShell(configuration);
+  }
+
+}
+----
+
+...Camel will use your custom GroovyShell instance (containing your
+custom static imports), instead of the default one.
+
+[[BookLanguagesAppendix-Example.1]]
+Example
+^^^^^^^
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+// lets route if a line item is over $100
+from("queue:foo").filter(groovy("request.lineItems.any { i -> i.value > 100 }")).to("queue:bar")
+----
+
+And the Spring DSL:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+        <route>
+            <from uri="queue:foo"/>
+            <filter>
+                <groovy>request.lineItems.any { i -> i.value > 100 }</groovy>
+                <to uri="queue:bar"/>
+            </filter>
+        </route>
+----
+
+[[BookLanguagesAppendix-ScriptContextOptions.3]]
+`ScriptContext` Options
+^^^^^^^^^^^^^^^^^^^^^^^
+
+ 
+
+The `JSR-223` scripting language's *`ScriptContext`* is pre-configured
+with the following attributes all set at *`ENGINE_SCOPE`*.
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Attribute |Type |Value
+|`camelContext` + |`org.apache.camel.CamelContext` |The Camel Context.
+
+|`context` |`org.apache.camel.CamelContext` |The Camel Context (cannot
+be used in groovy).
+
+|`exchange` |`org.apache.camel.Exchange` |The current Exchange.
+
+|`properties` |`org.apache.camel.builder.script.PropertiesFunction`
+|*Camel 2.9:* Function with a *`resolve`* method to make it easier to
+use Camels link:properties.html[Properties] component from scripts. See
+further below for example.
+
+|`request` |`org.apache.camel.Message` |The *`IN`* message.
+
+|`response` |`org.apache.camel.Message` |*Deprecated*: The *`OUT`*
+message. The *`OUT`* message is *`null`* by default. Use the *`IN`*
+message instead.
+|=======================================================================
+
+See link:scripting-languages.html[Scripting Languages] for the list of
+languages with explicit DSL support.
+
+[[BookLanguagesAppendix-PassingAdditionalArgumentstotheScriptingEngine.3]]
+Passing Additional Arguments to the `ScriptingEngine`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available from Camel 2.8*
+
+You can provide additional arguments to the *`ScriptingEngine`* using a
+header on the Camel message with the key *`CamelScriptArguments`*.
+
+Example:\{snippet:id=e1|lang=java|url=camel/trunk/components/camel-script/src/test/java/org/apache/camel/builder/script/JavaScriptExpressionTest.java}
+
+[[BookLanguagesAppendix-UsingPropertiesFunction.3]]
+Using Properties Function
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available from Camel 2.9*
+
+If you need to use the link:properties.html[Properties] component from a
+script to lookup property placeholders, then its a bit cumbersome to do
+so. For example, to set a header name *`myHeader`* with a value from a
+property placeholder, whose key is taken from a header named *`foo`*.
+
+.setHeader("myHeader").groovy("context.resolvePropertyPlaceholders('\{\{'
++ request.headers.get('foo') + '}}')")
+
+From *Camel 2.9*: you can now use the properties function and the same
+example is simpler:
+
+java.setHeader("myHeader").groovy("properties.resolve(request.headers.get('foo'))")
+
+[[BookLanguagesAppendix-LoadingScriptFromExternalResource.3]]
+Loading Script From External Resource
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available from Camel 2.11*
+
+You can externalize the script and have Camel load it from a resource
+such as *`classpath:`*, *`file:`*, or *`http:`*. This is done using the
+following syntax: *`resource:scheme:location`* e.g. to refer to a file
+on the classpath you can do:
+
+java.setHeader("myHeader").groovy("resource:classpath:mygroovy.groovy")
+
+[[BookLanguagesAppendix-HowtoGettheResultfromMultipleStatementsScript.3]]
+How to Get the Result from Multiple Statements Script
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available from Camel 2.14*
+
+The script engine's eval method returns a *`null`* when it runs a
+multi-statement script. However, Camel can look up the value of a
+script's result by using the key *`result`* from the value set. When
+writing a multi-statement script set the value of the *`result`*
+variable as the script return value.
+
+textbar = "baz"; # some other statements ... # camel take the result
+value as the script evaluation result result = body * 2 + 1
+
+ 
+
+[[BookLanguagesAppendix-Dependencies.11]]
+Dependencies
+^^^^^^^^^^^^
+
+To use scripting languages in your camel routes you need to add the a
+dependency on *`camel-script`* which integrates the JSR-223 scripting
+engine.
+
+If you use maven you could just add the following to your *`pom.xml`*,
+substituting the version number for the latest & greatest release (see
+link:download.html[the download page for the latest versions]).
+
+xml<dependency> <groupId>org.apache.camel</groupId>
+<artifactId>camel-script</artifactId> <version>x.x.x</version>
+</dependency>
+
+[[BookLanguagesAppendix-Python]]
+Python
+~~~~~~
+
+Camel supports http://www.python.org/[Python] among other
+link:scripting-languages.html[Scripting Languages] to allow an
+link:expression.html[Expression] or link:predicate.html[Predicate] to be
+used in the link:dsl.html[DSL] or link:xml-configuration.html[Xml
+Configuration].
+
+To use a Python expression use the following Java code
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+... python("somePythonExpression") ... 
+----
+
+For example you could use the *python* function to create an
+link:predicate.html[Predicate] in a link:message-filter.html[Message
+Filter] or as an link:expression.html[Expression] for a
+link:recipient-list.html[Recipient List]
+
+[[BookLanguagesAppendix-Example.2]]
+Example
+^^^^^^^
+
+In the sample below we use Python to create a
+link:predicate.html[Predicate] use in the route path, to route exchanges
+from admin users to a special queue.
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+    from("direct:start")
+        .choice()
+            .when().python("request.headers['user'] == 'admin'").to("seda:adminQueue")
+        .otherwise()
+            .to("seda:regularQueue");
+----
+
+And a Spring DSL sample as well:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+    <route>
+        <from uri="direct:start"/>
+        <choice>
+            <when>
+                <python>request.headers['user'] == 'admin'</python>
+                <to uri="seda:adminQueue"/>
+            </when>
+            <otherwise>
+                <to uri="seda:regularQueue"/>
+            </otherwise>
+        </choice>
+    </route>
+----
+
+[[BookLanguagesAppendix-ScriptContextOptions.4]]
+`ScriptContext` Options
+^^^^^^^^^^^^^^^^^^^^^^^
+
+ 
+
+The `JSR-223` scripting language's *`ScriptContext`* is pre-configured
+with the following attributes all set at *`ENGINE_SCOPE`*.
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Attribute |Type |Value
+|`camelContext` + |`org.apache.camel.CamelContext` |The Camel Context.
+
+|`context` |`org.apache.camel.CamelContext` |The Camel Context (cannot
+be used in groovy).
+
+|`exchange` |`org.apache.camel.Exchange` |The current Exchange.
+
+|`properties` |`org.apache.camel.builder.script.PropertiesFunction`
+|*Camel 2.9:* Function with a *`resolve`* method to make it easier to
+use Camels link:properties.html[Properties] component from scripts. See
+further below for example.
+
+|`request` |`org.apache.camel.Message` |The *`IN`* message.
+
+|`response` |`org.apache.camel.Message` |*Deprecated*: The *`OUT`*
+message. The *`OUT`* message is *`null`* by default. Use the *`IN`*
+message instead.
+|=======================================================================
+
+See link:scripting-languages.html[Scripting Languages] for the list of
+languages with explicit DSL support.
+
+[[BookLanguagesAppendix-PassingAdditionalArgumentstotheScriptingEngine.4]]
+Passing Additional Arguments to the `ScriptingEngine`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available from Camel 2.8*
+
+You can provide additional arguments to the *`ScriptingEngine`* using a
+header on the Camel message with the key *`CamelScriptArguments`*.
+
+Example:\{snippet:id=e1|lang=java|url=camel/trunk/components/camel-script/src/test/java/org/apache/camel/builder/script/JavaScriptExpressionTest.java}
+
+[[BookLanguagesAppendix-UsingPropertiesFunction.4]]
+Using Properties Function
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available from Camel 2.9*
+
+If you need to use the link:properties.html[Properties] component from a
+script to lookup property placeholders, then its a bit cumbersome to do
+so. For example, to set a header name *`myHeader`* with a value from a
+property placeholder, whose key is taken from a header named *`foo`*.
+
+.setHeader("myHeader").groovy("context.resolvePropertyPlaceholders('\{\{'
++ request.headers.get('foo') + '}}')")
+
+From *Camel 2.9*: you can now use the properties function and the same
+example is simpler:
+
+java.setHeader("myHeader").groovy("properties.resolve(request.headers.get('foo'))")
+
+[[BookLanguagesAppendix-LoadingScriptFromExternalResource.4]]
+Loading Script From External Resource
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available from Camel 2.11*
+
+You can externalize the script and have Camel load it from a resource
+such as *`classpath:`*, *`file:`*, or *`http:`*. This is done using the
+following syntax: *`resource:scheme:location`* e.g. to refer to a file
+on the classpath you can do:
+
+java.setHeader("myHeader").groovy("resource:classpath:mygroovy.groovy")
+
+[[BookLanguagesAppendix-HowtoGettheResultfromMultipleStatementsScript.4]]
+How to Get the Result from Multiple Statements Script
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available from Camel 2.14*
+
+The script engine's eval method returns a *`null`* when it runs a
+multi-statement script. However, Camel can look up the value of a
+script's result by using the key *`result`* from the value set. When
+writing a multi-statement script set the value of the *`result`*
+variable as the script return value.
+
+textbar = "baz"; # some other statements ... # camel take the result
+value as the script evaluation result result = body * 2 + 1
+
+ 
+
+[[BookLanguagesAppendix-Dependencies.12]]
+Dependencies
+^^^^^^^^^^^^
+
+To use scripting languages in your camel routes you need to add the a
+dependency on *`camel-script`* which integrates the JSR-223 scripting
+engine.
+
+If you use maven you could just add the following to your *`pom.xml`*,
+substituting the version number for the latest & greatest release (see
+link:download.html[the download page for the latest versions]).
+
+xml<dependency> <groupId>org.apache.camel</groupId>
+<artifactId>camel-script</artifactId> <version>x.x.x</version>
+</dependency>
+
+[[BookLanguagesAppendix-PHP]]
+PHP
+~~~
+
+Camel supports http://www.php.net/[PHP] among other
+link:scripting-languages.html[Scripting Languages] to allow an
+link:expression.html[Expression] or link:predicate.html[Predicate] to be
+used in the link:dsl.html[DSL] or link:xml-configuration.html[Xml
+Configuration].
+
+To use a PHP expression use the following Java code
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+... php("somePHPExpression") ... 
+----
+
+For example you could use the *php* function to create an
+link:predicate.html[Predicate] in a link:message-filter.html[Message
+Filter] or as an link:expression.html[Expression] for a
+link:recipient-list.html[Recipient List]
+
+[[BookLanguagesAppendix-ScriptContextOptions.5]]
+`ScriptContext` Options
+^^^^^^^^^^^^^^^^^^^^^^^
+
+ 
+
+The `JSR-223` scripting language's *`ScriptContext`* is pre-configured
+with the following attributes all set at *`ENGINE_SCOPE`*.
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Attribute |Type |Value
+|`camelContext` + |`org.apache.camel.CamelContext` |The Camel Context.
+
+|`context` |`org.apache.camel.CamelContext` |The Camel Context (cannot
+be used in groovy).
+
+|`exchange` |`org.apache.camel.Exchange` |The current Exchange.
+
+|`properties` |`org.apache.camel.builder.script.PropertiesFunction`
+|*Camel 2.9:* Function with a *`resolve`* method to make it easier to
+use Camels link:properties.html[Properties] component from scripts. See
+further below for example.
+
+|`request` |`org.apache.camel.Message` |The *`IN`* message.
+
+|`response` |`org.apache.camel.Message` |*Deprecated*: The *`OUT`*
+message. The *`OUT`* message is *`null`* by default. Use the *`IN`*
+message instead.
+|=======================================================================
+
+See link:scripting-languages.html[Scripting Languages] for the list of
+languages with explicit DSL support.
+
+[[BookLanguagesAppendix-PassingAdditionalArgumentstotheScriptingEngine.5]]
+Passing Additional Arguments to the `ScriptingEngine`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available from Camel 2.8*
+
+You can provide additional arguments to the *`ScriptingEngine`* using a
+header on the Camel message with the key *`CamelScriptArguments`*.
+
+Example:\{snippet:id=e1|lang=java|url=camel/trunk/components/camel-script/src/test/java/org/apache/camel/builder/script/JavaScriptExpressionTest.java}
+
+[[BookLanguagesAppendix-UsingPropertiesFunction.5]]
+Using Properties Function
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available from Camel 2.9*
+
+If you need to use the link:properties.html[Properties] component from a
+script to lookup property placeholders, then its a bit cumbersome to do
+so. For example, to set a header name *`myHeader`* with a value from a
+property placeholder, whose key is taken from a header named *`foo`*.
+
+.setHeader("myHeader").groovy("context.resolvePropertyPlaceholders('\{\{'
++ request.headers.get('foo') + '}}')")
+
+From *Camel 2.9*: you can now use the properties function and the same
+example is simpler:
+
+java.setHeader("myHeader").groovy("properties.resolve(request.headers.get('foo'))")
+
+[[BookLanguagesAppendix-LoadingScriptFromExternalResource.5]]
+Loading Script From External Resource
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available from Camel 2.11*
+
+You can externalize the script and have Camel load it from a resource
+such as *`classpath:`*, *`file:`*, or *`http:`*. This is done using the
+following syntax: *`resource:scheme:location`* e.g. to refer to a file
+on the classpath you can do:
+
+java.setHeader("myHeader").groovy("resource:classpath:mygroovy.groovy")
+
+[[BookLanguagesAppendix-HowtoGettheResultfromMultipleStatementsScript.5]]
+How to Get the Result from Multiple Statements Script
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available from Camel 2.14*
+
+The script engine's eval method returns a *`null`* when it runs a
+multi-statement script. However, Camel can look up the value of a
+script's result by using the key *`result`* from the value set. When
+writing a multi-statement script set the value of the *`result`*
+variable as the script return value.
+
+textbar = "baz"; # some other statements ... # camel take the result
+value as the script evaluation result result = body * 2 + 1
+
+ 
+
+[[BookLanguagesAppendix-Dependencies.13]]
+Dependencies
+^^^^^^^^^^^^
+
+To use scripting languages in your camel routes you need to add the a
+dependency on *`camel-script`* which integrates the JSR-223 scripting
+engine.
+
+If you use maven you could just add the following to your *`pom.xml`*,
+substituting the version number for the latest & greatest release (see
+link:download.html[the download page for the latest versions]).
+
+xml<dependency> <groupId>org.apache.camel</groupId>
+<artifactId>camel-script</artifactId> <version>x.x.x</version>
+</dependency>
+
+[[BookLanguagesAppendix-Ruby]]
+Ruby
+~~~~
+
+Camel supports http://www.ruby-lang.org/en/[Ruby] among other
+link:scripting-languages.html[Scripting Languages] to allow an
+link:expression.html[Expression] or link:predicate.html[Predicate] to be
+used in the link:dsl.html[DSL] or link:xml-configuration.html[Xml
+Configuration].
+
+To use a Ruby expression use the following Java code
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+... ruby("someRubyExpression") ... 
+----
+
+For example you could use the *ruby* function to create an
+link:predicate.html[Predicate] in a link:message-filter.html[Message
+Filter] or as an link:expression.html[Expression] for a
+link:recipient-list.html[Recipient List]
+
+[[BookLanguagesAppendix-Example.3]]
+Example
+^^^^^^^
+
+In the sample below we use Ruby to create a
+link:predicate.html[Predicate] use in the route path, to route exchanges
+from admin users to a special queue.
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+    from("direct:start")
+        .choice()
+            .when().ruby("$request.headers['user'] == 'admin'").to("seda:adminQueue")
+        .otherwise()
+            .to("seda:regularQueue");
+----
+
+And a Spring DSL sample as well:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+    <route>
+        <from uri="direct:start"/>
+        <choice>
+            <when>
+                <ruby>$request.headers['user'] == 'admin'</ruby>
+                <to uri="seda:adminQueue"/>
+            </when>
+            <otherwise>
+                <to uri="seda:regularQueue"/>
+            </otherwise>
+        </choice>
+    </route>
+----
+
+[[BookLanguagesAppendix-ScriptContextOptions.6]]
+`ScriptContext` Options
+^^^^^^^^^^^^^^^^^^^^^^^
+
+ 
+
+The `JSR-223` scripting language's *`ScriptContext`* is pre-configured
+with the following attributes all set at *`ENGINE_SCOPE`*.
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Attribute |Type |Value
+|`camelContext` + |`org.apache.camel.CamelContext` |The Camel Context.
+
+|`context` |`org.apache.camel.CamelContext` |The Camel Context (cannot
+be used in groovy).
+
+|`exchange` |`org.apache.camel.Exchange` |The current Exchange.
+
+|`properties` |`org.apache.camel.builder.script.PropertiesFunction`
+|*Camel 2.9:* Function with a *`resolve`* method to make it easier to
+use Camels link:properties.html[Properties] component from scripts. See
+further below for example.
+
+|`request` |`org.apache.camel.Message` |The *`IN`* message.
+
+|`response` |`org.apache.camel.Message` |*Deprecated*: The *`OUT`*
+message. The *`OUT`* message is *`null`* by default. Use the *`IN`*
+message instead.
+|=======================================================================
+
+See link:scripting-languages.html[Scripting Languages] for the list of
+languages with explicit DSL support.
+
+[[BookLanguagesAppendix-PassingAdditionalArgumentstotheScriptingEngine.6]]
+Passing Additional Arguments to the `ScriptingEngine`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available from Camel 2.8*
+
+You can provide additional arguments to the *`ScriptingEngine`* using a
+header on the Camel message with the key *`CamelScriptArguments`*.
+
+Example:\{snippet:id=e1|lang=java|url=camel/trunk/components/camel-script/src/test/java/org/apache/camel/builder/script/JavaScriptExpressionTest.java}
+
+[[BookLanguagesAppendix-UsingPropertiesFunction.6]]
+Using Properties Function
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available from Camel 2.9*
+
+If you need to use the link:properties.html[Properties] component from a
+script to lookup property placeholders, then its a bit cumbersome to do
+so. For example, to set a header name *`myHeader`* with a value from a
+property placeholder, whose key is taken from a header named *`foo`*.
+
+.setHeader("myHeader").groovy("context.resolvePropertyPlaceholders('\{\{'
++ request.headers.get('foo') + '}}')")
+
+From *Camel 2.9*: you can now use the properties function and the same
+example is simpler:
+
+java.setHeader("myHeader").groovy("properties.resolve(request.headers.get('foo'))")
+
+[[BookLanguagesAppendix-LoadingScriptFromExternalResource.6]]
+Loading Script From External Resource
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available from Camel 2.11*
+
+You can externalize the script and have Camel load it from a resource
+such as *`classpath:`*, *`file:`*, or *`http:`*. This is done using the
+following syntax: *`resource:scheme:location`* e.g. to refer to a file
+on the classpath you can do:
+
+java.setHeader("myHeader").groovy("resource:classpath:mygroovy.groovy")
+
+[[BookLanguagesAppendix-HowtoGettheResultfromMultipleStatementsScript.6]]
+How to Get the Result from Multiple Statements Script
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available from Camel 2.14*
+
+The script engine's eval method returns a *`null`* when it runs a
+multi-statement script. However, Camel can look up the value of a
+script's result by using the key *`result`* from the value set. When
+writing a multi-statement script set the value of the *`result`*
+variable as the script return value.
+
+textbar = "baz"; # some other statements ... # camel take the result
+value as the script evaluation result result = body * 2 + 1
+
+ 
+
+[[BookLanguagesAppendix-Dependencies.14]]
+Dependencies
+^^^^^^^^^^^^
+
+To use scripting languages in your camel routes you need to add the a
+dependency on *`camel-script`* which integrates the JSR-223 scripting
+engine.
+
+If you use maven you could just add the following to your *`pom.xml`*,
+substituting the version number for the latest & greatest release (see
+link:download.html[the download page for the latest versions]).
+
+xml<dependency> <groupId>org.apache.camel</groupId>
+<artifactId>camel-script</artifactId> <version>x.x.x</version>
+</dependency>
+
+[[BookLanguagesAppendix-SimpleExpressionLanguage]]
+Simple Expression Language
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The Simple Expression Language was a really simple language when it was
+created, but has since grown more powerful. It is primarily intended for
+being a really small and simple language for evaluating
+link:expression.html[Expression]s and link:predicate.html[Predicate]s
+without requiring any new dependencies or knowledge of
+link:xpath.html[XPath]; so it is ideal for testing in *`camel-core`*.
+The idea was to cover 95% of the common use cases when you need a little
+bit of expression based script in your Camel routes.
+
+However for much more complex use cases you are generally recommended to
+choose a more expressive and powerful language such as:
+
+* link:spel.html[SpEL]
+* link:mvel.html[Mvel]
+* link:groovy.html[Groovy]
+* link:javascript.html[JavaScript]
+* link:el.html[EL]
+* link:ognl.html[OGNL]
+* one of the supported link:scripting-languages.html[Scripting
+Languages]
+
+The simple language uses *`${body`}* placeholders for complex
+expressions where the expression contains constant literals.
+
+*Deprecated*: The *`${}`* placeholders can be omitted if the expression
+starts with the token, or if the token is only itself.
+
+Alternative syntax
+
+From Camel 2.5 you can also use the alternative syntax which
+uses *`$simple{}`* as placeholders. This can be used in situations to
+avoid clashes when using for example Spring property placeholder
+together with Camel.
+
+Configuring result type
+
+From Camel 2.8 you can configure the result type of the
+link:simple.html[Simple] expression. For example to set the type as a
+*`java.lang.Boolean`* or a `java.lang.Integer` etc.
+
+File language is now merged with Simple language
+
+From Camel 2.2, the link:file-language.html[File Language] is now merged
+with link:simple.html[Simple] language which means you can use all the
+file syntax directly within the simple language.
+
+Simple Language Changes in Camel 2.9 onwards
+
+The link:simple.html[Simple] language have been improved from Camel 2.9
+to use a better syntax parser, which can do index precise error
+messages, so you know exactly what is wrong and where the problem is.
+For example if you have made a typo in one of the operators, then
+previously the parser would not be able to detect this, and cause the
+evaluation to be true. There are a few changes in the syntax which are
+no longer backwards compatible. When using link:simple.html[Simple]
+language as a link:predicate.html[Predicate] then the literal text
+*must* be enclosed in either single or double quotes. For example:
+`"${body} == 'Camel'"`. Notice how we have single quotes around the
+literal. The old style of using `"body"` and `"header.foo"` to refer to
+the message body and header is *`@deprecated`*, and it is encouraged to
+always use *`${}`* tokens for the built-in functions. +
+The range operator now requires the range to be in single quote as well
+as shown: `"${header.zip} between '30000..39999'"`.
+
+To get the body of the in message: *`body`*, or *`in.body`* or
+*`${body}`*.
+
+A complex expression must use *`${}`* placeholders, such as:
+*`Hello ${in.header.name} how are you?`*.
+
+You can have multiple functions in the same expression:
+`"Hello ${in.header.name} this is ${in.header.me} speaking"`. However
+you can _*not*_ nest functions in Camel 2.8.x or older e.g., having
+another *`${}`* placeholder in an existing, is not allowed. From *Camel
+2.9* you can nest functions.
+
+[[BookLanguagesAppendix-Variables.4]]
+Variables
+^^^^^^^^^
+
+confluenceTableSmall
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Variable |Type |Description
+|`camelId` |`String` |*Camel 2.10:* the
+link:camelcontext.html[CamelContext] name.
+
+|`camelContext.OGNL` |`Object` |*Camel 2.11:* the *`CamelContext`*
+invoked using a Camel OGNL expression.
+
+|`collate(group)` |`List` |*Camel 2.17:* The collate function iterates
+the message body and groups the data into sub lists of specified size.
+This can be used with the link:splitter.html[Splitter] EIP to split a
+message body and group/batch the split sub messages into a group
+of *`N`* sub lists. This method works similar to the collate method in
+Groovy.
+
+|`exchange` |`Exchange` |*Camel 2.16:* the link:exchange.html[Exchange.]
+
+|`exchange.OGNL` |`Object` |**Camel 2.16:** the
+link:exchange.html[Exchange] invoked using a Camel OGNL expression.
+
+|`exchangeId` |`String` |*Camel 2.3:* the exchange Id.
+
+|`id` |`String` |The input message Id.
+
+|`body` |`Object` |The input body.
+
+|`in.body` |`Object` |The input body.
+
+|`body.OGNL` |`Object` |*Camel 2.3:* the input body invoked using a
+Camel OGNL expression.
+
+|`in.body.OGNL` |`Object` |*Camel 2.3:* the input body invoked using a
+Camel OGNL expression.
+
+|`bodyAs(type)` |`Type` |*Camel 2.3:* Converts the body to the given
+type determined by its classname. The converted body can be *`null`*.
+
+|`bodyAs(type).OGNL` |`Object` |**Camel 2.18:** Converts the body to the
+given type determined by its classname and then invoke methods using a
+Camel OGNL expression. The converted body can be *`null`*.
+
+|`mandatoryBodyAs(type)` |`Type` |*Camel 2.5:* Converts the body to the
+given type determined by its classname, and expects the body to be not
+*`null`*.
+
+|`mandatoryBodyAs(type).OGNL` |`Object` |**Camel 2.18:** Converts the
+body to the given type determined by its classname and then invoke
+methods using a Camel OGNL expression.
+
+|`out.body` |`Object` |The output body.
+
+|`header.foo` |`Object` |Refer to the input *`foo`* header.
+
+|`header[foo]` |`Object` |*Camel 2.9.2:* refer to the input *`foo`*
+header.
+
+|`headers.foo` |`Object` |Refer to the input *`foo`* header.
+
+|`headers[foo]` |`Object` |*Camel 2.9.2:* refer to the input *`foo`*
+header.
+
+|`in.header.foo` |`Object` |Refer to the input *`foo`* header.
+
+|`in.header[foo`] |`Object` |*Camel 2.9.2:* refer to the input *`foo`*
+header.
+
+|`in.headers.foo` |`Object` |Refer to the input *`foo`* header.
+
+|`in.headers[foo`] |`Object` |*Camel 2.9.2:* refer to the input *`foo`*
+header.
+
+|`header.foo[bar]` |`Object` |*Camel 2.3:* regard input *`foo`* header
+as a map and perform lookup on the map with *`bar`* as key.
+
+|`in.header.foo[bar`] |`Object` |*Camel 2.3:* regard input *`foo`*
+header as a map and perform lookup on the map with *`bar`* as key.
+
+|`in.headers.foo[bar`] |`Object` |*Camel 2.3:* regard input *`foo`*
+header as a map and perform lookup on the map with *`bar`* as key.
+
+|`header.foo`.OGNL |`Object` |*Camel 2.3:* refer to the input *`foo`*
+header and invoke its value using a Camel OGNL expression.
+
+|`in.header.foo`.OGNL |`Object` |*Camel 2.3:* refer to the input *`foo`*
+header and invoke its value using a Camel OGNL expression.
+
+|`in.headers.foo`.OGNL |`Object` |*Camel 2.3:* refer to the
+input *`foo`* header and invoke its value using a Camel OGNL expression.
+
+|`out.header.foo` |`Object` |Refer to the out header *`foo`*.
+
+|`out.header[foo`] |`Object` |*Camel 2.9.2:* refer to the out header
+*`foo`*.
+
+|`out.headers.foo` |`Object` |Refer to the out header *`foo`*.
+
+|`out.headers[foo`] |`Object` |*Camel 2.9.2:* refer to the out header
+*`foo`*.
+
+|`headerAs(key,type)` |`Type` |*Camel 2.5:* Converts the header to the
+given type determined by its classname.
+
+|`headers` |`Map` |*Camel 2.9:* refer to the input headers.
+
+|`in.headers` |`Map` |*Camel 2.9:* refer to the input headers.
+
+|`property.foo` |`Object` |*Deprecated:* refer to the *`foo`* property
+on the exchange.
+
+|`exchangeProperty.foo` |`Object` |*Camel 2.15:* refer to the *`foo`*
+property on the exchange.
+
+|`property[foo`] |`Object` |**Deprecated*:* refer to the *`foo`*
+property on the exchange.
+
+|`exchangeProperty[foo`] |`Object` |**Camel 2.15:** refer to the *`foo`*
+property on the exchange.
+
+|`property.foo`.OGNL |`Object` |**Deprecated*:* refer to the *`foo`*
+property on the exchange and invoke its value using a Camel OGNL
+expression.
+
+|`exchangeProperty.foo`.OGNL |`Object` |**Camel 2.15:** refer to
+the *`foo`* property on the exchange and invoke its value using a Camel
+OGNL expression.
+
+|`sys.foo` |`String` |Refer to the system property *`foo`*.
+
+|`sysenv.foo` |`String` |*Camel 2.3:* refer to the system environment
+property *`foo`*.
+
+|`exception` |`Object` |*Camel 2.4:* Refer to the exception object on
+the exchange, is *`null`* if no exception set on exchange. Will fallback
+and grab caught exceptions (*`Exchange.EXCEPTION_CAUGHT`*) if the
+Exchange has any.
+
+|`exception.OGNL` |`Object` |*Camel 2.4:* Refer to the exchange
+exception invoked using a Camel OGNL expression object
+
+|`exception.message` |`String` |Refer to the exception.message on the
+exchange, is *null* if no exception set on exchange. Will fallback and
+grab caught exceptions (*`Exchange.EXCEPTION_CAUGHT`*) if the Exchange
+has any.
+
+|`exception.stacktrace` |`String` |*Camel 2.6.* Refer to
+the *`exception.stracktrace`* on the exchange. Result is *`null`* if no
+exception set on exchange. Will fallback and grab caught exceptions
+(*`Exchange.EXCEPTION_CAUGHT`*) if the Exchange has any.
+
+|`date:command:pattern` |`String` a|
+Date formatting using the *`java.text.SimpleDateFormat`* patterns.
+Supported commands are: 
+
+* *`now`* for current timestamp.
+* *`in.header.xxx`* or *`header.xxx`* to use the *`Date`* object in
+the *`IN`* header with the key *`xxx`*.
+* *`out.header.xxx`* to use the *`Date`* object in the *`OUT`* header
+with the key *`xxx`*.
+
+|`bean:bean expression` |`Object` |Invoking a bean expression using the
+link:bean.html[Bean] language. Specifying a method name you must use dot
+as separator. We also support the *`?method=methodname`* syntax that is
+used by the link:bean.html[Bean] component.
+
+|`properties:locations:key` |`String` |*Deprecated: (use
+properties-location instead) Camel 2.3:* Lookup a property with the
+given key. The *`locations`* option is optional. See more at
+link:using-propertyplaceholder.html[Using PropertyPlaceholder].
+
+|`properties-location:locations:key` |`String` |*Camel 2.14.1:* Lookup a
+property with the given key. The `locations` option is optional. See
+more at link:using-propertyplaceholder.html[Using PropertyPlaceholder].
+
+|`properties:key:default` |`String` |*Camel 2.14.1*: Lookup a property
+with the given key. If the key does not exists or has no value, then an
+optional default value can be specified.
+
+|`routeId` |`String` |*Camel 2.11:* Returns the Id of the current route
+the link:exchange.html[Exchange] is being routed.
+
+|`threadName` |`String` |*Camel 2.3:* Returns the name of the current
+thread. Can be used for logging purpose.
+
+|`ref:xxx` |`Object` |*Camel 2.6:* To lookup a bean from the
+link:registry.html[Registry] with the given Id.
+
+|`type:name.field` |`Object` |*Camel 2.11:* To refer to a type or field
+by its FQN name. To refer to a field you can append *`.FIELD_NAME`*. For
+example you can refer to the constant field from Exchange as:
+*`org.apache.camel.Exchange.FILE_NAME`* |.
+
+|`null` |`null` |*Camel 2.12.3:* represents a *`null`.*
+
+|`random(value)` |`Integer` |*Camel 2.16.0:* returns a random Integer
+between _*`0`*_ (included) and *_value_* (excluded)
+
+|`random(min,max)` |`Integer` |*Camel 2.16.0:* returns a random Integer
+between *_min_* (included) and *_max_* (excluded)
+
+|`skip(number)` |`Iterator` |*Camel 2.19:* The skip function iterates
+the message body and skips the first number of items. This can be used
+with the link:splitter.html[Splitter EIP] to split a message body and
+skip the first N number of items.
+
+|`messageHistory` |`String` |*Camel 2.17:* The message history of the
+current exchange how it has been routed. This is similar to the route
+stack-trace message history the error handler logs in case of an
+unhandled exception.
+
+|`messageHistory(false)` |`String` |**Camel
+2.17:** As *`messageHistory`* but without the exchange details (only
+includes the route strack-trace). This can be used if you do not want to
+log sensitive data from the message itself.
+|=======================================================================
+
+[[BookLanguagesAppendix-OGNLexpressionsupport]]
+OGNL expression support
+^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available as of Camel 2.3*
+
+Camel's OGNL support is for invoking methods only. You cannot access
+fields. +
+From *Camel 2.11.1*: we added special support for accessing the length
+field of Java arrays.
+
+The link:simple.html[Simple] and link:bean.html[Bean] language now
+supports a Camel OGNL notation for invoking beans in a chain like
+fashion. Suppose the Message *`IN`* body contains a POJO which has a
+*`getAddress()`* method.
+
+Then you can use Camel OGNL notation to access the address object:
+
+javasimple("$\{body.address}") simple("$\{body.address.street}")
+simple("$\{body.address.zip}")
+
+Camel understands the shorthand names for accessors, but you can invoke
+any method or use the real name such as:
+
+javasimple("$\{body.address}") simple("$\{body.getAddress.getStreet}")
+simple("$\{body.address.getZip}") simple("$\{body.doSomething}")
+
+You can also use the null safe operator (*`?.`*) to avoid a NPE if for
+example the body does _not_ have an address
+
+javasimple("$\{body?.address?.street}")
+
+It is also possible to index in *`Map`* or *`List`* types, so you can
+do:
+
+javasimple("$\{body[foo].name}")
+
+To assume the body is *`Map`* based and lookup the value with *`foo`* as
+key, and invoke the *`getName`* method on that value.
+
+key with spaces
+
+If the key has space, then you _*must*_ enclose the key with quotes, for
+example:
+
+javasimple("$\{body['foo bar'].name}")
+
+You can access the *`Map`* or *`List`* objects directly using their key
+name (with or without dots) :
+
+javasimple("$\{body[foo]}") simple("$\{body[this.is.foo]}")
+
+Suppose there was no value with the key *`foo`* then you can use the
+null safe operator to avoid a NPE as shown:
+
+javasimple("$\{body[foo]?.name}")
+
+You can also access *`List`* types, for example to get lines from the
+address you can do:
+
+javasimple("$\{body.address.lines[0]}")
+simple("$\{body.address.lines[1]}") simple("$\{body.address.lines[2]}")
+
+There is a special *`last`* keyword which can be used to get the last
+value from a list.
+
+javasimple("$\{body.address.lines[last]}")
+
+And to get the penultimate line use subtraction. In this case use
+*`last-1`* for this:
+
+javasimple("$\{body.address.lines[last-1]}")
+
+And the third last is of course:
+
+javasimple("$\{body.address.lines[last-2]}")
+
+And you can call the *`size`* method on the list with
+
+javasimple("$\{body.address.lines.size}")
+
+From *Camel 2.11.1* we added support for the length field for Java
+arrays as well. Example:
+
+javaString[] lines = new String[]\{"foo", "bar", "cat"};
+exchange.getIn().setBody(lines); simple("There are $\{body.length}
+lines")
+
+And yes you can combine this with the operator support as shown below:
+
+javasimple("$\{body.address.zip} > 1000")
+
+[[BookLanguagesAppendix-OperatorSupport]]
+Operator Support
+^^^^^^^^^^^^^^^^
+
+The parser is limited to only support a single operator. To enable it
+the left value must be enclosed in *`${}`*.
+
+The syntax is:
+
+java$\{leftValue} OP rightValue
+
+Where the *`rightValue`* can be a *`String`* literal enclosed
+in *`' '`*, *`null`*, a constant value or another expression enclosed
+in**` ${}`**.
+
+Important
+
+There _*must*_ be spaces around the operator.
+
+Camel will automatically type convert the *`rightValue`* type to
+the *`leftValue`* type, so it is possible to for example, convert a
+string into a numeric so you can use *`>`* comparison for numeric
+values.
+
+The following operators are supported:
+
+[width="100%",cols="50%,50%",options="header",]
+|=======================================================================
+|Operator |Description
+|`==` |Equals.
+
+|`=~` |*Camel 2.16:* equals ignore case (will ignore case when
+comparing *`String`* values).
+
+|`>` |Greater than.
+
+|`>=` |Greater than or equals.
+
+|`<` |Less than.
+
+|`<=` |Less than or equals.
+
+|`!=` |Not equals.
+
+|`contains` |For testing if contains in a string based value.
+
+|`not contains` |For testing if not contains in a string based value.
+
+|`regex` |For matching against a given regular expression pattern
+defined as a *`String`* value.
+
+|`not regex` |For not matching against a given regular expression
+pattern defined as a *`String`* value.
+
+|`in` a|
+For matching if in a set of values, each element must be separated by
+comma.
+
+If you want to include an empty value, then it must be defined using
+double comma, eg ',,bronze,silver,gold', which +
+is a set of four values with an empty value and then the three medals.
+
+|`not in` a|
+For matching if not in a set of values, each element must be separated
+by comma.
+
+If you want to include an empty value, then it must be defined using
+double comma. Example: *`',,bronze,silver,gold'`*, which +
+is a set of four values with an empty value and then the three medals.
+
+|`is` |For matching if the left hand side type is an *`instanceof`* the
+value.
+
+|`not is` |For matching if the left hand side type is not
+an *`instanceof`* the value.
+
+|`range` a|
+For matching if the left hand side is within a range of values defined
+as numbers: *`from..to`*.
+
+From *Camel 2.9*: the range values must be enclosed in single quotes.
+
+|`not range` a|
+For matching if the left hand side is not within a range of values
+defined as numbers: *`from..to`*.
+
+From *Camel 2.9*: the range values must be enclosed in single quotes.
+
+|`starts with` |**Camel 2.17.1, 2.18**: For testing if the left hand
+side string starts with the right hand string.
+
+|`ends with` |*Camel 2.17.1, 2.18*: For testing if the left hand side
+string ends with the right hand string.
+|=======================================================================
+
+And the following unary operators can be used:
+
+[width="100%",cols="50%,50%",options="header",]
+|=======================================================================
+|Operator |Description
+|`++` |*Camel 2.9:* To increment a number by one. The left hand side
+must be a function, otherwise parsed as literal.
+
+|`--` |*Camel 2.9:* To decrement a number by one. The left hand side
+must be a function, otherwise parsed as literal.
+
+|`\` a|
+*Camel 2.9.3 to 2.10.x* To escape a value, e.g., *`\$`*, to indicate
+a *`$`* sign. Special: Use *`\n`* for new line, *`\t`* for tab,
+and *`\r`* for carriage return.
+
+*Note:* Escaping is *not* supported using the
+link:file-language.html[File Language].
+
+*Note:* from Camel 2.11, _the escape character is no longer supported_.
+It has been replaced with the following three escape sequences.
+
+|`\n` |*Camel 2.11:* To use newline character.
+
+|`\t` |*Camel 2.11:* To use tab character.
+
+|`\r` |*Camel 2.11:* To use carriage return character.
+
+|`\`} |*Camel 2.18:* To use the *`}`* character as text.
+|=======================================================================
+
+And the following logical operators can be used to group expressions:
+
+[width="100%",cols="50%,50%",options="header",]
+|=======================================================================
+|Operator |Description
+|`and` |*Deprecated*: use *`&&`* instead. The logical and operator is
+used to group two expressions.
+
+|`or` |*Deprecated*: use *`||`* instead. The logical or operator is used
+to group two expressions.
+
+|`&&` |*Camel 2.9:* The logical and operator is used to group two
+expressions.
+
+|`||` |*Camel 2.9:* The logical or operator is used to group two
+expressions.
+|=======================================================================
+
+Using and,or operators
+
+In *Camel 2.4 and older* the *`and`* or *`or`* can only be used *once*
+in a simple language expression.
+
+From *Camel 2.5*: you can use these operators multiple times.
+
+The syntax for *`AND`* is:
+
+java$\{leftValue} OP rightValue and $\{leftValue} OP rightValue
+
+And the syntax for *`OR`* is:
+
+java$\{leftValue} OP rightValue or $\{leftValue} OP rightValue
+
+Some examples:
+
+java// exact equals match simple("$\{in.header.foo} == 'foo'")   //
+ignore case when comparing, so if the header has value FOO this will
+match simple("$\{in.header.foo} =~ 'foo'") // here Camel will type
+convert '100' into the type of in.header.bar and if it is an Integer
+'100' will also be converter to an Integer simple("$\{in.header.bar} ==
+'100'") simple("$\{in.header.bar} == 100") // 100 will be converter to
+the type of in.header.bar so we can do > comparison
+simple("$\{in.header.bar} > 100") Comparing with different types
+
+When you compare with different types such as *`String`* and *`int`*,
+then you have to take a bit care. Camel will use the type from the left
+hand side as first priority. And fallback to the right hand side type if
+both values couldn't be compared based on that type. This means you can
+flip the values to enforce a specific type. Suppose the bar value above
+is a *`String`*. Then you can flip the equation:
+
+javasimple("100 < $\{in.header.bar}")
+
+which then ensures the *`int`* type is used as first priority.
+
+This may change in the future if the Camel team improves the binary
+comparison operations to prefer numeric types over *`String`* based.
+It's most often the *`String`* type which causes problem when comparing
+with numbers.
+
+java// testing for null simple("$\{in.header.baz} == null") // testing
+for not null simple("$\{in.header.baz} != null")
+
+And a bit more advanced example where the right value is another
+expression,
+
+javasimple("$\{in.header.date} == $\{date:now:yyyyMMdd}")
+simple("$\{in.header.type} ==
+$\{bean:orderService?method=getOrderType}")
+
+And an example with contains, testing if the title contains the word
+Camel:
+
+javasimple("$\{in.header.title} contains 'Camel'")
+
+And an example with regex, testing if the number header is a four digit
+value:
+
+javasimple("$\{in.header.number} regex '\\d\{4}'")
+
+And finally an example if the header equals any of the values in the
+list. Each element must be separated by comma, and no space around. This
+also works for numbers etc, as Camel will convert each element into the
+type of the left hand side.
+
+javasimple("$\{in.header.type} in 'gold,silver'")
+
+And for all the last three we also support the negate test using
+*`not`*:
+
+javasimple("$\{in.header.type} not in 'gold,silver'")
+
+And you can test if the type is a certain instance, e.g., for instance a
+*`String`*:
+
+javasimple("$\{in.header.type} is 'java.lang.String'")
+
+We have added a shorthand for all *`java.lang`* types so you can write
+it as:
+
+javasimple("$\{in.header.type} is 'String'")
+
+Ranges are also supported. The range interval requires numbers and both
+from and end are inclusive. For instance to test whether a value is
+between *`100`* and *`199`:*
+
+javasimple("$\{in.header.number} range 100..199")
+
+Notice we use *`..`* in the range without spaces. It is based on the
+same syntax as Groovy.
+
+From *Camel 2.9*: the range value must be in single quotes:
+
+javasimple("$\{in.header.number} range '100..199'") Can be used in
+Spring XML
+
+As the Spring XML does not have all the power as the Java DSL with all
+its various builder methods, you have to resort to use some other
+languages for testing with simple operators. Now you can do this with
+the simple language. In the sample below we want to test if the header
+is a widget order:
+
+xml<from uri="seda:orders"> <filter> <simple>$\{in.header.type} ==
+'widget'</simple> <to uri="bean:orderService?method=handleWidget"/>
+</filter> </from>
+
+[[BookLanguagesAppendix-Usingand/or]]
+Using `and` / `or`
+++++++++++++++++++
+
+If you have two expressions you can combine them with the *`and`* or
+*`or`* operator.
+
+Camel 2.9 onwards
+
+Use *`&&`* or *`||`*
+
+For instance:
+
+javasimple("$\{in.header.title} contains 'Camel' and $\{in.header.type'}
+== 'gold'")
+
+And of course the *`or`* is also supported. The sample would be:
+
+javasimple("$\{in.header.title} contains 'Camel' or $\{in.header.type'}
+== 'gold'")
+
+*Note:* currently *`and`* or *`or`* can only be used _*once*_ in a
+simple language expression. This might change in the future. So you
+*cannot* do:
+
+javasimple("$\{in.header.title} contains 'Camel' and $\{in.header.type'}
+== 'gold' and $\{in.header.number} range 100..200")
+
+[[BookLanguagesAppendix-Samples.3]]
+Samples
+^^^^^^^
+
+In the Spring XML sample below we filter based on a header value:
+
+xml<from uri="seda:orders"> <filter> <simple>$\{in.header.foo}</simple>
+<to uri="mock:fooOrders"/> </filter> </from>
+
+The Simple language can be used for the predicate test above in the
+link:message-filter.html[Message Filter] pattern, where we test if the
+in message has a *`foo`* header (a header with the key *`foo`* exists).
+If the expression evaluates to *`true`* then the message is routed to
+the *`mock:fooOrders`* endpoint, otherwise it is lost in the deep blue
+sea
+image:https://cwiki.apache.org/confluence/s/en_GB/5997/6f42626d00e36f53fe51440403446ca61552e2a2.1/_/images/icons/emoticons/wink.png[(wink)].
+
+The same example in Java DSL:
+
+javafrom("seda:orders") .filter().simple("$\{in.header.foo}")
+.to("seda:fooOrders");
+
+You can also use the simple language for simple text concatenations such
+as:
+
+javafrom("direct:hello") .transform().simple("Hello $\{in.header.user}
+how are you?") .to("mock:reply");
+
+Notice that we must use *`${}`* placeholders in the expression now to
+allow Camel to parse it correctly.
+
+And this sample uses the date command to output current date.
+
+javafrom("direct:hello") .transform().simple("The today is
+$\{date:now:yyyyMMdd} and it is a great day.") .to("mock:reply");
+
+And in the sample below we invoke the bean language to invoke a method
+on a bean to be included in the returned string:
+
+javafrom("direct:order") .transform().simple("OrderId:
+$\{bean:orderIdGenerator}") .to("mock:reply");
+
+Where *`orderIdGenerator`* is the id of the bean registered in the
+link:registry.html[Registry]. If using Spring then it is the Spring bean
+id.
+
+If we want to declare which method to invoke on the order id generator
+bean we must prepend *`.method name`* such as below where we invoke the
+*`generateId`* method.
+
+javafrom("direct:order") .transform().simple("OrderId:
+$\{bean:orderIdGenerator.generateId}") .to("mock:reply");
+
+We can use the *`?method=methodname`* option that we are familiar with
+the link:bean.html[Bean] component itself:
+
+javafrom("direct:order") .transform().simple("OrderId:
+$\{bean:orderIdGenerator?method=generateId}") .to("mock:reply");
+
+From *Camel 2.3*: you can also convert the body to a given type, for
+example to ensure that it is a *`String`* you can do:
+
+xml<transform> <simple>Hello $\{bodyAs(String)} how are you?</simple>
+</transform>
+
+There are a few types which have a shorthand notation, so we can use
+*`String`* instead of *`java.lang.String`*. These are: *`byte[]`*,
+*`String`, `Integer`*, *`Long`*. All other types must use their FQN
+name, e.g. *`org.w3c.dom.Document`*.
+
+It is also possible to lookup a value from a header *`Map`* in *Camel
+2.3*:
+
+xml<transform> <simple>The gold value is $\{header.type[gold]}</simple>
+</transform>
+
+In the code above we lookup the header with name `type` and regard it as
+a *`java.util.Map`* and we then lookup with the key *`gold`* and return
+the value. If the header is not convertible to Map an exception is
+thrown. If the header with name *`type`* does not exist *`null`* is
+returned.
+
+From *Camel 2.9*: you can nest functions, such as shown below:
+
+xml<setHeader headerName="myHeader">
+<simple>$\{properties:$\{header.someKey}}</simple> </setHeader>
+
+[[BookLanguagesAppendix-ReferringtoConstantsorEnums]]
+Referring to Constants or Enums
++++++++++++++++++++++++++++++++
+
+*Available *from* Camel 2.11*
+
+Suppose you have an enum for
+customers:\{snippet:id=e1|lang=java|url=camel/trunk/camel-core/src/test/java/org/apache/camel/processor/Customer.java}And
+in a link:content-based-router.html[Content Based Router] we can use the
+link:simple.html[Simple] language to refer to this enum, to check the
+message which enum it
+matches.\{snippet:id=e1|lang=java|url=camel/trunk/camel-core/src/test/java/org/apache/camel/processor/CBRSimpleTypeTest.java}
+
+[[BookLanguagesAppendix-UsingNewLinesorTabsinXMLDSLs]]
+Using New Lines or Tabs in XML DSLs
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available *from* Camel 2.9.3*
+
+From *Camel 2.9.3*: it is easier to specify new lines or tabs in XML
+DSLs as you can escape the value now
+
+xml<transform> <simple>The following text\nis on a new line</simple>
+</transform>
+
+[[BookLanguagesAppendix-LeadingandTrailingWhitespaceHandling]]
+Leading and Trailing Whitespace Handling
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available *from* Camel 2.10.0*
+
+From *Camel 2.10.0*: the *`trim`* attribute of the expression can be
+used to control whether the leading and trailing whitespace characters
+are removed or preserved. The default of *`trim=true`* removes all
+whitespace characters.
+
+xml<setBody> <simple trim="false">You get some trailing whitespace
+characters. </simple> </setBody>
+
+[[BookLanguagesAppendix-SettingtheResultType]]
+Setting the Result Type
+^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available from Camel 2.8*
+
+You can now provide a result type to the link:simple.html[Simple]
+expression, which means the result of the evaluation will be converted
+to the desired type. This is most usable to define types such as
+`boolean`'s, `integer`'s, etc.
+
+For example to set a header as a *`boolean`* type you can do:
+
+.setHeader("cool", simple("true", Boolean.class))
+
+And in XML DSL
+
+xml<setHeader headerName="cool"> <!-- use resultType to indicate that
+the type should be a java.lang.Boolean --> <simple
+resultType="java.lang.Boolean">true</simple> </setHeader>
+
+[[BookLanguagesAppendix-ChangingFunctionStartandEndTokens]]
+Changing Function Start and End Tokens
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available *from* Camel 2.9.1*
+
+You can configure the function start and end tokens - *`${}`* using the
+setters *`changeFunctionStartToken`* and *`changeFunctionEndToken`* on
+*`SimpleLanguage`*, using Java code. From Spring XML you can define
+a *`<bean>`* tag with the new changed tokens in the properties as shown
+below:
+
+xml<!-- configure Simple to use custom prefix/suffix tokens --> <bean
+id="simple" class="org.apache.camel.language.simple.SimpleLanguage">
+<property name="functionStartToken" value="["/> <property
+name="functionEndToken" value="]"/> </bean>
+
+In the example above we use *`[]`* as the changed tokens. Notice by
+changing the start/end token you change those in all the Camel
+applications which share the same *`camel-core`* on their classpath. For
+example in an OSGi server this may affect many applications, where as a
+Web Application as a WAR file it only affects the Web Application.
+
+[[BookLanguagesAppendix-LoadingScriptfromExternalResource]]
+Loading Script from External Resource
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available *from* Camel 2.11*
+
+You can externalize the script and have Camel load it from a resource
+such as: `classpath:`, `file:`, or `http:`. This is done using the
+following syntax: `resource:scheme:location`, e.g., to refer to a file
+on the classpath you can do:
+
+java.setHeader("myHeader").simple("resource:classpath:mysimple.txt")
+
+[[BookLanguagesAppendix-SettingSpringbeanstoExchangeproperties]]
+Setting Spring beans to Exchange properties
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available *from* Camel 2.6*
+
+You can set a spring bean into an exchange property as shown below:
+
+xml<bean id="myBeanId" class="my.package.MyCustomClass"/> <route> <!--
+... --> <setProperty propertyName="monitoring.message">
+<simple>ref:myBeanId</simple> </setProperty> <!-- ... --> </route>
+
+[[BookLanguagesAppendix-Dependencies.15]]
+Dependencies
+^^^^^^^^^^^^
+
+The link:simple.html[Simple] language is part of *`camel-core`*.
+
+[[BookLanguagesAppendix-FileExpressionLanguage]]
+File Expression Language
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+[Info]
+====
+ **File language is now merged with Simple language**
+
+From *Camel 2.2*: the file language is now merged with
+link:simple.html[Simple] language which means you can use all the file
+syntax directly within the simple language.
+
+====
+
+The File Expression Language is an extension to the
+link:simple.html[Simple] language, adding file related capabilities.
+These capabilities are related to common use cases working with file
+path and names. The goal is to allow expressions to be used with the
+link:file2.html[File] and link:ftp.html[FTP] components for setting
+dynamic file patterns for both consumer and producer.
+
+[[BookLanguagesAppendix-Syntax]]
+Syntax
+^^^^^^
+
+This language is an *extension* to the link:simple.html[Simple] language
+so the link:simple.html[Simple] syntax applies also. So the table below
+only lists the additional. By contrast to the link:simple.html[Simple]
+language, the link:file-language.html[File Language] also supports the
+use of link:constant.html[Constant] expressions to enter a fixed
+filename, for example.
+
+All the file tokens use the same expression name as the method on the
+*`java.io.File`* object. For example: *`file:absolute`* refers to the
+*`java.io.File.getAbsolute()`* method.
+
+[Info]
+====
+
+
+*Note*: not all expressions are supported by the current Exchange. For
+example, the link:ftp.html[FTP] component supports some of the options,
+whereas the link:file2.html[File] component supports all of them. ====
+
+[width="99%",cols="16%,14%,14%,14%,14%,14%,14%",options="header",]
+|=======================================================================
+|Expression |Type |File Consumer |File Producer |FTP Consumer |FTP
+Producer |Description
+|`date:command:pattern` |`String` |`yes` |`yes` |`yes` |`yes` a|
+For date formatting using the *`java.text.SimpleDateFormat`* patterns
+which is an *extension* to the link:simple.html[Simple] language.
+
+Additional command is: *`file`* (consumers only) for the last modified
+timestamp of the file.
+
+*Note*: all the commands from the link:simple.html[Simple] language can
+also be used.
+
+|`file:absolute` |`Boolean` |`yes` |`no` |`no` |`no` |Refers to whether
+the file is regarded as absolute or relative.
+
+|`file:absolute.path` |`String` |`yes` |`no` |`no` |`no` |Refers to the
+absolute file path.
+
+|`file:ext` |`String` |`yes` |`no` |`yes` |`no` |Refers to the file
+extension only.
+
+|`file:length` |`Long` |`yes` |`no` |`yes` |`no` |Refers to the file
+length returned as a *`Long`* type.
+
+|`file:modified` |`Date` |`yes` |`no` |`yes` |`no` |Refers to the file
+last modified returned as a *`Date`* type.
+
+|`file:name` |`String` |`yes` |`no` |`yes` |`no` |Refers to the file
+name (is relative to the starting directory, see note below).
+
+|`file:name.ext` |`String` |`yes` |`no` |`yes` |`no` |*Camel 2.3:*
+refers to the file extension only.
+
+|`file:name.ext.single` |`String` |`yes` |`no` |`yes` |`no` |*Camel
+2.14.4/2.15.3:* refers to the file extension. If the file extension has
+multiple dots, then this expression strips and only returns the last
+part.
+
+|`file:name.noext` |`String` |`yes` |`no` |`yes` |`no` |Refers to the
+file name with no extension (is relative to the starting directory, see
+note below).
+
+|`file:name.noext.single` |`String` |`yes` |`no` |`yes` |`no` |**Camel
+2.14.4/2.15.3:** refers to the file name with no extension (is relative
+to the starting directory, see note below). If the file extension has
+multiple dots, then this expression strips only the last part, and keep
+the others.
+
+|`file:onlyname` |`String` |`yes` |`no` |`yes` |`no` |Refers to the file
+name only with no leading paths.
+
+|`file:onlyname.noext` |`String` |`yes` |`no` |`yes` |`no` |Refers to
+the file name only with no extension and with no leading paths.
+
+|`file:onlyname.noext.single` |`String` |`yes` |`no` |`yes` |`no`
+|*Camel 2.14.4/2.15.3:* refers to the file name only with no extension
+and with no leading paths. If the file extension has multiple dots, then
+this expression strips only the last part, and keep the others.
+
+|`file:parent` |`String` |`yes` |`no` |`yes` |`no` |Refers to the file
+parent.
+
+|`file:path` |`String` |`yes` |`no` |`yes` |`no` |Refers to the file
+path.
+
+|`file:size` |`Long` |`yes` |`no` |`yes` |`no` |*Camel 2.5:* refers to
+the file length returned as a *`Long`* type.
+|=======================================================================
+
+[[BookLanguagesAppendix-FileTokenExample]]
+File Token Example
+^^^^^^^^^^^^^^^^^^
+
+[[BookLanguagesAppendix-RelativePaths]]
+Relative Paths
+++++++++++++++
+
+We have a *`java.io.File`* handle for the file *`hello.txt`* in the
+following _relative_ directory: *`.\filelanguage\test`*. And we
+configure our endpoint to use this starting directory
+*`.\filelanguage`*.
+
+The file tokens returned are:
+
+[width="100%",cols="50%,50%",options="header",]
+|=======================================================================
+|Expression |Returns
+|`file:absolute` |`false`
+
+|`file:absolute.path`
+|`\workspace\camel\camel-core\target\filelanguage\test\hello.txt`
+
+|`file:ext` |`txt`
+
+|`file:name` |`test\hello.txt`
+
+|`file:name.ext` |`txt`
+
+|`file:name.noext` |`test\hello`
+
+|`file:onlyname` |`hello.txt`
+
+|`file:onlyname.noext` |`hello`
+
+|`file:parent` |`filelanguage\test`
+
+|`file:path` |`filelanguage\test\hello.txt`
+|=======================================================================
+
+[[BookLanguagesAppendix-AbsolutePaths]]
+Absolute Paths
+++++++++++++++
+
+We have a *`java.io.File`* handle for the file *`hello.txt`* in the
+following _absolute_ directory:
+*`\workspace\camel\camel-core\target\filelanguage\test`*. And we
+configure out endpoint to use the absolute starting directory:
+*`\workspace\camel\camel-core\target\filelanguage`*.
+
+The file tokens return are:
+
+[width="100%",cols="50%,50%",options="header",]
+|=======================================================================
+|Expression |Returns
+|`file:absolute` |`true`
+
+|`file:absolute.path`
+|`\workspace\camel\camel-core\target\filelanguage\test\hello.txt`
+
+|`file:ext` |`txt`
+
+|`file:name` |`test\hello.txt`
+
+|`file:name.ext` |`txt`
+
+|`file:name.noext` |`test\hello`
+
+|`file:onlyname` |`hello.txt`
+
+|`file:onlyname.noext` |`hello`
+
+|`file:parent` |`\workspace\camel\camel-core\target\filelanguage\test`
+
+|`file:path`
+|`\workspace\camel\camel-core\target\filelanguage\test\hello.txt`
+|=======================================================================
+
+[[BookLanguagesAppendix-Examples.1]]
+Examples
+^^^^^^^^
+
+You can enter a fixed link:constant.html[Constant] expression such as
+*`myfile.txt`*:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+fileName="myfile.txt"
+----
+
+Lets assume we use the file consumer to read files and want to move the
+read files to backup folder with the current date as a sub folder. This
+can be achieved using an expression like:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+fileName="backup/${date:now:yyyyMMdd}/${file:name.noext}.bak"
+----
+
+relative folder names are also supported so suppose the backup folder
+should be a sibling folder then you can append *`..`* as:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+fileName="../backup/${date:now:yyyyMMdd}/${file:name.noext}.bak"
+----
+
+As this is an extension to the link:simple.html[Simple] language we have
+access to all the goodies from this language also, so in this use case
+we want to use the *`in.header.type`* as a parameter in the dynamic
+expression:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+fileName="../backup/${date:now:yyyyMMdd}/type-${in.header.type}/backup-of-${file:name.noext}.bak"
+----
+
+If you have a custom *`Date`* you want to use in the expression then
+Camel supports retrieving dates from the message header.
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+fileName="orders/order-${in.header.customerId}-${date:in.header.orderDate:yyyyMMdd}.xml"
+----
+
+And finally we can also use a bean expression to invoke a POJO class
+that generates some *`String`* output (or convertible to *`String`*) to
+be used:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+fileName="uniquefile-${bean:myguidgenerator.generateid}.txt"
+----
+
+And of course all this can be combined in one expression where you can
+use the link:file-language.html[File Language], link:simple.html[Simple]
+and the link:bean.html[Bean] language in one combined expression. This
+is pretty powerful for those common file path patterns.
+
+[[BookLanguagesAppendix-UsingSpring'sPropertyPlaceholderConfigurerwiththeFileComponent]]
+Using Spring's `PropertyPlaceholderConfigurer` with the
+link:file2.html[File] Component
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In Camel you can use the link:file-language.html[File Language] directly
+from the link:simple.html[Simple] language which makes a
+link:content-based-router.html[Content Based Router] easier to do in
+Spring XML, where we can route based on file extensions as shown below:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<from uri="file://input/orders"/>
+  <choice>
+    <when>
+      <simple>${file:ext} == 'txt'</simple>
+      <to uri="bean:orderService?method=handleTextFiles"/>
+    </when>
+    <when>
+      <simple>${file:ext} == 'xml'</simple>
+      <to uri="bean:orderService?method=handleXmlFiles"/>
+    </when>
+    <otherwise>
+      <to uri="bean:orderService?method=handleOtherFiles"/>
+    </otherwise>
+  </choice>
+----
+
+If you use the *`fileName`* option on the link:file2.html[File] endpoint
+to set a dynamic filename using the link:file-language.html[File
+Language] then make sure you use the alternative syntax (available from
+Camel 2.5) to avoid clashing with Spring's
+*`PropertyPlaceholderConfigurer`*.
+
+*bundle-context.xml*
+
+[source,brush:,xml;,gutter:,false;,theme:,Default]
+----
+<bean id="propertyPlaceholder" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+  <property name="location" value="classpath:bundle-context.cfg"/>
+</bean>
+
+<bean id="sampleRoute" class="SampleRoute">
+  <property name="fromEndpoint" value="${fromEndpoint}"/>
+  <property name="toEndpoint" value="${toEndpoint}"/>
+</bean>
+----
+
+*bundle-context.cfg*
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+fromEndpoint=activemq:queue:test
+toEndpoint=file://fileRoute/out?fileName=test-$simple{date:now:yyyyMMdd}.txt
+----
+
+Notice how we use the *`$simple{}`* syntax in the *`toEndpoint`* above.
+If you don't do this, they will clash and Spring will throw an
+exception:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+org.springframework.beans.factory.BeanDefinitionStoreException:
+Invalid bean definition with name 'sampleRoute' defined in class path resource [bundle-context.xml]:
+Could not resolve placeholder 'date:now:yyyyMMdd'
+----
+
+[[BookLanguagesAppendix-Dependencies.16]]
+Dependencies
+^^^^^^^^^^^^
+
+The File language is part of *`camel-core`*.
+
+[[BookLanguagesAppendix-SQLLanguage]]
+SQL Language
+~~~~~~~~~~~~
+
+The SQL support is added by http://josql.sourceforge.net/[JoSQL] and is
+primarily used for performing SQL queries on in-memory objects. If you
+prefer to perform actual database queries then check out the
+link:jpa.html[JPA] component.
+
+[Tip]
+====
+ **Looking for the SQL component**
+
+Camel has both a link:sql.html[SQL] language and a
+link:sql-component.html[SQL Component]. This page is about the SQL
+language. Click on link:sql-component.html[SQL Component] if you are
+looking for the component instead.
+
+====
+
+To use SQL in your camel routes you need to add the a dependency on
+*camel-josql* which implements the SQL language.
+
+If you use maven you could just add the following to your pom.xml,
+substituting the version number for the latest & greatest release (see
+link:download.html[the download page for the latest versions]).
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<dependency>
+  <groupId>org.apache.camel</groupId>
+  <artifactId>camel-josql</artifactId>
+  <version>x.x.x</version>
+  <!-- use the same version as your Camel core version -->
+</dependency>
+----
+
+Camel supports http://en.wikipedia.org/wiki/SQL[SQL] to allow an
+link:expression.html[Expression] or link:predicate.html[Predicate] to be
+used in the link:dsl.html[DSL] or link:xml-configuration.html[Xml
+Configuration]. For example you could use SQL to create an
+link:predicate.html[Predicate] in a link:message-filter.html[Message
+Filter] or as an link:expression.html[Expression] for a
+link:recipient-list.html[Recipient List].
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from("queue:foo").setBody().sql("select * from MyType").to("queue:bar")
+----
+
+And the spring DSL:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+   <from uri="queue:foo"/>
+   <setBody>
+       <sql>select * from MyType</sql>
+   </setBody>
+   <to uri="queue:bar"/>
+----
+
+[[BookLanguagesAppendix-Variables.5]]
+Variables
+^^^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Variable |Type |Description
+|exchange |Exchange |the Exchange object
+
+|in |Message |the exchange.in message
+
+|out |Message |the exchange.out message
+
+|the property key |Object |the Exchange properties
+
+|the header key |Object |the exchange.in headers
+
+|the variable key |Object |if any additional variables is added using
+`setVariables` method
+|=======================================================================
+
+[[BookLanguagesAppendix-Loadingscriptfromexternalresource.3]]
+Loading script from external resource
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available as of Camel 2.11*
+
+You can externalize the script and have Camel load it from a resource
+such as `"classpath:"`, `"file:"`, or `"http:"`. +
+This is done using the following syntax: `"resource:scheme:location"`,
+eg to refer to a file on the classpath you can do:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+.setHeader("myHeader").sql("resource:classpath:mysql.sql")
+----
+
+[[BookLanguagesAppendix-XPath]]
+XPath
+~~~~~
+
+Camel supports http://www.w3.org/TR/xpath[XPath] to allow an
+link:expression.html[Expression] or link:predicate.html[Predicate] to be
+used in the link:dsl.html[DSL] or link:xml-configuration.html[Xml
+Configuration]. For example you could use XPath to create an
+link:predicate.html[Predicate] in a link:message-filter.html[Message
+Filter] or as an link:expression.html[Expression] for a
+link:recipient-list.html[Recipient List].
+
+Streams
+
+If the message body is stream based, which means the input is received
+by Camel as a stream, then you will only be able to read the content of
+the stream *once*. Oftentimes when using link:xpath.html[XPath] as
+link:message-filter.html[Message Filter] or
+link:content-based-router.html[Content Based Router] the data will be
+accessed multiple times. Therefore use link:stream-caching.html[Stream
+caching] or convert the message body to a *`String`* beforehand. This
+makes it safe to be re-read multiple times.
+
+from("queue:foo") .filter().xpath("//foo")) .to("queue:bar")
+from("queue:foo") .choice().xpath("//foo")).to("queue:bar")
+.otherwise().to("queue:others");
+
+[[BookLanguagesAppendix-Namespaces]]
+Namespaces
+^^^^^^^^^^
+
+You can easily use namespaces with XPath expressions using the
+Namespaces helper
+class.\{snippet:id=example|lang=java|url=camel/trunk/camel-core/src/test/java/org/apache/camel/processor/XPathWithNamespacesFilterTest.java}
+
+[[BookLanguagesAppendix-Variables.6]]
+Variables
+^^^^^^^^^
+
+Variables in XPath is defined in different namespaces. The default
+namespace is `http://camel.apache.org/schema/spring`.
+
+[width="100%",cols="25%,25%,25%,25%",options="header",]
+|=======================================================================
+|Namespace URI |Local part |Type |Description
+|http://camel.apache.org/xml/in/ |`in` |`Message` |The *`exchange.in`*
+message.
+
+|http://camel.apache.org/xml/out/ |`out` |`Message`
+|The *`exchange.out`* message.
+
+|http://camel.apache.org/xml/function/ |`functions` |`Object` |*Camel
+2.5:* Additional functions.
+
+|http://camel.apache.org/xml/variables/environment-variables |`env`
+|`Object` |OS environment variables.
+
+|http://camel.apache.org/xml/variables/system-properties |`system`
+|`Object` |Java System properties.
+
+|http://camel.apache.org/xml/variables/exchange-property |  |`Object`
+|The exchange property.
+|=======================================================================
+
+Camel will resolve variables according to either:
+
+* namespace given
+* no namespace given
+
+[[BookLanguagesAppendix-NamespaceGiven]]
+Namespace Given
++++++++++++++++
+
+If the namespace is given then Camel is instructed exactly what to
+return. However when resolving either *`IN`* or *`OUT`* Camel will try
+to resolve a header with the given local part first, and return it. If
+the local part has the value *`body`* then the body is returned instead.
+
+[[BookLanguagesAppendix-NoNamespaceGiven]]
+No Namespace Given
+++++++++++++++++++
+
+If there is no namespace given then Camel resolves only based on the
+local part. Camel will try to resolve a variable in the following steps:
+
+* From *`variables`* that has been set using the
+*`variable(name, value)`* fluent builder.
+* From *`message.in.header`* if there is a header with the given key.
+* From *`exchange.properties`* if there is a property with the given
+key.
+
+[[BookLanguagesAppendix-Functions]]
+Functions
+^^^^^^^^^
+
+Camel adds the following XPath functions that can be used to access the
+exchange:
+
+[width="100%",cols="25%,25%,25%,25%",options="header",]
+|=======================================================================
+|Function |Argument |Type |Description
+|`in:body` |none |`Object` |Will return the *`IN`* message body.
+
+|`in:header` |the header name |`Object` |Will return the *`IN`* message
+header.
+
+|`out:body` |none |`Object` |Will return the *`OUT`* message body.
+
+|`out:header` |the header name |`Object` |Will return the *`OUT`*
+message header.
+
+|`function:properties` |key for property |`String` |*Camel 2.5:* To
+lookup a property using the link:properties.html[Properties] component
+(property placeholders).
+
+|`function:simple` |simple expression |`Object` |*Camel 2.5:* To
+evaluate a link:simple.html[Simple] expression.
+|=======================================================================
+
+*Note: `function:properties`* and *`function:simple`* is not supported
+when the return type is a *`NodeSet`*, such as when using with a
+link:splitter.html[Splitter] EIP.
+
+Here's an example showing some of these functions in
+use.\{snippet:id=ex|lang=java|url=camel/trunk/camel-core/src/test/java/org/apache/camel/language/XPathFunctionTest.java}And
+the new functions introduced in Camel
+2.5:\{snippet:id=ex|lang=java|url=camel/trunk/camel-core/src/test/java/org/apache/camel/builder/xml/XPathFunctionsTest.java}
+
+[[BookLanguagesAppendix-UsingXMLConfiguration]]
+Using XML Configuration
+^^^^^^^^^^^^^^^^^^^^^^^
+
+If you prefer to configure your routes in your link:spring.html[Spring]
+XML file then you can use XPath expressions as follows
+
+xml<beans xmlns="http://www.springframework.org/schema/beans"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation=" http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans.xsd
+http://camel.apache.org/schema/spring
+http://camel.apache.org/schema/spring/camel-spring.xsd"> <camelContext
+id="camel" xmlns="http://activemq.apache.org/camel/schema/spring"
+xmlns:foo="http://example.com/person"> <route> <from
+uri="activemq:MyQueue"/> <filter>
+<xpath>/foo:person[@name='James']</xpath> <to
+uri="mqseries:SomeOtherQueue"/> </filter> </route> </camelContext>
+</beans>
+
+Notice how we can reuse the namespace prefixes, *`foo`* in this case, in
+the XPath expression for easier namespace based XPath expressions! See
+also this
+http://camel.465427.n5.nabble.com/fail-filter-XPATH-camel-td476424.html[discussion
+on the mailinglist] about using your own namespaces with XPath.
+
+[[BookLanguagesAppendix-SettingtheResultType.1]]
+Setting the Result Type
+^^^^^^^^^^^^^^^^^^^^^^^
+
+The link:xpath.html[XPath] expression will return a result type using
+native XML objects such as *`org.w3c.dom.NodeList`*. But many times you
+want a result type to be a *`String`*. To do this you have to instruct
+the link:xpath.html[XPath] which result type to use.
+
+In Java DSL:
+
+javaxpath("/foo:person/@id", String.class)
+
+In Spring DSL you use the *`resultType`* attribute to provide a fully
+qualified classname:
+
+xml<xpath resultType="java.lang.String">/foo:person/@id</xpath>
+
+In *`@XPath`*: +
+*Available as of Camel 2.1*
+
+java@XPath(value = "concat('foo-',//order/name/)", resultType =
+String.class) String name)
+
+Where we use the XPath function *`concat`* to prefix the order name with
+*`foo-`*. In this case we have to specify that we want a *`String`* as
+result type so the *`concat`* function works.
+
+[[BookLanguagesAppendix-UsingXPathonHeaders]]
+Using XPath on Headers
+^^^^^^^^^^^^^^^^^^^^^^
+
+*Available as of Camel 2.11*
+
+Some users may have XML stored in a header. To apply an XPath statement
+to a header's value you can do this by defining the *`headerName`*
+attribute.
+
+In XML
+DSL:\{snippet:id=e1|lang=xml|url=camel/trunk/components/camel-test-blueprint/src/test/resources/org/apache/camel/test/blueprint/xpath/XPathHeaderNameTest.xml}And
+in Java DSL you specify the *`headerName`* as the 2nd parameter as
+shown:
+
+javaxpath("/invoice/@orderType = 'premium'", "invoiceDetails")
+
+[[BookLanguagesAppendix-Examples.2]]
+Examples
+^^^^^^^^
+
+Here is a simple
+http://svn.apache.org/repos/asf/camel/trunk/camel-core/src/test/java/org/apache/camel/processor/XPathFilterTest.java[example]
+using an XPath expression as a predicate in a
+link:message-filter.html[Message
+Filter]\{snippet:id=example|lang=java|url=camel/trunk/camel-core/src/test/java/org/apache/camel/processor/XPathFilterTest.java}If
+you have a standard set of namespaces you wish to work with and wish to
+share them across many different XPath expressions you can use
+the *`NamespaceBuilder`* as shown
+http://svn.apache.org/repos/asf/camel/trunk/camel-core/src/test/java/org/apache/camel/processor/XPathWithNamespaceBuilderFilterTest.java[in
+this
+example]\{snippet:id=example|lang=java|url=camel/trunk/camel-core/src/test/java/org/apache/camel/processor/XPathWithNamespaceBuilderFilterTest.java}In
+this sample we have a *`choice`* construct. The first choice evaulates
+if the message has a header key *`type`* that has the value *`Camel`*.
+The 2nd *`choice`* evaluates if the message body has a name
+tag *`<name>`* which values is *`Kong`*. +
+If neither is true the message is routed in the otherwise
+block:\{snippet:id=e1|lang=java|url=camel/trunk/camel-core/src/test/java/org/apache/camel/builder/xml/XPathHeaderTest.java}And
+the spring XML equivalent of the
+route:\{snippet:id=example|lang=xml|url=camel/trunk/components/camel-spring/src/test/resources/org/apache/camel/spring/processor/SpringXPathHeaderTest-context.xml}
+
+[[BookLanguagesAppendix-XPathInjection]]
+XPath Injection
+~~~~~~~~~~~~~~~
+
+You can use link:bean-integration.html[Bean Integration] to invoke a
+method on a bean and use various languages such as XPath to extract a
+value from the message and bind it to a method parameter.
+
+The default XPath annotation has SOAP and XML namespaces available. If
+you want to use your own namespace URIs in an XPath expression you can
+use your own copy of the
+http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/language/XPath.html[XPath
+annotation] to create whatever namespace prefixes you want to
+use.\{snippet:id=example|lang=java|url=camel/trunk/camel-core/src/test/java/org/apache/camel/component/xslt/MyXPath.java}e.g.,
+cut and paste upper code to your own project in a different package
+and/or annotation name then add whatever namespace prefix/URIs you want
+in scope when you use your annotation on a method parameter. Then when
+you use your annotation on a method parameter all the namespaces you
+want will be available for use in your XPath expression.
+
+Example:
+
+javapublic class Foo \{ @MessageDriven(uri = "activemq:my.queue") public
+void doSomething(@MyXPath("/ns1:foo/ns2:bar/text()") String
+correlationID, @Body String body) \{ // process the inbound message here
+} }
+
+[[BookLanguagesAppendix-UsingXPathBuilderWithoutanExchange]]
+Using XPathBuilder Without an Exchange
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available as of Camel 2.3*
+
+You can now use the *`org.apache.camel.builder.XPathBuilder`* without
+the need for an link:exchange.html[Exchange]. This comes handy if you
+want to use it as a helper to do custom XPath evaluations. It requires
+that you pass in a link:camelcontext.html[CamelContext] since a lot of
+the moving parts inside the *`XPathBuilder`* requires access to the
+Camel link:type-converter.html[Type Converter] and hence why
+link:camelcontext.html[CamelContext] is needed.
+
+For example you can do something like this:
+
+javaboolean matches =
+XPathBuilder.xpath("/foo/bar/@xyz").matches(context, "<foo><bar
+xyz='cheese'/></foo>"));
+
+This will match the given predicate.
+
+You can also evaluate for example as shown in the following three
+examples:
+
+javaString name = XPathBuilder.xpath("foo/bar").evaluate(context,
+"<foo><bar>cheese</bar></foo>", String.class); Integer number =
+XPathBuilder.xpath("foo/bar").evaluate(context,
+"<foo><bar>123</bar></foo>", Integer.class); Boolean bool =
+XPathBuilder.xpath("foo/bar").evaluate(context,
+"<foo><bar>true</bar></foo>", Boolean.class);
+
+Evaluating with a String result is a common requirement and thus you can
+do it a bit simpler:
+
+String name = XPathBuilder.xpath("foo/bar").evaluate(context,
+"<foo><bar>cheese</bar></foo>");
+
+[[BookLanguagesAppendix-UsingSaxonwithXPathBuilder]]
+Using Saxon with XPathBuilder
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available as of Camel 2.3*
+
+You need to add *`camel-saxon`* as dependency to your project. It's now
+easier to use http://saxon.sourceforge.net/[Saxon] with
+the *`XPathBuilder`* which can be done in several ways as shown below.
+Where as the latter ones are the easiest ones.
+
+Using a
+factory\{snippet:id=e1|lang=java|url=camel/trunk/components/camel-saxon/src/test/java/org/apache/camel/builder/saxon/XPathTest.java}Using
+the object model** +
+**\{snippet:id=e2|lang=java|url=camel/trunk/components/camel-saxon/src/test/java/org/apache/camel/builder/saxon/XPathTest.java}The
+easy
+one\{snippet:id=e3|lang=java|url=camel/trunk/components/camel-saxon/src/test/java/org/apache/camel/builder/saxon/XPathTest.java}
+
+[[BookLanguagesAppendix-SettingaCustomXPathFactoryUsingSystemProperty]]
+Setting a Custom XPathFactory Using System Property
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available as of Camel 2.3*
+
+Camel now supports reading the
+http://java.sun.com/j2se/1.5.0/docs/api/javax/xml/xpath/XPathFactory.html#newInstance(java.lang.String)[JVM
+system property `javax.xml.xpath.XPathFactory`] that can be used to set
+a custom *`XPathFactory`* to use.
+
+This unit test shows how this can be done to use Saxon
+instead:\{snippet:id=e4|lang=java|url=camel/trunk/components/camel-saxon/src/test/java/org/apache/camel/builder/saxon/XPathTest.java}Camel
+will log at *`INFO`* level if it uses a non default *`XPathFactory`*
+such as:
+
+XPathBuilder INFO Using system property
+javax.xml.xpath.XPathFactory:http://saxon.sf.net/jaxp/xpath/om with
+value: net.sf.saxon.xpath.XPathFactoryImpl when creating XPathFactory
+
+To use Apache Xerces you can configure the system property:
+
+-Djavax.xml.xpath.XPathFactory=org.apache.xpath.jaxp.XPathFactoryImpl
+
+[[BookLanguagesAppendix-EnablingSaxonfromSpringDSL]]
+Enabling Saxon from Spring DSL
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available as of Camel 2.10*
+
+Similarly to Java DSL, to enable Saxon from Spring DSL you have three
+options:
+
+Specifying the factory
+
+xml<xpath factoryRef="saxonFactory"
+resultType="java.lang.String">current-dateTime()</xpath>
+
+Specifying the object model
+
+xml<xpath objectModel="http://saxon.sf.net/jaxp/xpath/om"
+resultType="java.lang.String">current-dateTime()</xpath>
+
+Shortcut
+
+xml<xpath saxon="true"
+resultType="java.lang.String">current-dateTime()</xpath>
+
+[[BookLanguagesAppendix-NamespaceAuditingtoAidDebugging]]
+Namespace Auditing to Aid Debugging
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available as of Camel 2.10*
+
+A large number of XPath-related issues that users frequently face are
+linked to the usage of namespaces. You may have some misalignment
+between the namespaces present in your message and those that your XPath
+expression is aware of or referencing. XPath predicates or expressions
+that are unable to locate the XML elements and attributes due to
+namespaces issues may simply look like "they are not working", when in
+reality all there is to it is a lack of namespace definition.
+
+Namespaces in XML are completely necessary, and while we would love to
+simplify their usage by implementing some magic or voodoo to wire
+namespaces automatically, truth is that any action down this path would
+disagree with the standards and would greatly hinder interoperability.
+
+Therefore, the utmost we can do is assist you in debugging such issues
+by adding two new features to the XPath Expression Language and are thus
+accessible from both predicates and expressions.
+
+[[BookLanguagesAppendix-LoggingtheNamespaceContextofYourXPathExpression/Predicate]]
+Logging the Namespace Context of Your XPath Expression/Predicate
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Every time a new XPath expression is created in the internal pool, Camel
+will log the namespace context of the expression under the
+*`org.apache.camel.builder.xml.XPathBuilder`* logger. Since Camel
+represents Namespace Contexts in a hierarchical fashion (parent-child
+relationships), the entire tree is output in a recursive manner with the
+following format:
+
+[me: \{prefix -> namespace}, \{prefix -> namespace}], [parent: [me:
+\{prefix -> namespace}, \{prefix -> namespace}], [parent: [me: \{prefix
+-> namespace}]]]
+
+Any of these options can be used to activate this logging:
+
+1.  Enable *`TRACE`* logging on the
+*`org.apache.camel.builder.xml.XPathBuilder`* logger, or some parent
+logger such as *`org.apache.camel`* or the root logger.
+2.  Enable the *`logNamespaces`* option as indicated in
+link:xpath.html[Auditing Namespaces], in which case the logging will
+occur on the *`INFO`* level.
+
+AuditingNamespaces
+
+[[BookLanguagesAppendix-Auditingnamespaces]]
+Auditing namespaces
++++++++++++++++++++
+
+Camel is able to discover and dump all namespaces present on every
+incoming message before evaluating an XPath expression, providing all
+the richness of information you need to help you analyse and pinpoint
+possible namespace issues. To achieve this, it in turn internally uses
+another specially tailored XPath expression to extract all namespace
+mappings that appear in the message, displaying the prefix and the full
+namespace URI(s) for each individual mapping.
+
+Some points to take into account:
+
+* The implicit XML namespace
+(xmlns:xml="http://www.w3.org/XML/1998/namespace") is suppressed from
+the output because it adds no value.
+* Default namespaces are listed under the *`DEFAULT`* keyword in the
+output.
+* Keep in mind that namespaces can be remapped under different scopes.
+Think of a top-level 'a' prefix which in inner elements can be assigned
+a different namespace, or the default namespace changing in inner
+scopes. For each discovered prefix, all associated URIs are listed.
+
+You can enable this option in Java DSL and Spring DSL.
+
+Java DSL:
+
+javaXPathBuilder.xpath("/foo:person/@id", String.class).logNamespaces()
+
+Spring DSL:
+
+xml<xpath logNamespaces="true"
+resultType="String">/foo:person/@id</xpath>
+
+The result of the auditing will be appear at the *`INFO`* level under
+the *`org.apache.camel.builder.xml.XPathBuilder`* logger and will look
+like the following:
+
+2012-01-16 13:23:45,878 [stSaxonWithFlag] INFO XPathBuilder - Namespaces
+discovered in message: \{xmlns:a=[http://apache.org/camel],
+DEFAULT=[http://apache.org/default], xmlns:b=[http://apache.org/camelA,
+http://apache.org/camelB]}
+
+[[BookLanguagesAppendix-LoadingScriptfromExternalResource.1]]
+Loading Script from External Resource
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available as of Camel 2.11*
+
+You can externalize the script and have Camel load it from a resource
+such as: *`classpath:`*, `file:` or `http:`. +
+This is done using the following syntax: `resource:scheme:location`,
+e.g., to refer to a file on the classpath you can do:
+
+.setHeader("myHeader").xpath("resource:classpath:myxpath.txt",
+String.class)
+
+[[BookLanguagesAppendix-Dependencies.17]]
+Dependencies
+^^^^^^^^^^^^
+
+The XPath language is part of camel-core.
+
+[[BookLanguagesAppendix-XQuery]]
+XQuery
+~~~~~~
+
+Camel supports http://www.w3.org/TR/xquery/[XQuery] to allow an
+link:expression.html[Expression] or link:predicate.html[Predicate] to be
+used in the link:dsl.html[DSL] or link:xml-configuration.html[Xml
+Configuration]. For example you could use XQuery to create an
+link:predicate.html[Predicate] in a link:message-filter.html[Message
+Filter] or as an link:expression.html[Expression] for a
+link:recipient-list.html[Recipient List].
+
+[[BookLanguagesAppendix-Options.1]]
+Options
+^^^^^^^
+
+confluenceTableSmall
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Name |Default Value |Description
+|`allowStAX` |`false` |*Camel 2.8.3/2.9:* Whether to allow using StAX as
+the `javax.xml.transform.Source`.
+|=======================================================================
+
+[[BookLanguagesAppendix-Examples.3]]
+Examples
+^^^^^^^^
+
+from("queue:foo").filter(). xquery("//foo"). to("queue:bar")
+
+You can also use functions inside your query, in which case you need an
+explicit type conversion (or you will get a org.w3c.dom.DOMException:
+HIERARCHY_REQUEST_ERR) by passing the Class as a second argument to the
+*xquery()* method.
+
+from("direct:start"). recipientList().xquery("concat('mock:foo.',
+/person/@city)", String.class);
+
+[[BookLanguagesAppendix-Variables.7]]
+Variables
+^^^^^^^^^
+
+The IN message body will be set as the `contextItem`. Besides this these
+Variables is also added as parameters:
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Variable |Type |Description
+|exchange |Exchange |The current Exchange
+
+|in.body |Object |The In message's body
+
+|out.body |Object |The OUT message's body (if any)
+
+|in.headers.* |Object |You can access the value of exchange.in.headers
+with key *foo* by using the variable which name is in.headers.foo
+
+|out.headers.* |Object |You can access the value of exchange.out.headers
+with key *foo* by using the variable which name is out.headers.foo
+variable
+
+|*key name* |Object |Any exchange.properties and exchange.in.headers and
+any additional parameters set using `setParameters(Map)`. These
+parameters is added with they own key name, for instance if there is an
+IN header with the key name *foo* then its added as *foo*.
+|=======================================================================
+
+[[BookLanguagesAppendix-UsingXMLconfiguration.1]]
+Using XML configuration
+^^^^^^^^^^^^^^^^^^^^^^^
+
+If you prefer to configure your routes in your link:spring.html[Spring]
+XML file then you can use XPath expressions as follows
+
+xml<beans xmlns="http://www.springframework.org/schema/beans"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns:foo="http://example.com/person" xsi:schemaLocation="
+http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans.xsd
+http://camel.apache.org/schema/spring
+http://camel.apache.org/schema/spring/camel-spring.xsd"> <camelContext
+id="camel" xmlns="http://activemq.apache.org/camel/schema/spring">
+<route> <from uri="activemq:MyQueue"/> <filter>
+<xquery>/foo:person[@name='James']</xquery> <to
+uri="mqseries:SomeOtherQueue"/> </filter> </route> </camelContext>
+</beans>
+
+Notice how we can reuse the namespace prefixes, *foo* in this case, in
+the XPath expression for easier namespace based XQuery expressions!
+
+When you use functions in your XQuery expression you need an explicit
+type conversion which is done in the xml configuration via the *@type*
+attribute:
+
+xml <xquery type="java.lang.String">concat('mock:foo.',
+/person/@city)</xquery>
+
+[[BookLanguagesAppendix-UsingXQueryastransformation]]
+Using XQuery as transformation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+We can do a message translation using transform or setBody in the route,
+as shown below:
+
+from("direct:start"). transform().xquery("/people/person");
+
+Notice that xquery will use DOMResult by default, so if we want to grab
+the value of the person node, using text() we need to tell xquery to use
+String as result type, as shown:
+
+from("direct:start"). transform().xquery("/people/person/text()",
+String.class);
+
+ 
+
+[[BookLanguagesAppendix-UsingXQueryasanendpoint]]
+Using XQuery as an endpoint
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Sometimes an XQuery expression can be quite large; it can essentally be
+used for link:templating.html[Templating]. So you may want to use an
+link:xquery-endpoint.html[XQuery Endpoint] so you can route using XQuery
+templates.
+
+The following example shows how to take a message of an ActiveMQ queue
+(MyQueue) and transform it using XQuery and send it to MQSeries.
+
+<camelContext id="camel" xmlns="http://camel.apache.org/schema/spring">
+<route> <from uri="activemq:MyQueue"/> <to
+uri="xquery:com/acme/someTransform.xquery"/> <to
+uri="mqseries:SomeOtherQueue"/> </route> </camelContext>
+
+[[BookLanguagesAppendix-Examples.4]]
+Examples
+^^^^^^^^
+
+Here is a simple
+http://svn.apache.org/repos/asf/camel/trunk/components/camel-saxon/src/test/java/org/apache/camel/builder/saxon/XQueryFilterTest.java[example]
+using an XQuery expression as a predicate in a
+link:message-filter.html[Message Filter]
+
+\{snippet:id=example|lang=java|url=camel/trunk/components/camel-saxon/src/test/java/org/apache/camel/builder/saxon/XQueryFilterTest.java}
+
+This
+http://svn.apache.org/repos/asf/camel/trunk/components/camel-saxon/src/test/java/org/apache/camel/builder/saxon/XQueryWithNamespacesFilterTest.java[example]
+uses XQuery with namespaces as a predicate in a
+link:message-filter.html[Message Filter]
+
+\{snippet:id=example|lang=java|url=camel/trunk/components/camel-saxon/src/test/java/org/apache/camel/builder/saxon/XQueryWithNamespacesFilterTest.java}
+
+[[BookLanguagesAppendix-LearningXQuery]]
+Learning XQuery
+^^^^^^^^^^^^^^^
+
+XQuery is a very powerful language for querying, searching, sorting and
+returning XML. For help learning XQuery try these tutorials
+
+* Mike Kay's http://www.stylusstudio.com/xquery_primer.html[XQuery
+Primer]
+* the W3Schools http://www.w3schools.com/xquery/default.asp[XQuery
+Tutorial]
+
+You might also find the http://www.w3.org/TR/xpath-functions/[XQuery
+function reference] useful
+
+[[BookLanguagesAppendix-Loadingscriptfromexternalresource.4]]
+Loading script from external resource
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available as of Camel 2.11*
+
+You can externalize the script and have Camel load it from a resource
+such as `"classpath:"`, `"file:"`, or `"http:"`. +
+This is done using the following syntax: `"resource:scheme:location"`,
+eg to refer to a file on the classpath you can do:
+
+.setHeader("myHeader").xquery("resource:classpath:myxquery.txt",
+String.class)
+
+[[BookLanguagesAppendix-Dependencies.18]]
+Dependencies
+^^^^^^^^^^^^
+
+To use XQuery in your camel routes you need to add the a dependency on
+*camel-saxon* which implements the XQuery language.
+
+If you use maven you could just add the following to your pom.xml,
+substituting the version number for the latest & greatest release (see
+link:download.html[the download page for the latest versions]).
+
+<dependency> <groupId>org.apache.camel</groupId>
+<artifactId>camel-saxon</artifactId> <version>x.x.x</version>
+</dependency>

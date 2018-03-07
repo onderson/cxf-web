@@ -1,0 +1,80 @@
+[[ConfluenceContent]]
+The Zip link:data-format.html[Data Format] is a message compression and
+de-compression format. Messages marshalled using Zip compression can be
+unmarshalled using Zip decompression just prior to being consumed at the
+endpoint. The compression capability is quite useful when you deal with
+large XML and Text based payloads. It facilitates more optimal use of
+network bandwidth while incurring a small cost in order to compress and
+decompress payloads at the endpoint.
+
+[Info]
+====
+ **About using with Files**
+
+The Zip data format, does not (yet) have special support for files.
+Which means that when using big files, the entire file content is loaded
+into memory. +
+This is subject to change in the future, to allow a streaming based
+solution to have a low memory footprint.
+
+====
+
+[[ZipDataFormat-Options]]
+Options
+^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Option |Default |Description
+|compressionLevel |null |To specify a specific compression Level use
+`java.util.zip.Deflater` settings. The possible settings are  +
+          - `Deflater.BEST_SPEED` +
+          - `Deflater.BEST_COMPRESSION` +
+          - `Deflater.DEFAULT_COMPRESSION` +
+ +
+If compressionLevel is not explicitly specified the compressionLevel
+employed is `Deflater.DEFAULT_COMPRESSION`
+|=======================================================================
+
+[[ZipDataFormat-Marshal]]
+Marshal
+^^^^^^^
+
+In this example we marshal a regular text/XML payload to a compressed
+payload employing zip compression `Deflater.BEST_COMPRESSION` and send
+it an ActiveMQ queue called MY_QUEUE.
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from("direct:start").marshal().zip(Deflater.BEST_COMPRESSION).to("activemq:queue:MY_QUEUE");
+----
+
+Alternatively if you would like to use the default setting you could
+send it as
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from("direct:start").marshal().zip().to("activemq:queue:MY_QUEUE");
+----
+
+[[ZipDataFormat-Unmarshal]]
+Unmarshal
+^^^^^^^^^
+
+In this example we unmarshal a zipped payload from an ActiveMQ queue
+called MY_QUEUE to its original format, and forward it for processing to
+the UnZippedMessageProcessor. Note that the compression Level employed
+during the marshalling should be identical to the one employed during
+unmarshalling to avoid errors.
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from("activemq:queue:MY_QUEUE").unmarshal().zip().process(new UnZippedMessageProcessor()); 
+----
+
+[[ZipDataFormat-Dependencies]]
+Dependencies
+^^^^^^^^^^^^
+
+This data format is provided in *camel-core* so no additional
+dependencies are needed.

@@ -1,0 +1,32 @@
+[[ConfluenceContent]]
+[[Howdoesthewebsitework-Howdoesthewebsitework]]
+How does the website work
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This website is actually rendered from the Wiki contents that you can
+link:how-do-i-edit-the-website.html[edit]. +
+When viewing a page on the static HTML website you can click on the
+*edit* link (bottom of the page) and you can edit the page.
+
+For more information see link:how-do-i-edit-the-website.html[How do I
+edit the website].
+
+Other useful link:site.html[Site links] are
+
+This page contains the main navigation links to the parts which make up
+the Site layout.
+
+* link:banner.html[Banner]
+* link:book.html[Book]
+* link:book-in-one-page.html[Book In One Page]
+* link:includes.html[Includes]
+* link:navigation.html[Navigation]
+* link:quicklinks.html[QuickLinks]
+* link:scratch-page.html[Scratch Page]
+* link:siteindex.html[SiteIndex]
+* link:sitemap.html[SiteMap]
+* link:site-update-ideas.html[Site Update Ideas]
+
+Note that it takes a little while to update the Apache site at
+http://camel.apache.org/ due to caching. Though this site usually
+updates quickly: http://cwiki.apache.org/CAMEL/

@@ -1,0 +1,61 @@
+[[ConfluenceContent]]
+* Standard JVM object marshalling
+** link:serialization.html[Serialization]
+** link:string.html[String]
+
+* Object marshalling
+** link:avro.html[Avro]
+** link:boon.html[Boon]
+** link:hessian.html[Hessian]
+** link:json.html[JSON]
+** link:protobuf.html[Protobuf]
+** link:yaml-data-format.html[YAML]
+
+* Object/XML marshalling
+** link:castor.html[Castor]
+** link:jaxb.html[JAXB]
+** link:xmlbeans.html[XmlBeans]
+** link:xstream.html[XStream]
+** link:jibx.html[JiBX]
+** link:jackson-xml.html[Jackson XML]
+
+* Object/XML/Webservice marshalling
+** link:soap.html[SOAP]
+
+* Direct JSON / XML marshalling
+** link:xmljson.html[XmlJson]
+
+* Flat data structure marshalling
+** link:beanio.html[BeanIO]
+** link:bindy.html[Bindy]
+** link:csv.html[CSV]
+** link:edi.html[EDI]
+** link:flatpack-dataformat.html[Flatpack DataFormat]
+** link:univocity-parsers-formats.html[uniVocity-parsers formats]
+
+* Domain specific marshalling
+** link:hl7-dataformat.html[HL7 DataFormat]
+
+* Compression
+** link:gzip-data-format.html[GZip data format]
+** link:zip-dataformat.html[Zip DataFormat]
+** link:zip-file-dataformat.html[Zip File DataFormat]
+** link:lzf-data-format.html[LZF Data Format]
+** link:tar-dataformat.html[Tar DataFormat]
+
+* Security
+** link:crypto.html[Crypto]
+** link:crypto.html[PGP]
+** link:xmlsecurity-dataformat.html[XMLSecurity DataFormat]
+
+* Misc.
+** link:base64.html[Base64]
+** link:custom-dataformat.html[Custom DataFormat] - to use your own
+custom implementation
+** link:mime-multipart.html[MIME-Multipart]
+** link:rss.html[RSS]
+** link:tidymarkup.html[TidyMarkup]
+** link:syslog.html[Syslog]
+** link:ical.html[ICal]
+** link:barcode-data-format.html[Barcode]- to read and generate barcodes
+(QR-Code, PDF417, ...)

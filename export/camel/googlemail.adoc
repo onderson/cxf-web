@@ -1,0 +1,537 @@
+[[ConfluenceContent]]
+[[GoogleMail-GoogleMailComponent]]
+GoogleMail Component
+~~~~~~~~~~~~~~~~~~~~
+
+'''''
+
+*Available as of Camel 2.15*
+
+[[GoogleMail-ComponentDescription]]
+Component Description
+^^^^^^^^^^^^^^^^^^^^^
+
+The Google Mail component provides access
+to http://gmail.com/[Gmail] via
+the https://developers.google.com/gmail/api/v1/reference/[Google Mail
+Web APIs].
+
+Google Mail uses
+the https://developers.google.com/accounts/docs/OAuth2[OAuth 2.0
+protocol] for authenticating a Google account and authorizing access to
+user data. Before you can use this component, you will need
+to https://developers.google.com/gmail/api/auth/web-server[create an
+account and generate OAuth credentials]. Credentials comprise of a
+clientId, clientSecret, and a refreshToken. A handy resource for
+generating a long-lived refreshToken is
+the https://developers.google.com/oauthplayground[OAuth playground].
+
+Maven users will need to add the following dependency to their pom.xml
+for this component:
+
+....
+    <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-google-mail</artifactId>
+            <version>2.15-SNAPSHOT</version>
+    </dependency>
+        
+....
+
+[[GoogleMail-URIFormat]]
+URI Format
+^^^^^^^^^^
+
+'''''
+
+The GoogleMail Component uses the following URI format:
+
+....
+        google-mail://endpoint-prefix/endpoint?[options]
+    
+....
+
+Endpoint prefix can be one of:
+
+* attachments
+* drafts
+* history
+* labels
+* messages
+* threads
+* users
+
+[[GoogleMail-GoogleMailComponent.1]]
+GoogleMailComponent
+^^^^^^^^^^^^^^^^^^^
+
+'''''
+
+The GoogleMail Component can be configured with the options below. These
+options can be provided using the component's bean property
+`configuration` of type
+`org.apache.camel.component.google.mail.GoogleMailConfiguration`.
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Option |Type | 
+|accessToken |String |OAuth 2 access token. This typically expires after
+an hour so refreshToken is recommended for long term usage.
+
+|applicationName |String |Google drive application name. Example would
+be "camel-google-mail/1.0"
+
+|clientId |String |Client ID of the drive application
+
+|clientSecret |String |Client secret of the drive application
+
+|refreshToken |String |OAuth 2 refresh token. Using this, the Google
+Mail component can obtain a new accessToken whenever the current one
+expires - a necessity if the application is long-lived.
+
+|scopes |List<String> |Specifies the level of permissions you want a
+drive application to have to a user account.
+See https://developers.google.com/gmail/api/auth/scopes for more info.
+
+|p12FileName |String |**Camel 2.16:**The name of the p12 file which has
+the private key to use with the Google Service Account.
+
+|user |String |*Camel 2.16.2:* The email address of the user the
+application is trying to impersonate in the service account flow
+|=======================================================================
+
+[[GoogleMail-ProducerEndpoints]]
+Producer Endpoints
+^^^^^^^^^^^^^^^^^^
+
+'''''
+
+Producer endpoints can use endpoint prefixes followed by endpoint names
+and associated options described next. A shorthand alias can be used for
+some endpoints. The endpoint URI MUST contain a prefix.
+
+Endpoint options that are not mandatory are denoted by []. When there
+are no mandatory options for an endpoint, one of the set of [] options
+MUST be provided. Producer endpoints can also use a special option
+*`inBody`* that in turn should contain the name of the endpoint option
+whose value will be contained in the Camel Exchange In message.
+
+Any of the endpoint options can be provided in either the endpoint URI,
+or dynamically in a message header. The message header name must be of
+the format `CamelGoogleMail.<option>`. Note that the `inBody` option
+overrides message header, i.e. the endpoint option `inBody=option` would
+override a `CamelGoogleMail.option` header.
+
+For more information on the endpoints and options see API documentation
+at: https://developers.google.com/gmail/api/v1/reference/
+
+[[GoogleMail-1.EndpointPrefixattachments]]
+1. Endpoint Prefix _attachments_
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+'''''
+
+The following endpoints can be invoked with the prefix `attachments` as
+follows:
+
+....
+        google-mail://attachments/endpoint?[options]
+    
+....
+
+[cols=",,,",options="header",]
+|=======================================================================
+|Endpoint |Shorthand Alias |Options |Result Body Type
+|get |  |id, messageId, userId
+|com.google.api.services.gmail.model.MessagePartBody
+|=======================================================================
+
+[[GoogleMail-URIOptionsforattachments]]
+URI Options for _attachments_
++++++++++++++++++++++++++++++
+
+'''''
+
+[cols=",",options="header",]
+|=================
+|Name |Type
+|id |String
+|messageId |String
+|userId |String
+|=================
+
+[[GoogleMail-2.EndpointPrefixdrafts]]
+2. Endpoint Prefix _drafts_
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+'''''
+
+The following endpoints can be invoked with the prefix `drafts` as
+follows:
+
+....
+        google-mail://drafts/endpoint?[options]
+    
+....
+
+[width="100%",cols="25%,25%,25%,25%",options="header",]
+|=====================================================
+|Endpoint |Shorthand Alias |Options |Result Body Type
+|create |  |[mediaContent], content, userId a|
+[source,prettyprint,lang-java]
+----
+com.google.api.services.gmail.model.Draft
+----
+
+|delete |  |id, userId | 
+|get |  |id, userId a|
+[source,prettyprint,lang-java]
+----
+com.google.api.services.gmail.model.Draft
+----
+
+|list |  |userId a|
+[source,prettyprint,lang-java]
+----
+com.google.api.services.gmail.model.ListDraftsResponse
+----
+
+|send |  |[mediaContent], content, userId a|
+[source,prettyprint,lang-java]
+----
+com.google.api.services.gmail.model.Message
+----
+
+|update |  |[mediaContent], content, id, userId a|
+[source,prettyprint,lang-java]
+----
+com.google.api.services.gmail.model.Draft
+----
+
+|=====================================================
+
+[[GoogleMail-URIOptionsfordrafts]]
+URI Options for _drafts_
+++++++++++++++++++++++++
+
+'''''
+
+[cols=",",options="header",]
+|===================================================================
+|Name |Type
+|content |com.google.api.services.gmail.model.Draft
+|id |String
+|mediaContent |com.google.api.client.http.AbstractInputStreamContent
+|userId |String
+|===================================================================
+
+[[GoogleMail-3.EndpointPrefixhistory]]
+3. Endpoint Prefix _history_
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+'''''
+
+The following endpoints can be invoked with the prefix `history` as
+follows:
+
+....
+        google-mail://history/endpoint?[options]
+    
+....
+
+[width="100%",cols="25%,25%,25%,25%",options="header",]
+|======================================================
+|Endpoint |Shorthand Alias |Options |Result Body Type
+|list |  |userId a|
+[source,prettyprint,lang-java]
+----
+com.google.api.services.gmail.model.ListHistoryResponse
+----
+
+|======================================================
+
+[[GoogleMail-URIOptionsforhistory]]
+URI Options for _history_
++++++++++++++++++++++++++
+
+'''''
+
+[cols=",",options="header",]
+|==============
+|Name |Type
+|userId |String
+|==============
+
+[[GoogleMail-4.EndpointPrefixlabels]]
+4. Endpoint Prefix _labels_
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+'''''
+
+The following endpoints can be invoked with the prefix `labels` as
+follows:
+
+....
+        google-mail://labels/endpoint?[options]
+    
+....
+
+[width="100%",cols="25%,25%,25%,25%",options="header",]
+|=====================================================
+|Endpoint |Shorthand Alias |Options |Result Body Type
+|create |  |content, userId a|
+[source,prettyprint,lang-java]
+----
+com.google.api.services.gmail.model.Label
+----
+
+|delete |  |id, userId | 
+|get |  |id, userId a|
+[source,prettyprint,lang-java]
+----
+com.google.api.services.gmail.model.Label
+----
+
+|list |  |userId a|
+[source,prettyprint,lang-java]
+----
+com.google.api.services.gmail.model.ListLabelsResponse
+----
+
+|patch |  |content, id, userId a|
+[source,prettyprint,lang-java]
+----
+com.google.api.services.gmail.model.Label
+----
+
+|update |  |content, id, userId a|
+[source,prettyprint,lang-java]
+----
+com.google.api.services.gmail.model.Label
+----
+
+|=====================================================
+
+[[GoogleMail-URIOptionsforlabels]]
+URI Options for _labels_
+++++++++++++++++++++++++
+
+'''''
+
+[cols=",",options="header",]
+|==================================================
+|Name |Type
+|content |com.google.api.services.gmail.model.Label
+|id |String
+|userId |String
+|==================================================
+
+[[GoogleMail-5.EndpointPrefixmessages]]
+5. Endpoint Prefix _messages_
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+'''''
+
+The following endpoints can be invoked with the prefix `messages` as
+follows:
+
+....
+        google-mail://messages/endpoint?[options]
+    
+....
+
+[width="100%",cols="25%,25%,25%,25%",options="header",]
+|=======================================================
+|Endpoint |Shorthand Alias |Options |Result Body Type
+|delete |  |id, userId | 
+|get |  |id, userId a|
+[source,prettyprint,lang-java]
+----
+com.google.api.services.gmail.model.Message
+----
+
+|gmailImport |  |[mediaContent], content, userId a|
+[source,prettyprint,lang-java]
+----
+com.google.api.services.gmail.model.Message
+----
+
+|insert |  |[mediaContent], content, userId a|
+[source,prettyprint,lang-java]
+----
+com.google.api.services.gmail.model.Message
+----
+
+|list |  |userId a|
+[source,prettyprint,lang-java]
+----
+com.google.api.services.gmail.model.ListMessagesResponse
+----
+
+|modify |  |id, modifyMessageRequest, userId a|
+[source,prettyprint,lang-java]
+----
+com.google.api.services.gmail.model.Message
+----
+
+|send |  |[mediaContent], content, userId a|
+[source,prettyprint,lang-java]
+----
+com.google.api.services.gmail.model.Message
+----
+
+|trash |  |id, userId a|
+[source,prettyprint,lang-java]
+----
+ 
+----
+
+|untrash |  |id, userId a|
+[source,prettyprint,lang-java]
+----
+ 
+----
+
+|=======================================================
+
+[[GoogleMail-URIOptionsformessages]]
+URI Options for _messages_
+++++++++++++++++++++++++++
+
+'''''
+
+[cols=",",options="header",]
+|=======================================================================
+|Name |Type
+|content |com.google.api.services.gmail.model.Message
+
+|id |String
+
+|mediaContent |com.google.api.client.http.AbstractInputStreamContent
+
+|modifyMessageRequest
+|com.google.api.services.gmail.model.ModifyMessageRequest
+
+|userId |String
+|=======================================================================
+
+[[GoogleMail-6.EndpointPrefixthreads]]
+6. Endpoint Prefix _threads_
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+'''''
+
+The following endpoints can be invoked with the prefix `threads` as
+follows:
+
+....
+        google-mail://threads/endpoint?[options]
+    
+....
+
+[width="100%",cols="25%,25%,25%,25%",options="header",]
+|======================================================
+|Endpoint |Shorthand Alias |Options |Result Body Type
+|delete |  |id, userId | 
+|get |  |id, userId a|
+[source,prettyprint,lang-java]
+----
+com.google.api.services.gmail.model.Thread
+----
+
+|list |  |userId a|
+[source,prettyprint,lang-java]
+----
+com.google.api.services.gmail.model.ListThreadsResponse
+----
+
+|modify |  |content, id, userId a|
+[source,prettyprint,lang-java]
+----
+com.google.api.services.gmail.model.Thread
+----
+
+|trash |  |id, userId | 
+|untrash |  |id, userId | 
+|======================================================
+
+[[GoogleMail-URIOptionsforthreads]]
+URI Options for _threads_
++++++++++++++++++++++++++
+
+'''''
+
+[cols=",",options="header",]
+|================================================================
+|Name |Type
+|content |com.google.api.services.gmail.model.ModifyThreadRequest
+|id |String
+|userId |String
+|================================================================
+
+[[GoogleMail-7.EndpointPrefixusers]]
+7. Endpoint Prefix _users_
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+'''''
+
+The following endpoints can be invoked with the prefix `users` as
+follows:
+
+....
+        google-mail://users/endpoint?[options]
+    
+....
+
+[cols=",,,",options="header",]
+|==================================================================
+|Endpoint |Shorthand Alias |Options |Result Body Type
+|getProfile |  |userId |com.google.api.services.gmail.model.Profile
+|==================================================================
+
+[[GoogleMail-URIOptionsforusers]]
+URI Options for _users_
++++++++++++++++++++++++
+
+'''''
+
+[cols=",",options="header",]
+|==============
+|Name |Type
+|userId |String
+|==============
+
+[[GoogleMail-ConsumerEndpoints]]
+Consumer Endpoints
+^^^^^^^^^^^^^^^^^^
+
+'''''
+
+Any of the producer endpoints can be used as a consumer endpoint.
+Consumer endpoints can use
+http://camel.apache.org/polling-consumer.html#PollingConsumer-ScheduledPollConsumerOptions[Scheduled
+Poll Consumer Options] with a `consumer.` prefix to schedule endpoint
+invocation. Consumer endpoints that return an array or collection will
+generate one exchange per element, and their routes will be executed
+once for each exchange.
+
+[[GoogleMail-MessageHeaders]]
+Message Headers
+^^^^^^^^^^^^^^^
+
+'''''
+
+Any URI option can be provided in a message header for producer
+endpoints with a `CamelGoogleMail.` prefix.
+
+[[GoogleMail-MessageBody]]
+Message Body
+^^^^^^^^^^^^
+
+'''''
+
+All result message bodies utilize objects provided by the underlying
+APIs used by the GoogleMailComponent. Producer endpoints can specify the
+option name for incoming message body in the `inBody` endpoint URI
+parameter. For endpoints that return an array or collection, a consumer
+endpoint will map every element to distinct messages.     

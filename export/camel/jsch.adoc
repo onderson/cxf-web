@@ -1,0 +1,98 @@
+[[ConfluenceContent]]
+[[Jsch-Jsch]]
+Jsch
+~~~~
+
+The *camel-jsch* component supports the
+http://en.wikipedia.org/wiki/Secure_copy[SCP protocol] using the Client
+API of the http://www.jcraft.com/jsch/[Jsch] project. Jsch is already
+used in camel by the link:ftp.html[FTP] component for the *sftp:*
+protocol.
+
+Maven users will need to add the following dependency to their `pom.xml`
+for this component:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<dependency>
+    <groupId>org.apache.camel</groupId>
+    <artifactId>camel-jsch</artifactId>
+    <version>x.x.x</version>
+    <!-- use the same version as your Camel core version -->
+</dependency>
+----
+
+[[Jsch-URIformat]]
+URI format
+^^^^^^^^^^
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+scp://host[:port]/destination[?options]
+----
+
+You can append query options to the URI in the following format,
+`?option=value&option=value&...`
+
+The file name can be specified either in the <path> part of the URI or
+as a "CamelFileName" header on the message (`Exchange.FILE_NAME` if used
+in code).
+
+[[Jsch-Options]]
+Options
+^^^^^^^
+
+ 
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Name |Description |Default Value
+|`username` |Specifies the username to use to log in to the remote file
+system. |`null`
+
+|`password` |Specifies the password to use to log in to the remote file
+system. |`null`
+
+|`knownHostsFile` |Sets the `known_hosts` file, so that the scp endpoint
+can do host key verification. |`null`
+
+|`strictHostKeyChecking` |Sets whether to use strict host key checking.
+Possible values are: `no`, `yes` |`no`
+
+|`chmod` |Allows you to set chmod on the stored file. For example
+`chmod=664`. |`null`
+
+|useUserKnownHostsFile |*Camel 2.15:* If knownHostFile has not been
+explicit configured, then use the host file from +
+System.getProperty("user.home") + "/.ssh/known_hosts" |true
+|=======================================================================
+
+[[Jsch-ComponentOptions]]
+Component Options
+^^^^^^^^^^^^^^^^^
+
+The JschComponent supports the following options
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Name |Description |Default Value
+|`verboseLogging` |*Camel 2.15:* JSCH is verbose logging out of the box.
+Therefore we turn the logging down to DEBUG logging by default. |true
+|=======================================================================
+
+[[Jsch-Limitations]]
+Limitations
+^^^^^^^^^^^
+
+Currently camel-jsch only supports a
+http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/Producer.html[Producer]
+(i.e. copy files to another host). 
+
+[[Jsch-SeeAlso]]
+See Also
+^^^^^^^^
+
+* link:configuring-camel.html[Configuring Camel]
+* link:component.html[Component]
+* link:endpoint.html[Endpoint]
+* link:getting-started.html[Getting Started]

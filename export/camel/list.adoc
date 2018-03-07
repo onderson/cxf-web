@@ -1,0 +1,64 @@
+[[ConfluenceContent]]
+[[List-ListComponent]]
+List Component
+~~~~~~~~~~~~~~
+
+*deprecated*: is renamed to the link:browse.html[Browse] component in
+Camel 2.0
+
+The List component provides a simple
+link:browsableendpoint.html[BrowsableEndpoint] which can be useful for
+testing, visualisation tools or debugging. The exchanges sent to the
+endpoint are all available to be browsed.
+
+[[List-URIformat]]
+URI format
+^^^^^^^^^^
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+list:someName
+----
+
+Where *someName* can be any string to uniquely identify the endpoint.
+
+[[List-Sample]]
+Sample
+^^^^^^
+
+In the route below we have the list component to be able to browse the
+Exchanges that is passed through:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+  from("activemq:order.in").to("list:orderReceived").to("bean:processOrder");
+----
+
+Then we will be able to inspect the received exchanges from java code:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+    private CamelContext context;
+
+    public void inspectRecievedOrders() {
+        BrowsableEndpoint browse = context.getEndpoint("list:orderReceived", BrowsableEndpoint.class);
+        List<Exchange> exchanges = browse.getExchanges();
+        ...
+        // then we can inspect the list of received exchanges from Java
+        for (Exchange exchange : exchanges) {
+            String payload = exchange.getIn().getBody();
+            ...
+        }
+   }
+----
+
+[[List-SeeAlso]]
+See Also
+^^^^^^^^
+
+* link:configuring-camel.html[Configuring Camel]
+* link:component.html[Component]
+* link:endpoint.html[Endpoint]
+* link:getting-started.html[Getting Started]
+
+* link:browse.html[Browse]

@@ -1,0 +1,150 @@
+[[ConfluenceContent]]
+[[Nagios-Nagios]]
+Nagios
+~~~~~~
+
+*Available as of Camel 2.3*
+
+The link:nagios.html[Nagios] component allows you to send passive checks
+to http://nagios.org[Nagios].
+
+Maven users will need to add the following dependency to their `pom.xml`
+for this component:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<dependency>
+    <groupId>org.apache.camel</groupId>
+    <artifactId>camel-nagios</artifactId>
+    <version>x.x.x</version>
+    <!-- use the same version as your Camel core version -->
+</dependency>
+----
+
+[[Nagios-URIformat]]
+URI format
+^^^^^^^^^^
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+nagios://host[:port][?Options]
+----
+
+Camel provides two abilities with the link:nagios.html[Nagios]
+component. You can send passive check messages by sending a message to
+its endpoint. +
+Camel also provides a link:camel-jmx.html[EventNotifer] which allows you
+to send notifications to Nagios.
+
+[[Nagios-Options]]
+Options
+^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Name |Default Value |Description
+|`host` |none |This is the address of the link:nagios.html[Nagios] host
+where checks should be send.
+
+|`port` |  |The port number of the host.
+
+|`password` |  |Password to be authenticated when sending checks to
+Nagios.
+
+|`connectionTimeout` |5000 |Connection timeout in millis.
+
+|`timeout` |5000 |Sending timeout in millis.
+
+|`nagiosSettings` |  |To use an already configured
+`com.googlecode.jsendnsca.core.NagiosSettings` object. Then any of the
+other options are not in use, if using this.
+
+|`sendSync` |`true` |Whether or not to use synchronous when sending a
+passive check. Setting it to `false` will allow Camel to continue
+routing the message and the passive check message will be send
+asynchronously.
+
+|`encryptionMethod` |`No` |*Camel 2.9:* To specify an encryption method.
+Possible values: `No`, `Xor`, or `TripleDes`.
+|=======================================================================
+
+[[Nagios-Headers]]
+Headers
+^^^^^^^
+
+[width="100%",cols="50%,50%",options="header",]
+|=======================================================================
+|Name |Description
+|`CamelNagiosHostName` |This is the address of the
+link:nagios.html[Nagios] host where checks should be send. This header
+will override any existing hostname configured on the endpoint.
+
+|`CamelNagiosLevel` |This is the severity level. You can use values
+`CRITICAL, WARNING, OK`. Camel will by default use `OK`.
+
+|`CamelNagiosServiceName` |The servie name. Will default use the
+link:camelcontext.html[CamelContext] name.
+|=======================================================================
+
+[[Nagios-Sendingmessageexamples]]
+Sending message examples
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+You can send a message to Nagios where the message payload contains the
+message. By default it will be `OK` level and use the
+link:camelcontext.html[CamelContext] name as the service name. You can
+overrule these values using headers as shown above.
+
+For example we send the `Hello Nagios` message to Nagios as follows:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+    template.sendBody("direct:start", "Hello Nagios");
+
+    from("direct:start").to("nagios:127.0.0.1:5667?password=secret").to("mock:result");
+----
+
+To send a `CRITICAL` message you can send the headers such as:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+        Map headers = new HashMap();
+        headers.put(NagiosConstants.LEVEL, "CRITICAL");
+        headers.put(NagiosConstants.HOST_NAME, "myHost");
+        headers.put(NagiosConstants.SERVICE_NAME, "myService");
+        template.sendBodyAndHeaders("direct:start", "Hello Nagios", headers);
+----
+
+[[Nagios-UsingNagiosEventNotifer]]
+Using `NagiosEventNotifer`
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The link:nagios.html[Nagios] component also provides an
+link:camel-jmx.html[EventNotifer] which you can use to send events to
+Nagios. For example we can enable this from Java as follows:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+        NagiosEventNotifier notifier = new NagiosEventNotifier();
+        notifier.getConfiguration().setHost("localhost");
+        notifier.getConfiguration().setPort(5667);
+        notifier.getConfiguration().setPassword("password");
+
+        CamelContext context = ... 
+        context.getManagementStrategy().addEventNotifier(notifier);
+        return context;
+----
+
+In Spring XML its just a matter of defining a Spring bean with the type
+`EventNotifier` and Camel will pick it up as documented here:
+link:advanced-configuration-of-camelcontext-using-spring.html[Advanced
+configuration of CamelContext using Spring].
+
+[[Nagios-SeeAlso]]
+See Also
+^^^^^^^^
+
+* link:configuring-camel.html[Configuring Camel]
+* link:component.html[Component]
+* link:endpoint.html[Endpoint]
+* link:getting-started.html[Getting Started]

@@ -1,0 +1,133 @@
+[[ConfluenceContent]]
+[[AddNewComponentGuide-Howtoaddanewcomponent]]
+How to add a new component
+--------------------------
+
+[[AddNewComponentGuide-1.OpenanJIRAissue]]
+1. Open an JIRA issue
+~~~~~~~~~~~~~~~~~~~~~
+
+Open a JIRA issue at https://issues.apache.org/jira/browse/CAMEL, if
+does not already exist. +
+The issue type should be "New Feature". A sample can be found here:
+https://issues.apache.org/jira/browse/CAMEL-3468
+
+[[AddNewComponentGuide-2.Checkthelicenseofalldependencies]]
+2. Check the license of all dependencies
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+You have to check whether or not all required dependencies have an
+Apache compatible license. +
+Please refer to http://www.apache.org/legal/resolved.html[Third-Party
+Licensing Policy] for detailed information and acceptable licenses (see
+especially about excluded licenses). +
+This *doesn't* mean, if one of the dependencies are not compatible with
+the Apache license we can't accept the component. In this case, we might
+have to add the component to the
+http://code.google.com/p/camel-extra/[Camel-Extra] repository.
+
+[[AddNewComponentGuide-3.Providingapatch]]
+3. Providing a patch
+~~~~~~~~~~~~~~~~~~~~
+
+If you would like to contribute a new component as a patch (we love
+contributions), please refer to
+http://camel.apache.org/contributing.html[Contributing] (look for
+`Creating patches`) for instructions.
+
+[[AddNewComponentGuide-4.Addthenewcomponent]]
+4. Add the new component
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Add the new component into the components pom modules section (note the
+alphabetical order of the project names). +
+After that, add the new component to the components folder.
+
+[[AddNewComponentGuide-5.Checkthesourcesandresources]]
+5. Check the sources and resources
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The source and resources have to follow some Apache/Camel coding rules:
+
+* Make sure every added source and resource contains the Apache license
+header.
+* Make sure the new component has an adequate test coverage.
+* Run a build with checkstyle to ensure the sources are conform with the
+Apache Camel coding rules:
+http://camel.apache.org/building.html[Building Camel] (look for
+`Building with checkstyle`)
+* Make sure the log output is adequate on the INFO log level.
+
+[[AddNewComponentGuide-6.CheckwhetheralldependenciesareavailableasOSGIbundles]]
+6. Check whether all dependencies are available as OSGI bundles
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If a dependency is not available as an OSGI bundle, ask the Apache
+Servicemix guys for an OSGI-fied version of this dependency. You should
+do this by opening a JIRA issue at
+https://issues.apache.org/jira/browse/SMX4 +
+The issue type should be "Task". A sample can be found here:
+https://issues.apache.org/jira/browse/SMX4-723
+
+[[AddNewComponentGuide-7.Addanewfeature]]
+7. Add a new feature
+~~~~~~~~~~~~~~~~~~~~
+
+Add a new feature definition for this component to the feature file
+(under platforms/karaf/features). +
+Next, validate the correctness of this feature file as described in
+http://camel.apache.org/building.html[Working with features] (look for
+`Working with features`)
+
+[[AddNewComponentGuide-8.Addthewikipage]]
+8. Add the wiki page
+~~~~~~~~~~~~~~~~~~~~
+
+Each component requires its own wiki page to document the component. If
+you don't have the *karma* to edit the wiki pages, plese refer to
+http://camel.apache.org/how-do-i-edit-the-website.html[how do I edit the
+website]. +
+Add the new component wiki page to the
+https://cwiki.apache.org/confluence/display/CAMEL/Components[Components]
+list by editing
+https://cwiki.apache.org/confluence/display/CAMEL/Component+List[Component
+List] wiki page. +
+Add a reference to the new component to the
+https://cwiki.apache.org/confluence/display/CAMEL/Book+Component+Appendix[Manual]
+wiki page. +
+Update the release notes for the version the development is
+https://cwiki.apache.org/confluence/display/CAMEL/In+Progress[in
+progress]. +
+Check whether other sites needs to be updated.
+
+[[AddNewComponentGuide-9.Runacompletebuild]]
+9. Run a complete build
+~~~~~~~~~~~~~~~~~~~~~~~
+
+To ensure you do not break the build, run a complete build from the new
+component directory:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+mvn clean install
+----
+
+[[AddNewComponentGuide-10.Addthecomponenttodistribution]]
+10. Add the component to distribution
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Add the new component to the following files
+
+* parent/pom.xml
+* apache-camel/src/main/descriptors/common-bin.xml
+
+Build the kit by running the following maven goal from the
+`apache-camel` directory:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+mvn clean install
+----
+
+Check the generated .zip file in the target folder contains the new
+component.

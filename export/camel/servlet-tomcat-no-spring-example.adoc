@@ -1,0 +1,86 @@
+[[ConfluenceContent]]
+[[ServletTomcatNoSpringExample-ServletTomcatNoSpringExample]]
+Servlet Tomcat No Spring Example
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+*Available as of Camel 2.11*
+
+This example is located in the
+`examples/camel-example-servlet-tomcat-no-spring` directory of the Camel
+distribution. +
+There is a `README.txt` file with instructions how to run it.
+
+If you use maven then you can easily package the example from the
+command line:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+mvn package
+----
+
+[[ServletTomcatNoSpringExample-About]]
+About
+^^^^^
+
+This example demonstrates how you can create light-weight web
+applications without the need for Spring Framework. +
+The example contains a Camel routes that used the
+link:servlet.html[Servlet] component to expose a http service.
+
+[[ServletTomcatNoSpringExample-Implementation]]
+Implementation
+^^^^^^^^^^^^^^
+
+In the `web.xml` file in the `src/main/webapp/WEB-INF` folder we have
+both a CamelServlet and CamelContextListener defined. +
+The CamelServlet is mandatory to do when using the
+link:servlet.html[Servlet] component. And the
+`JndiCamelServletContextListener` is used to bootstrap the Camel
+application.
+
+*web.xml*
+
+[Tip]
+====
+
+
+Its the link:servletlistener-component.html[ServletListener Component]
+that is used to bootstrap Camel in the web application. See more details
+at link:servletlistener-component.html[ServletListener Component].
+
+====
+
+[[ServletTomcatNoSpringExample-TheCamelroute]]
+The Camel route
++++++++++++++++
+
+The route is a simple link:content-based-router.html[Content Based
+Router] defined in the DSL XML as shown:
+
+*camel-config.xml*
+
+[[ServletTomcatNoSpringExample-Runningtheexample]]
+Running the example
+^^^^^^^^^^^^^^^^^^^
+
+This example runs in any web container such as Apache Tomcat. For
+example to deploy in Apache Tomcat you will have to package the .war
+file and copy it to the `webapp` folder of Tomcat, which is the hot
+deploy folder.
+
+There is a main page at:
+`http://localhost:8080/camel-example-servlet-tomcat-no-spring` which has
+more instructions. +
+You can then use a web browser and send a request to the
+`http://localhost:8080/camel-example-servlet-tomcat-no-spring/camel/hello`
+url.
+
+[[ServletTomcatNoSpringExample-SeeAlso]]
+See Also
+^^^^^^^^
+
+* link:examples.html[Examples]
+* link:servlet-tomcat-example.html[Servlet Tomcat Example]
+* link:servletlistener-component.html[ServletListener Component]
+* link:servlet.html[Servlet]
+* link:http.html[HTTP]

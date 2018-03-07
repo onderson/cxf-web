@@ -1,0 +1,51 @@
+[[ConfluenceContent]]
+[[Languages-Languages]]
+Languages
+~~~~~~~~~
+
+To support flexible and powerful
+link:enterprise-integration-patterns.html[Enterprise Integration
+Patterns] Camel supports various Languages to create an
+link:expression.html[Expression] or link:predicate.html[Predicate]
+within either the link:dsl.html[Routing Domain Specific Language] or the
+link:xml-configuration.html[Xml Configuration].
+
+**Combining Predicates**
+
+When creating predicates (expressions that evaluate to `true` or
+`false`), you can combine several predicates - regardless of the
+language they are built with - by using the PredicateBuilder class. For
+more information, see link:predicate.html[Compound Predicates].
+
+The following languages are supported:
+
+* link:bean-language.html[Bean Language] for using Java for expressions
+* link:constant.html[Constant]
+* the unified link:el.html[EL] from JSP and JSF
+* link:header.html[Header]
+* link:jsonpath.html[JSonPath]
+* link:jxpath.html[JXPath]
+* link:mvel.html[Mvel]
+* link:ognl.html[OGNL]
+* link:ref-language.html[Ref Language]
+* link:exchangeproperty.html[ExchangeProperty]
+/ link:property.html[Property]
+* link:scripting-languages.html[Scripting Languages] such as
+** link:beanshell.html[BeanShell]
+** link:javascript.html[JavaScript]
+** link:groovy.html[Groovy]
+** link:python.html[Python]
+** link:php.html[PHP]
+** link:ruby.html[Ruby]
+* link:simple.html[Simple]
+** link:file-language.html[File Language]
+* link:spel.html[Spring Expression Language]
+* link:sql.html[SQL]
+* link:tokenizer.html[Tokenizer]
+* link:xpath.html[XPath]
+* link:xquery.html[XQuery]
+* link:vtd-xml.html[VTD-XML]
+
+Most of these languages is also supported used as
+link:annotation-based-expression-language.html[Annotation Based
+Expression Language].

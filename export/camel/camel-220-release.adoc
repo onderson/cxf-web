@@ -1,0 +1,449 @@
+[[ConfluenceContent]]
+[[Camel2.2.0Release-Camel2.2.0release]]
+Camel 2.2.0 release
+-------------------
+
+image:http://camel.apache.org/download.data/camel-box-v1.0-150x200.png[image]
+
+[[Camel2.2.0Release-NewandNoteworthy]]
+New and Noteworthy
+~~~~~~~~~~~~~~~~~~
+
+Welcome to the 2.2.0 release which approx 180 issues resolved (new
+features, improvements and bug fixes such as...)
+
+* link:routing-slip.html[Routing Slip] now breaks when an exception
+occurred
+* link:mina.html[MINA] now supports easier configuration of multiple
+custom codecs, which is needed when working with SSL.
+* Improved link:transactionerrorhandler.html[TransactionErrorHandler]
+two fold by reducing complexity of internal logic in Camel when working
+with transactions. And added better support for using multiple
+transactions in multiple routes. See more at section _Using multiple
+routes with different propagation behaviors_ at
+link:transactional-client.html[Transactional Client].
+* link:recipient-list.html[Recipient List] now supports
+`parallelProcessing`, `stopOnException` and references for
+`AggregationStrategy` and thread pools. This applies to the
+`@RecipientList` annotation as well.
+* Cleanup of spring jar dependencies.
+* link:file-language.html[File Language] is now merged directly into
+link:simple.html[Simple] language which among others makes
+link:content-based-router.html[Content Based Router] in Spring XML using
+file language syntax easier.
+* link:http.html[HTTP] is now using CamelContext Properties instead of
+System Properties to set the http proxy configuration.
+* Fixed link:using-camelproxy.html[Camel Proxy] throwing exception if
+`null` was returned.
+* Improved error handling with link:recipient-list.html[Recipient List]
+and link:multicast.html[Multicast] which now performs redelivery etc. on
+that _output_ node instead of starting again from the scratch.
+* Improved the link:etl-example.html[ETL Example] and
+link:bam-example.html[BAM Example] so they can be deployed into
+ServiceMix4(Karaf).
+* link:seda.html[SEDA] now supports `multipleConsumers` which allows you
+to use it for pub-sub messaging where each consumer concurrently will
+receive a copy of the link:exchange.html[Exchange]. This is done with
+the help from link:multicast.html[Multicast] EIP.
+* link:defaulterrorhandler.html[DefaultErrorHandler] will now log a log
+line at `ERROR` level in case an Exception was thrown which could not be
+redelivered either. This aid to see that an Exception occurred instead
+of relying on the client logging it. You can customize this behavior on
+the link:error-handler.html[Error Handler].
+* Fixed `groupedExchange` not working properly on
+link:aggregator.html[Aggregator].
+* link:graceful-shutdown.html[Graceful Shutdown] which ensures Camel now
+shutdown in a more reliable and graceful manner. This also works with in
+memory components such as link:seda.html[SEDA].
+* Added new `log` in the DSL for dynamic human readable log messages.
+* Camel now supports Spring 3.0 as well (will still use Camel 2.5.6 as
+default). However camel-spring-javaconfig now requires Spring 3.0 as
+Spring have native support for java configuration.
+* Added methods for getting header and property (Exchange / Message API)
+which uses a default parameter.
+* Added OsgiClassResolver which supports to load the class or resources
+within OSGi platform.
+* Added fireNow option to link:quartz.html[Quartz] component to fire the
+trigger when the route is started.
+* link:file2.html[File] will delete orphaned lock files on startup. This
+allows it to selfheal in cases when Camel was terminated/killed
+abruptly.
+* Fixed issue with using Spring XML for routing could in some cases
+_loose_ route scoped configured `<onException>`, `<onCompletion/>` when
+using in combination with `<transacted/>`.
+* `<proxy>`, `<export>`, `<endpoint>`, `<template>`,
+`<consumerTemplate>` can be defined outside of `<camelContext>`.
+* link:jaxb.html[JAXB] will filter the nonXml characters when it
+unmarshals the inputstream or marshal the java object.
+* Slightly reworked how correlation id is determined in
+link:jms.html[JMS] when using InOut messaging. See more at _important
+changes to consider when upgrading_.
+* `EventNotifier` improved to allow ignoring events based on categories.
+Easier configuration to only notify those events you care about.
+* Added `PublishEventNotifier` to send the events to any kind of Camel
+link:endpoint.html[Endpoint].
+* link:jdbc.html[JDBC] added option
+`useJDBC4ColumnNameAndLabelSemantics` to let you choose semantics to use
+in case you have issue with your JDBC driver when using SQL SELECT with
+aliases.
+* link:cache.html[Cache] can now store message bodies which are
+`Serializable` out of the box and not forcing to be converted into a
+byte stream as it otherwise would.
+* Fixed an issue with running the link:examples.html[Examples] using
+ANT.
+* `ManagementStrategy` now supports using multiple `EventNotifier`
+instead of just one.
+* Introduced link:notifybuilder.html[NotifyBuilder] which helps during
+testing. For example when testing routes without mocks etc. It will help
+to notify when a certain condition has occurred such as X messages has
+is done etc.
+* link:ftp2.html[FTP] now allows using starting directory with a dot in
+the name. It used to invalidate those to easy transition from Camel 1.x
+to 2.x as 1.x did also support using a file as starting (which was not
+good practice).
+* link:file2.html[File] producer now supports option to keep last
+modified timestamp in case a message was received from some file source.
+You can also set the timestamp it should use in the header
+`Exchange.FILE_LAST_MODIFIED`.
+* link:bean-language.html[Bean Language] using `bean` or `method` to
+invoke a link:bean.html[Bean] now supports using an existing bean
+instance. This is convenient for testing where you can quickly use an
+instance you have prepared in the unit test.
+* link:camel-jboss.html[camel-jboss] for running Camel inside JBoss
+Application Server which uses it specialized classloading which prevents
+typically frameworks to not work out of the box inside JBoss.
+* http://camel-extra.googlecode.com/[Camel Extra] projects migrated to
+use Camel 2.1.0 release.
+* link:jaxb.html[JAXB] now supports partial marshalling/unmarshalling.
+* link:bean.html[Bean] parameter binding using Camel annotations now
+works with CGLIB enhanced classes.
+* link:cxf.html[CXF] supports to configure the endpoint with CXF style
+configuration.
+* link:defaulterrorhandler.html[DefaultErrorHandler] will now log
+stracktrace when an link:exchange.html[Exchange] is exhausted (give up).
+Added new `logRetryStackTrace` option to set whether or not stacktraces
+are logged for failed redelivery attempts. Most people dont like the
+logs spammed if you retry 5 times etc.
+* link:bean.html[Bean] component now honors void method invocations and
+accepts methods returning `null` as a valid response.
+* link:error-handler.html[Error Handler] now catches and handles all
+exceptions (Throwable). This ensures fatal errors such as
+`NoSuchMethodException` etc. will now be handle by Camel and logged etc.
+* link:cxf.html[cxfbean] now propagates CONTENT_TYPE for other camel
+component to use.
+
+[[Camel2.2.0Release-New]]
+New link:enterprise-integration-patterns.html[Enterprise Integration
+Patterns]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+[[Camel2.2.0Release-New.1]]
+New link:components.html[Components]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* link:ftp2.html[camel-ftp] now supports `FTPS` (FTP over SSL/TLS)
+* link:smpp.html[camel-smpp]
+* link:lucene.html[camel-lucene]
+* link:hdfs.html[camel-hdfs]
+* link:camel-jboss.html[camel-jboss] for running Camel inside JBoss out
+of the box
+
+[[Camel2.2.0Release-NewDSL]]
+New DSL
+^^^^^^^
+
+* `markRollbackOnlyLast`
+* `log`
+
+[[Camel2.2.0Release-NewAnnotations]]
+New Annotations
+^^^^^^^^^^^^^^^
+
+[[Camel2.2.0Release-NewDataFormats]]
+New link:data-format.html[Data Formats]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* link:protobuf.html[camel-protobuff]
+* link:dozer-type-conversion.html[camel-dozer]
+
+[[Camel2.2.0Release-New.2]]
+New link:languages.html[Languages]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+[[Camel2.2.0Release-New.3]]
+New link:examples.html[Examples]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* link:cafe-example.html[Cafe Example]
+
+[[Camel2.2.0Release-APIbreaking]]
+API breaking
+~~~~~~~~~~~~
+
+[[Camel2.2.0Release-DefaultComponent]]
+DefaultComponent
+^^^^^^^^^^^^^^^^
+
+The methods `DefaultComponent.resolveAndRemoveReferenceParameter` and
+`DefaultComponent.resolveAndRemoveReferenceParameterList` have been
+changed to make the leading `#` sign for bean references optional and to
+throw an `IllegalArgumentException` if a referenced bean is not in the
+registry. For details see
+https://issues.apache.org/activemq/browse/CAMEL-2248[CAMEL-2248].
+
+[[Camel2.2.0Release-Exchange]]
+Exchange
+^^^^^^^^
+
+The property `Exchange.FILTETED` have been removed as part of
+https://issues.apache.org/activemq/browse/CAMEL-2248[CAMEL-2288].
+
+Added two new methods for `getProperty` to accept a `defaultValue` as
+parameter to be used when the property does not exists.
+
+[[Camel2.2.0Release-Message]]
+Message
+^^^^^^^
+
+Added two new methods for `getHeader` to accept a `defaultValue` as
+parameter to be used when the header does not exists.
+
+[[Camel2.2.0Release-ExceptionHandler]]
+ExceptionHandler
+^^^^^^^^^^^^^^^^
+
+The class `org.apache.camel.spi.ExceptionHandler` now have two
+additional methods which accepts more details when an Exception occurred
+such as a message and the current Exchange.
+
+[[Camel2.2.0Release-@EndpointInject]]
+@EndpointInject
+^^^^^^^^^^^^^^^
+
+The `name` attribute in @EndpointInject has been renamed to `ref` to be
+consistent with the other annotations. Its a reference for an Endpoint
+to be looked up in the link:registry.html[Registry].
+
+[[Camel2.2.0Release-BatchConsumer]]
+BatchConsumer
+^^^^^^^^^^^^^
+
+The `BatchConsumer` have a new method `isBatchAllowed` which should be
+used during processing the batch, to break out the batch loop in case
+its not allowed anymore. Also `BatchConsumer` should consider implement
+`ShutdownAware` to support fine grained control during shutdown. See for
+example the `GenericFileConsumer` for details.
+
+[[Camel2.2.0Release-GenericFileProcessStrategy]]
+GenericFileProcessStrategy
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The `GenericFileProcessStrategy` has a new method `prepareOnStartup`
+which is used to _prepare_ the link:file2.html[File] component on
+startup, such as deleting orphaned lock files. The same applies for the
+`GenericFileExclusiveReadLockStrategy` interface in case you have
+developed a custom lock strategy.
+
+[[Camel2.2.0Release-ManagementStrategy]]
+ManagementStrategy
+^^^^^^^^^^^^^^^^^^
+
+The `ManagementStrategy` now supports multiple `EventNotifier` and thus
+have its setter/getter methods adjusted to a `List<EventNotifier>` and
+there is a `addEventNotifier` method as well to add a single
+`EventNotifier`.
+
+[[Camel2.2.0Release-EventNotifier]]
+EventNotifier
+^^^^^^^^^^^^^
+
+The `EventNotifier` has new methods for filtering events based on
+categories. The `DefaultEventNotifier` class has been renamed to
+`LoggingEventNotifier` and a new `EventNotifierSupport` class is added
+which is meant for custom implementations to extend.
+
+[[Camel2.2.0Release-UnitOfWork]]
+UnitOfWork
+^^^^^^^^^^
+
+The `UnitOfWork` have adjusted its methods for setting `RouteContext`
+from a setter to a `push` and `pop` style.
+
+[[Camel2.2.0Release-KnownIssues]]
+Known Issues
+~~~~~~~~~~~~
+
+See known issues from previous releases.
+
+[[Camel2.2.0Release-UsingRecipientListandMina]]
+Using RecipientList and Mina
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+When using the link:recipient-list.html[Recipient List] together with
+link:mina.html[MINA] endpoints Camel will over time hold on to memory
+which could lead to OutOfMemoryErrors. See more at:
+https://issues.apache.org/activemq/browse/CAMEL-2484[CAMEL-2484]
+
+[[Camel2.2.0Release-Importantchangestoconsiderwhenupgrading]]
+Important changes to consider when upgrading
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+[[Camel2.2.0Release-Featuresfilemoved]]
+Features file moved
+^^^^^^^^^^^^^^^^^^^
+
+For Camel 2.2.0, the newly named `features.xml` file can be found in
+http://repo2.maven.org/maven2/org/apache/camel/karaf/apache-camel/2.2.0/ +
+You can use it in Karaf by doing a
+*`features:addUrl mvn:org.apache.camel.karaf/apache-camel/2.2.0/xml/features`*
+
+[[Camel2.2.0Release-Pleasedon'tinstallcamel-osgiandcamel-spring-osgibundleinOSGienvironmentatthesametime]]
+Please don't install camel-osgi and camel-spring-osgi bundle in OSGi
+environment at the same time
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+We have an issue that installing camel-osgi and camel-spring in
+different order will cause the "http://camel.apache.org/schema/spring"
+namespace can't be handled rightly in OSGi environment. From Camel 2.2.0
+we merged the camel-osgi and camel-spring bundles together, it's
+camel-spring-osgi. +
+In this way camel-osgi and camel-spring-osgi both have the
+BundleActivator which helps camel-core to load the component in OSGi
+container. If you install these two bundle at the same time will cause
+some conflict on the component finding. +
+You just need to install camel-core, camel-spring-osgi bundle to let the
+basic camel application work.
+
+[[Camel2.2.0Release-Springjardependencieshavebeencutdownincamel-core.]]
+Spring jar dependencies have been cut down in camel-core.
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The `pom.xml` file for *camel-core* have cut down number of spring jar
+dependencies to allow Camel to easily run without any Spring .jars at
+all. However this affects you if you use maven and use camel-core
+without camel-spring or spring at all. If you want to use JMX with Camel
+then you need to add the following 4 spring jars required:
+`spring-core.jar, spring-beans.jar, spring-context.jar, spring-aop.jar`.
+With maven you only need to depend on `spring-context` and `spring-aop`
+as they will bring in the other two jars.
+
+See also link:camel-jar-dependencies.html[Camel JAR Dependencies] and
+link:camel-jmx.html[Camel JMX].
+
+[[Camel2.2.0Release-Usingfilterin]]
+Using filter in link:splitter.html[Splitter]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The `filter` no long influence the `split` and its `AggregationStrategy`
+as it was just too confusing why it did that. See
+https://issues.apache.org/activemq/browse/CAMEL-2248[CAMEL-2288] for
+details.
+
+[[Camel2.2.0Release-camel-httpandproxy]]
+camel-http and proxy
+^^^^^^^^^^^^^^^^^^^^
+
+The link:http.html[HTTP] component used to read Proxy settings directly
+from system properties. You should instead configure proxy wide
+information as properties to the `CamelContext` instead. See
+link:http.html[HTTP] for details.
+
+[[Camel2.2.0Release-camel-jms]]
+camel-jms
+^^^^^^^^^
+
+How correlationId is determined has been changed slightly. Now
+link:jms.html[JMS] will always use messageId if configured to do so
+using `useMessageIDAsCorrelationID==true`. Otherwise `JMSCorrelationID`
+is used but if that has not been set then Camel will fallback to use
+`messageId` instead. See the method `determineCorrelationId` in the
+class `org.apache.camel.component.jms.EndpointMessageListener` for
+actual implementation. This change will most likely not affect most
+users.
+
+[[Camel2.2.0Release-GettingtheDistributions]]
+Getting the Distributions
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+[[Camel2.2.0Release-BinaryDistributions]]
+Binary Distributions
+^^^^^^^^^^^^^^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Description |Download Link |PGP Signature file of download
+|Windows Distribution
+|http://archive.apache.org/dist/camel/apache-camel/2.2.0/apache-camel-2.2.0.zip[apache-camel-2.2.0.zip]
+|http://archive.apache.org/dist/camel/apache-camel/2.2.0/apache-camel-2.2.0.zip.asc[apache-camel-2.2.0.zip.asc]
+
+|Unix/Linux/Cygwin Distribution
+|http://archive.apache.org/dist/camel/apache-camel/2.2.0/apache-camel-2.2.0.tar.gz[apache-camel-2.2.0.tar.gz]
+|http://archive.apache.org/dist/camel/apache-camel/2.2.0/apache-camel-2.2.0.tar.gz.asc[apache-camel-2.2.0.tar.gz.asc]
+|=======================================================================
+
+[Info]
+====
+ **The above URLs use redirection**
+
+The above URLs use the Apache Mirror system to redirect you to a
+suitable mirror for your download. Some users have experienced issues
+with some versions of browsers (e.g. some Safari browsers). If the
+download doesn't seem to work for you from the above URL then try using
+http://www.mozilla.com/en-US/firefox/[FireFox]
+
+====
+
+[[Camel2.2.0Release-SourceDistributions]]
+Source Distributions
+^^^^^^^^^^^^^^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Description |Download Link |PGP Signature file of download
+|Source for Windows
+|http://archive.apache.org/dist/camel/apache-camel/2.2.0/apache-camel-2.2.0-src.zip[apache-camel-2.2.0-src.zip]
+|http://archive.apache.org/dist/camel/apache-camel/2.2.0/apache-camel-2.2.0-src.zip.asc[apache-camel-2.2.0-src.zip.asc]
+|=======================================================================
+
+[width="100%",cols="34%,33%,33%",]
+|=======================================================================
+|Source for Unix/Linux/Cygwin
+|http://archive.apache.org/dist/camel/apache-camel/2.2.0/apache-camel-2.2.0-src.tar.gz[apache-camel-2.2.0-src.tar.gz]
+|http://archive.apache.org/dist/camel/apache-camel/2.2.0/apache-camel-2.2.0-src.tar.gz.asc[apache-camel-2.2.0-src.tar.gz.asc]
+|=======================================================================
+
+[[Camel2.2.0Release-GettingtheBinariesusingMaven2]]
+Getting the Binaries using Maven 2
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To use this release in your maven project, the proper dependency
+configuration that you should use in your
+http://maven.apache.org/guides/introduction/introduction-to-the-pom.html[Maven
+POM] is:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<dependency>
+  <groupId>org.apache.camel</groupId>
+  <artifactId>camel-core</artifactId>
+  <version>2.2.0</version>
+</dependency>
+----
+
+[[Camel2.2.0Release-SVNTagCheckout]]
+SVN Tag Checkout
+^^^^^^^^^^^^^^^^
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+svn co http://svn.apache.org/repos/asf/camel/tags/camel-2.2.0
+----
+
+[[Camel2.2.0Release-Changelog]]
+Changelog
+~~~~~~~~~
+
+For a more detailed view of new features and bug fixes, see the:
+
+* http://issues.apache.org/jira/secure/ReleaseNote.jspa?projectId=12311211&styleName=Html&version=12315686[JIRA
+Release notes for 2.2.0]

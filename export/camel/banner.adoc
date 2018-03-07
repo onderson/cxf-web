@@ -1,0 +1,4 @@
+[[ConfluenceContent]]
+[[asf_logo]]
+[[activemq_logo]]
+http://camel.apache.org/[Camel] http://www.apache.org[Apache]

@@ -1,0 +1,383 @@
+[[ConfluenceContent]]
+[[Camel2.5.0Release-Camel2.5.0release]]
+Camel 2.5.0 release
+-------------------
+
+image:http://camel.apache.org/download.data/camel-box-v1.0-150x200.png[image]
+
+[[Camel2.5.0Release-NewandNoteworthy]]
+New and Noteworthy
+~~~~~~~~~~~~~~~~~~
+
+Welcome to the 2.5.0 release which approx 300 issues resolved (new
+features, improvements and bug fixes such as...)
+
+* Added `suspend/resume` operations to
+link:camelcontext.html[CamelContext] for _warm_ restarts, or as the
+preferred way to temporary stop a running Camel application, and then
+later resume it. Those operations is also available in
+link:camel-jmx.html[JMX].
+* Improved management of routes in link:camel-jmx.html[JMX]. You can now
+suspend/resume routes which support suspension. There is a new
+`removeRoute` to remove a route from link:camel-jmx.html[JMX]. Routes
+with `autoStartup=false` is now also listed in link:camel-jmx.html[JMX],
+to allow you to start the routes manually.
+* The link:asynchronous-routing-engine.html[Asynchronous Routing Engine]
+allows to be forced into synchronous mode for certain components, by
+specifying `synchronous=true` in the endpoint uri.
+* link:ftp2.html[FTP] now supports MSV file systems. The ftp consumer
+will now traverse the directory structure using a
+`cd <dir>, list files in cur dir` pattern, as opposed to a
+`list files <dir>` style.
+* link:ftp2.html[FTP] improved support for consuming using absolute
+paths.
+* Fixed issue with using multiple link:http.html[HTTP] endpoints with
+the only difference being `httpClient` parameters.
+* Fixed issue with link:stream-caching.html[Stream caching] and deleting
+temporary files on Windows.
+* Server thread pool settings can be configured on
+link:jetty.html[Jetty] component.
+* Easier to configure general HTTP/SSL socket connector properties on
+link:jetty.html[Jetty] component.
+* Fixed issue with sending an `InOut` message to
+link:dead-letter-channel.html[Dead Letter Channel] would cause Camel to
+expect a reply. Now the message will always be send to the DLQ as
+`InOnly`.
+* Fixed issue when sending to a link:jms.html[JMS] destination, the
+option `disableReplyTo` was not used.
+* Added two new functions to link:xpath.html[XPath] to leverage
+link:properties.html[Properties] component and link:simple.html[Simple]
+language.
+* Fixed issue when running link:jetty.html[Jetty] server under heavy
+load throwing `IllegalStateException`
+* link:jms.html[JMS] uses
+link:asynchronous-routing-engine.html[Asynchronous Routing Engine] for
+link:request-reply.html[Request Reply] messaging over JMS.
+* Fixed issue with a route could mistakenly pick up a route scoped
+link:exception-clause.html[OnException] from another route.
+* Fixed an issue with starting `CamelContext` after it had been
+shutdown, leading to routes not properly being re-initialized and
+started.
+* The link:file2.html[File] and link:ftp2.html[FTP] consumers now
+support using `preMove` together with either `noop` or `delete` options.
+* Added support for `timeout` in link:recipient-list.html[Recipient
+List], link:splitter.html[Splitter] and link:multicast.html[Multicast]
+EIPs when running in parallel mode.
+* Added support for 3rd part link:uuidgenerator.html[UuidGenerator].
+* Reverted back to use ActiveMQ link:uuidgenerator.html[UuidGenerator]
+as default generator. Its faster than the previous `JavaUuidGenerator`,
+especially in high concurrent systems.
+* link:velocity.html[Velocity] can now find template files from
+filesystem/classpath when referring to them from other templates.
+* Fixed issue with multiple link:camelcontext.html[CamelContext] using
+same id being mixed as single link:camelcontext.html[CamelContext] in
+link:camel-jmx.html[JMX]. Camel now fails to start if existing
+link:camelcontext.html[CamelContext] already have been registered in the
+MBeanServer.
+* The link:message-filter.html[Message Filter] EIP now stores a property
+on the link:exchange.html[Exchange] to indicate if it was filtered or
+not.
+* link:ftp2.html[FTP] supports sending site commands after successful
+login.
+* link:simple.html[Simple] language can now compare numeric values which
+was entered as String types.
+* Fixed limitation where link:content-enricher.html[PollEnrich] could
+not poll from a file endpoint if the route started from a file endpoint
+as well.
+* Fixed limitation with link:simple.html[Simple] language, before you
+could only use one `and` or `or` operator. Now you can use multiple
+operators in the same expression.
+* link:restlet.html[Restlet] component now supports using \{ }
+placeholders in uri, which gets replaced with headers from
+link:exchange.html[Exchange].
+* Added `dynamicRouter` to the DSL to make it easier to do dynamic
+routing using a link:bean.html[Bean] to evaluate _on-the-fly_ the next
+destination(s).
+* When sending a link:jms.html[JMS] message using InOnly but having a
+`JMSReplyTo` header configured, then the `JmsProducer` will
+lookup/create the JMS Destination to ensure its a valid `JMSReplyTo`
+from the header.
+* Endpoint uris containing password is not logged in plaintext, but is
+now masked.
+* link:properties.html[Properties] can now leverage
+link:jasypt.html[Jasypt] allowing you to use encrypted values in your
+properties files.
+* Trimmed down the size of the link:web-console.html[Web Console]
+reducing the number of jars and removing the groovy experimental editor.
+It now requires JDK 1.6 to run as well. We will in the future improve
+the link:web-console.html[Web Console] to contain more features and
+information.
+* Added new link:language.html[Language] component to execute
+link:languages.html[Languages] scripts when sending a message to a
+`language` endpoint. This makes it easier to support
+link:dynamic-router.html[Dynamic Router] where small pieces of logic
+must be executed as well.
+* Added `charset` option on the link:file2.html[File],
+link:ftp2.html[FTP] endpoint which dictates the encoding to use.
+* link:cxf.html[CXF] consumer and link:cxfrs.html[CXFRS] consumer will
+try to leverage CXF continuation API to call the camel process
+asynchronous API if it is possible, and you can turn it off by setting
+the `synchronous` option to `true`.
+* link:cxf-bean-component.html[CXF Bean Component] now supports using
+customer providers configured by the `providers` option on the
+link:cxfrs.html[CXFRS] endpoint.
+* Fixed `ConsumerTemplate` using `receiveBody` methods to complete
+link:oncompletion.html[OnCompletion] beforehand. For example when using
+a link:file2.html[File] endpoint and having set `delete=true`, which now
+causes the file to be deleted.
+* Fixed link:hawtdb.html[HawtDB] not working in OSGi
+* Fixed dependency injection between `<bean>` and `<camelContext>`,
+making it work as it did with Spring 2.5 when using Spring 3.0 instead.
+The `<bean>` will be dependency injected before the `<camelContext>`.
+* Optimized link:type-converter.html[Type Converter] when using
+link:jetty.html[Jetty] routing and/or conversions to `String` types
+which will fallback and lookup `PropertyEditor` editors.
+* Added `LimitedPollingConsumerPollStrategy` for
+link:polling-consumer.html[Polling Consumer]s as a limited strategy
+which suspends consumers which causes consecutive failures. For example
+to avoid a faulty consumer to spam logs etc. Uses a limit of 3.
+* Fixed link:jetty.html[Jetty] sending back HTTP headers using keys is
+lower-case. Not it preserves the case of the keys, so it can be mixed
+case.
+* Added $simple\{ } as alternative syntax for tokens in the
+link:simple.html[Simple] language to avoid clashing when using Springs
+`PropertyPlaceholderConfigurer`. See example at the
+link:file2.html[File] language page.
+* Added `discardOnCompletionTimeout` option to
+link:aggregator2.html[Aggregator]
+* Fixed concurrency issue when using predicates using binary operators
+such as `isEqualTo`.
+* Total overhaul of the link:quickfix.html[Quickfix] component. Thanks
+to the http://www.quickfixj.org/[QuickFIX/J] community for help.
+* link:cxfrs.html[CXFRS] producer now leverages fallback type converter
+which means its much easier for end users to grab the response body in a
+type they want.
+* link:mail.html[Mail] component now supports specifying emails using
+`"Ibsen, Claus" <davsclaus@apache.org>` style.
+* Fixed issue with link:ftp2.html[FTP] which could cause the polling to
+stop without any hint in the logs why.
+* Added `publishedEndpointUrl` option into the link:cxf.html[CXF]
+component.
+* `DefaultPackageScanClassResolver` supports to configure the url
+schemes by using Spring configuration. To cater for Server's using
+custom classloader schemes in URLs.
+* Added option `lazyLoadTypeConverters` to
+link:camelcontext.html[CamelContext] to configure if type converters
+should be loaded lazy or on startup (default).
+
+[[Camel2.5.0Release-New]]
+New link:enterprise-integration-patterns.html[Enterprise Integration
+Patterns]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* link:dynamic-router.html[Dynamic Router] is now available in the
+link:dsl.html[DSL] as well.
+
+[[Camel2.5.0Release-New.1]]
+New link:components.html[Components]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* link:db4o.html[Db4o]
+* link:language.html[Language]
+* link:jasypt.html[Jasypt]
+* link:shiro-security.html[Shiro Security]
+* link:sip.html[Sip]
+* link:quickfix.html[Quickfix] (total overhauled)
+
+[[Camel2.5.0Release-NewDSL]]
+New DSL
+^^^^^^^
+
+* link:dynamic-router.html[Dynamic Router]
+
+[[Camel2.5.0Release-NewAnnotations]]
+New Annotations
+^^^^^^^^^^^^^^^
+
+* `@DynamicRouter`
+
+[[Camel2.5.0Release-NewDataFormats]]
+New link:data-format.html[Data Formats]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+[[Camel2.5.0Release-New.2]]
+New link:languages.html[Languages]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+[[Camel2.5.0Release-New.3]]
+New link:examples.html[Examples]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* `camel-example-reportincident-ws-security-osgi`
+* link:cxf-proxy-example.html[CXF Proxy Example]
+* link:cxf-tomcat-example.html[CXF Tomcat Example]
+
+[[Camel2.5.0Release-New.4]]
+New link:tutorials.html[Tutorials]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+[[Camel2.5.0Release-APIbreaking]]
+API breaking
+~~~~~~~~~~~~
+
+* Some methods on the link:file2.html[File] and link:ftp2.html[FTP]
+endpoint/producer has been promoted from `protected` to `public` to make
+it easy from Java code to re-use the functionally of those methods,
+without using it as a Camel component. Such as when you want to
+communicate with a FTP server using the API from the
+`RemoteFileOperations`.
+* Added `changeToParentDirectory` method to `GenericFileOperations`.
+
+[[Camel2.5.0Release-KnownIssues]]
+Known Issues
+~~~~~~~~~~~~
+
+* The link:tracer.html[Tracer] may not output all details for some
+situations such as when using `onCompletion` or `intercept` etc.
+* Not all link:examples.html[Examples] have ANT build.xml files to run
+the example using ANT.
+* Project cannot be fully build using Maven 3.0
+* One may encounter build errors in camel-ftp with java versions older
+than "1.5.0_24"
+* Dozer does not work in OSGi
+* `camel-blueprint` is not fully feature complete (such as @Producer,
+@Consume is not supported)
+* `camel-blueprint` using <package> scan does not work
+* Setting a custom TaskExecutor on link:jms.html[JMS] component using
+Spring 2.5 does not work as `camel-jms` is compiled against Spring 3.0.
+See more at
+https://issues.apache.org/activemq/browse/CAMEL-3286[CAMEL-3286]
+* `markRollbackOnlyLast` doesn't remove caused exception, which may
+affect outer transaction to rollback as well. Likewise the logging of
+`TransactionErrorHandler` may log the inner transaction as being
+committed, when it was in fact rolled back.
+* link:splitter.html[Splitter] using `parallelProcessing` may use a lot
+of memory during processing, see
+https://issues.apache.org/jira/browse/CAMEL-3497[CAMEL-3497]
+
+[[Camel2.5.0Release-Importantchangestoconsiderwhenupgrading]]
+Important changes to consider when upgrading
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+* Support for link:jms.html[JMS] API 1.0.2 has been removed.
+* The `stopRoute` method on `CamelContext` now leverages
+link:graceful-shutdown.html[Graceful Shutdown] when stopping. This is
+more intuitive to stop routes in a graceful and safe manner. You can the
+stop method with a timeout if you want to force stopping, which was the
+old behavior.
+* The link:web-console.html[Web Console] now requires JDK 1.6 as minimum
+to run.
+* The artifacts `camel-core-tests.jar` and `camel-spring-tests.jar` has
+been *deprecated* and will be removed in a future release. You should
+always only use the `camel-test.jar` if you want to use the Camel Test
+Kit.
+* Camel will now fail to startup if an existing CamelContext has been
+registered in JMX with the same id.
+* If you did not set a id on `<camelContext>` it would have defaulted to
+`camelContext`. This has been changed to be the auto assigned name it's
+given by Camel, such as `camel-1`, `camel-2` etc.
+* Maven version 2.2.1 or better is now required to build Camel from
+source.
+* If using link:quartz.html[Quartz] with jobs persisted in a database,
+then mind that Camel now resolves job names based on endpoint uri,
+_without_ parameters. This allows you to change cron parameters on the
+same job (reschedule jobs).
+* The `timeout` option on link:netty.html[Netty] has been removed as it
+was flawed.
+* Durable topic subscribers with link:jms.html[JMS] must now provide
+`clientId`, otherwise Camel will fail fast on startup.
+* The default link:uuidgenerator.html[UuidGenerator] has been changed
+back to be ActiveMQ based. If you run in the cloud you may have to
+configure to use the old default `JavaUuidGenerator` as the ActiveMQ may
+use JDK API which is not accessible in the cloud.
+* If you use the link:ftp2.html[FTP] component (consumers) make sure to
+test it throughly as it has changed how it traverse the file structure.
+* Upgraded to Spring 3.0.4
+* Upgraded to CXF 2.2.11
+
+[[Camel2.5.0Release-GettingtheDistributions]]
+Getting the Distributions
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+[[Camel2.5.0Release-BinaryDistributions]]
+Binary Distributions
+^^^^^^^^^^^^^^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Description |Download Link |PGP Signature file of download
+|Windows Distribution
+|http://archive.apache.org/dist/camel/apache-camel/2.5.0/apache-camel-2.5.0.zip[apache-camel-2.5.0.zip]
+|http://archive.apache.org/dist/camel/apache-camel/2.5.0/apache-camel-2.5.0.zip.asc[apache-camel-2.5.0.zip.asc]
+
+|Unix/Linux/Cygwin Distribution
+|http://archive.apache.org/dist/camel/apache-camel/2.5.0/apache-camel-2.5.0.tar.gz[apache-camel-2.5.0.tar.gz]
+|http://archive.apache.org/dist/camel/apache-camel/2.5.0/apache-camel-2.5.0.tar.gz.asc[apache-camel-2.5.0.tar.gz.asc]
+|=======================================================================
+
+[Info]
+====
+ **The above URLs use redirection**
+
+The above URLs use the Apache Mirror system to redirect you to a
+suitable mirror for your download. Some users have experienced issues
+with some versions of browsers (e.g. some Safari browsers). If the
+download doesn't seem to work for you from the above URL then try using
+http://www.mozilla.com/en-US/firefox/[FireFox]
+
+====
+
+[[Camel2.5.0Release-SourceDistributions]]
+Source Distributions
+^^^^^^^^^^^^^^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Description |Download Link |PGP Signature file of download
+|Source for Windows
+|http://archive.apache.org/dist/camel/apache-camel/2.5.0/apache-camel-2.5.0-src.zip[apache-camel-2.5.0-src.zip]
+|http://archive.apache.org/dist/camel/apache-camel/2.5.0/apache-camel-2.5.0-src.zip.asc[apache-camel-2.5.0-src.zip.asc]
+|=======================================================================
+
+[width="100%",cols="34%,33%,33%",]
+|=======================================================================
+|Source for Unix/Linux/Cygwin
+|http://archive.apache.org/dist/camel/apache-camel/2.5.0/apache-camel-2.5.0-src.tar.gz[apache-camel-2.5.0-src.tar.gz]
+|http://archive.apache.org/dist/camel/apache-camel/2.5.0/apache-camel-2.5.0-src.tar.gz.asc[apache-camel-2.5.0-src.tar.gz.asc]
+|=======================================================================
+
+[[Camel2.5.0Release-GettingtheBinariesusingMaven2]]
+Getting the Binaries using Maven 2
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To use this release in your maven project, the proper dependency
+configuration that you should use in your
+http://maven.apache.org/guides/introduction/introduction-to-the-pom.html[Maven
+POM] is:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<dependency>
+  <groupId>org.apache.camel</groupId>
+  <artifactId>camel-core</artifactId>
+  <version>2.5.0</version>
+</dependency>
+----
+
+[[Camel2.5.0Release-SVNTagCheckout]]
+SVN Tag Checkout
+^^^^^^^^^^^^^^^^
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+svn co http://svn.apache.org/repos/asf/camel/tags/camel-2.5.0
+----
+
+[[Camel2.5.0Release-Changelog]]
+Changelog
+~~~~~~~~~
+
+For a more detailed view of new features and bug fixes, see:
+
+* http://issues.apache.org/jira/secure/ReleaseNote.jspa?projectId=12311211&styleName=Html&version=12315689[JIRA
+Release notes for 2.5.0]

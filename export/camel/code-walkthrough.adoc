@@ -1,0 +1,13 @@
+[[ConfluenceContent]]
+[[CodeWalkthrough-CodeWalkthrough]]
+Code Walkthrough
+~~~~~~~~~~~~~~~~
+
+The main module to get to grips with is the
+http://camel.apache.org/maven/current/camel-core/apidocs/index.html[camel-core]
+module which defines the core APIs and the link:dsl.html[DSL].
+
+Often developers pick up libraries by looking at test cases. Probably
+the best test cases to start with are the
+https://git-wip-us.apache.org/repos/asf?p=camel.git;a=tree;f=camel-core/src/test/java/org/apache/camel/processor[processor
+test cases]

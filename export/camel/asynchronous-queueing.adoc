@@ -1,0 +1,12 @@
+[[ConfluenceContent]]
+For details see the discussion on
+http://cwiki.apache.org/confluence/display/CAMEL/SOA+Patterns[Asynchronous
+Queueing on the SOA Patterns site].
+
+To implement asynchronous queueing just send a message to an async
+endpoint like link:jms.html[JMS] or link:seda.html[SEDA].
+
+You can also force
+http://camel.apache.org/using-exchange-pattern-annotations.html[InOnly
+message exchange patterns using an annotation] if you are using
+something like link:spring-remoting.html[Spring Remoting]

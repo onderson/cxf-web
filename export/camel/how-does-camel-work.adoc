@@ -1,0 +1,7 @@
+[[ConfluenceContent]]
+[[HowdoesCamelwork-HowdoesCamelwork?]]
+How does Camel work?
+~~~~~~~~~~~~~~~~~~~~
+
+Please see the link:architecture.html[Architecture] for details of how
+things work.

@@ -1,0 +1,92 @@
+[[ConfluenceContent]]
+[[Camel2.9-JMXandreducingSpringdependency-Camel2.9-JMXandreducingSpringdependency]]
+Camel 2.9 - JMX and reducing Spring dependency
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This note covers the goal for Camel 2.9 to reduce Spring dependency in
+`camel-core` and other link:components.html[Components] where Spring is
+not really needed.
+
+[[Camel2.9-JMXandreducingSpringdependency-Background]]
+Background
+^^^^^^^^^^
+
+In `camel-core` we support Spring JMX annotations when we enlist MBeans
+in JMX. In fact Spring JMX must be on the classpath to be able to use
+JMX with Camel at all. +
+If Spring JARs is not on the classpath, Camel will automatic disable
+JMX. This puts a burden on end users of Camel who may not use Spring to
+include 8+ Spring JARs to have support for JMX.
+
+Some Camel link:components.html[Components] such as
+link:velocity.html[Velocity], link:freemarker.html[Freemarker],
+link:xslt.html[XSLT] uses Spring Resource API to load resources over the
+classpath etc. This does not work in OSGi blueprint, etc. Instead we
+should rely on the link:pluggable-class-resolvers.html[Pluggable Class
+Resolvers] provided by Camel that works with OSGi, JBoss and other
+containers.
+
+[[Camel2.9-JMXandreducingSpringdependency-Design]]
+Design
+^^^^^^
+
+The Spring JMX annotation support code in `camel-core` should be moved
+to `camel-spring`. This allows people to keep using Spring JMX
+annotations. +
+We should add a SPI plugin in `camel-core` so `camel-spring` can hook in
+the Spring JMX annotation support it now provides. Likewise 3rd party
+can inject their custom integration.
+
+We should provide a basic set of Camel JMX annotations in `camel-core`
+that the various Camel link:components.html[Components] should use. This
+ensures we its stil easy to have link:components.html[Components] enlist
+in JMX with custom attributes and operations. For example Apache
+ActiveMQ has a set of JMX annotations as well.
+
+This also allows Camel end users to use these new Camel JMX annotations
+in their custom Camel components. Then they do not need to use Spring
+JMX annotations, and thus bring in maybe unneeded dependency on Spring
+JARs in their code.
+
+The `ResourceEndpoint` from `camel-spring` should be moved to
+`camel-core` and rely on `ClassResolver` API from Camel to load
+resources from the classpath. +
+We would need to add support for the http scheme, and the file scheme.
+But those are easy. Then we can migrate the
+link:freemarker.html[Freemarker], link:velocity.html[Velocity],
+link:xslt.html[XSLT] components to not depend on Spring/camel-spring.
+
+[[Camel2.9-JMXandreducingSpringdependency-ReducingruntimeJARs]]
+Reducing runtime JARs
+^^^^^^^^^^^^^^^^^^^^^
+
+Since Spring JARs will no longer be mandatory on the classpath for JMX
+support, we can reduce the runtime JAR dependency for Camel end users.
+Most end users of Camel will need to support JMX, so essentially we
+force them to add Spring JARs. That means they only need slf4j logging
+and commons-management JARs.
+
+[[Camel2.9-JMXandreducingSpringdependency-Portingcommons-managementtocamel-core]]
+Porting commons-management to camel-core
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Currently `camel-core` rely on
+http://fusesource.com/forge/projects/commonman[commons-management] for
+basic JMX support. We should consider porting this code into the
+`camel-core` codebase. +
+This reduces the mandatory JARs for `camel-core` to only the sfl4j
+logging API. This is as low as we can get.
+
+[[Camel2.9-JMXandreducingSpringdependency-OthercomponentsusingSpring]]
+Other components using Spring
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The link:mail.html[Mail] and link:jms.html[JMS] component currently
+depend on Spring JARs. There is a work in progress patch for the
+link:mail.html[Mail] component to be able to run without Spring. The
+link:jms.html[JMS] component is however heavily dependent on Spring, as
+it uses spring-jms. We may in the future consider writing a new light
+weight JMS component that has less features, but can work without
+Spring. However this is not the goal for Camel 2.9. If we do our own jms
+abstraction which might be a good idea then we should put it in a apache
+commons project as it would also help other projects like cxf.

@@ -1,0 +1,560 @@
+[[ConfluenceContent]]
+[[Camel2.13.0Release-Camel2.13.0release]]
+Camel 2.13.0 release 
+---------------------
+
+image:http://camel.apache.org/download.data/camel-box-v1.0-150x200.png[image]
+
+ 
+
+[[Camel2.13.0Release-NewandNoteworthy]]
+New and Noteworthy
+~~~~~~~~~~~~~~~~~~
+
+Welcome to the 2.13.0 release which approx 480 issues resolved (new
+features, improvements and bug fixes such as...)
+
+* Using <camelContext> in Spring will now shutdown <camelContext> eager
+by default. This ensure a cleaner shutdown of Camel, as dependent <bean>
+are not shutdown at this moment. The <bean> will then be shutdown after
+<camelContext>. There is a new attribute shutdownEager on <camelContext>
+to turn this off, and use the old behavior.
+* The MBean names registered by link:camel-jmx.html[Camel JMX] no longer
+include the hostname in the `context` part, eg before
+`context=myHost/myCamelId` and now after `context=myCamelId`. Having the
+hostname in the MBean name does not bring much value, and in fact makes
+things more complicated as the mbean name changes depending on the host
+running Camel.
+* link:camel-jmx.html[MBean naming] in OSGi cleaned up to use simpler
+naming with symbolicName. Before we could have MBean names with
+duplicate bundle ids such as `context=114-114-camel-6`, which now is
+using the symbolic name instead, `context=MyApplication`.
+* When using multiple OSGi Blueprint <cm:property-placeholder>'s then
+Camel now favors using non-default placeholders, or the last
+property-placeholder defined in the Blueprint XML file. This allows for
+example to define default properties in one placeholder, and override
+these values in other placeholders.
+* link:ftp2.html[FTP] consumer allow to download a single named file
+without using the FTP LIST command. This allows to download a known file
+from a FTP server even when the user account does not have permission to
+do FTP LIST command.
+* link:ftp2.html[FTP] consumer allow to ignore file not found or
+insufficient file permission errors.
+* link:data-format.html[Data Format] using marshal now leverages
+link:stream-caching.html[Stream caching] out of the box if enabled,
+which allows to marshal big streams and spool to disk, instead of being
+pure in-memory based.
+* Improved using link:bean.html[Bean] when the bean is looked up in the
+link:registry.html[Registry], when using concurrent processing in the
+route.
+* Added `cache` option to `beanRef` and `<bean>` in the DSL. This avoids
+looking up the link:bean.html[Bean] from the
+link:registry.html[Registry] on each usage; this can safely be done for
+singleton beans.
+* Configuring link:data-format.html[Data Format]s in XML attributes now
+supports reference lookup using the # syntax, eg
+`<jaxb xmlStreamWriterWrapper="#myWriterWrapper" ..>`
+* link:jdbc.html[JDBC] component now also support `outputType` to
+specify the expected output as either a List or single Object. As well
+allow to map to a bean using a `BeanRowMapper` to control the mapping of
+ROW names to bean properties.
+* Both link:quartz.html[Quartz] as well as link:quartz2.html[Quartz2]
+based link:scheduledroutepolicy.html[ScheduledRoutePolicy] has been
+improved to better support cluster setups (e.g. to not schedule jobs
+being already scheduled through another node inside a given cluster).
+* Reduced the work the link:aggregator2.html[Aggregate] EIP does while
+holding a lock during aggregation, which can lead to improved
+performance in some use-cases.
+* `JndiRegistry` now implements all the find methods.
+* link:vm.html[VM] component now supports `multipleConsumers=true`
+across deployment units.
+* Added `@PreConsumed` to link:jpa.html[JPA] consumer.
+* Added CamelFileName header support to the link:hdfs.html[HDFS]
+producer
+* Like as `JpaConsumer` now also `JpaProducer` of the link:jpa.html[JPA]
+component supports the `CamelEntityManager` header.
+* link:restlet.html[Restlet] consumer now supports returning custom
+headers as HTTP headers from the Camel link:message.html[Message].
+* link:spring-java-config.html[Spring Java Config] `CamelConfiguration`
+now automagically detects all `RouteBuilder` instances registered in the
+Spring context if `CamelConfiguration#routes` method is not overridden.
+* Added support for transferring custom headers with
+link:rabbitmq.html[RabbitMQ] component.
+* link:crypto.html[PGPDataFormat] enables stream cache during
+unmarshaling.
+* `FileIdempotentRepository` now creates necessary parent directories
+together with the new repository file.
+* link:properties.html[Properties] component and
+link:using-propertyplaceholder.html[property placeholder] will now
+ignore non existing JVM and environment options as well if
+`ignoreMissingLocation` is set to `true`.
+* Improved link:stream.html[Stream] consumer to enrich the
+link:message.html[Message] with headers about current index / completion
+flag.
+* Added link:bean-injection.html[`@BeanInject`] to inject beans
+(obtained from the link:registry.html[Registry]) in your beans such as
+`RouteBuilder` classes.
+* Polished the link:karaf.html[Karaf] commands to output tables sorted
+and auto calculated width, so the data is formatted nicely.
+* Introduced `UnitOfWorkFactory` to allow end users to use custom
+`UnitOfWork` implementations created by the factory.
+* Doing request/reply over link:jms.html[JMS] allows per individual
+message `requestTimeout` value by specifying the timeout value in the
+`"CamelJmsRequestTimeout"` header.
+* link:quartz.html[Quartz] and link:quartz2.html[Quartz2] components now
+enlist the quartz scheduler by default in JMX, unless configured to be
+disabled.
+* link:twitter.html[Twitter] Component supports to set proxy.
+* link:netty-http.html[Netty HTTP] consumer now remembers the raw (not
+decoded) value of URI query in the "`CamelHttpRawQuery`" header.
+* link:bean-validator.html[Bean Validator] component can be now
+configured to use custom `ValidationProviderResolver`
+(https://issues.apache.org/jira/browse/CAMEL-7162[CAMEL-7162]) +
+* TypeConverterRegistry exposes more information in JMX and allows to
+browse all the registered type converters.
+* link:bean-validator.html[Bean Validator] component is now shipped with
+the optional OSGi-friendly `HibernateValidationProviderResolver`
+(https://issues.apache.org/jira/browse/CAMEL-7168[CAMEL-7168])
+* link:amqp.html[AMQP] has been updated to QPid 0.24 and has been tested
+using AMQP 1.0.
+* Allow to turn off useOriginalMessage
+(camelContext.setAllowUseOriginalMessage) which avoids a defensive copy
+of the incoming original message, which can improve performance; in
+situations where access to the original message is not needed.
+* link:bean-validator.html[Bean Validator] component now automatically
+uses OSGi-friendly `ValidationProviderResolver` if deployed in the OSGi
+environment
+(https://issues.apache.org/jira/browse/CAMEL-7212[CAMEL-7212])
+* link:async.html[Threads DSL] thread pool options and
+`executorServiceRef` option are now mutually exclusive.
+(https://issues.apache.org/jira/browse/CAMEL-7250[CAMEL-7250])
+* link:shiro-security.html[Shiro Security] now supports access control
+by roles.
+
+[[Camel2.13.0Release-FixedIssues]]
+Fixed Issues
+^^^^^^^^^^^^
+
+* Fixed an `ArrayIndexOutOfBoundsException` with
+link:message-history.html[Message History] when using
+link:seda.html[SEDA]
+* Fixed `requestTimeout` on link:netty.html[Netty] not triggering when
+we have received message.
+* Fixed link:parameter-binding-annotations.html[Parameter Binding
+Annotations] on boolean types to evaluate as
+link:predicate.html[Predicate] instead of
+link:expression.html[Expression]
+* Fixed using link:file2.html[File] consumer with
+`delete=true&readLock=fileLock` not being able to delete the file on
+Windows.
+* Fixed link:throttler.html[Throttler] to honor time slots after period
+expires (eg so it works consistently and as expected).
+* Fixed getting JMSXUserID property when consuming from
+link:activemq.html[ActiveMQ]
+* Fixed link:intercept.html[interceptFrom] to support property
+placeholders
+* Fixed a race condition in initializing `SSLContext` in
+link:netty.html[Netty] and link:netty-http.html[Netty HTTP]
+* Fixed using link:recipient-list.html[Recipient List],
+link:routing-slip.html[Routing Slip] calling another route which is
+configured with `NoErrorHandler`, and an exception occurred in that
+route, would be propagated back as not-exhausted, allow the caller route
+to have its error handler react on the exception.
+* Fixed link:quartz.html[Quartz] and exception was thrown when
+scheduling a job, would affect during shutdown, assuming the job was
+still in progress, and not shutdown the Quartz scheduler.
+* Fixed so you can configure link:stomp.html[Stomp] endpoints using
+link:uris.html[URIs]
+* Fixed memory leak when using link:language.html[Language] component
+with `camel-script` languages and having `contentCache=false`
+* Fixed link:error-handler.html[Error Handler] may log at `WARN` level
+"Cannot determine current route from Exchange" when using
+link:splitter.html[Splitter]
+* Fixed `camel-fop` to work in Apache link:karaf.html[Karaf] and
+ServiceMix
+* Fixed link:hdfs.html[HDFS] producer to use the configured
+link:uuidgenerator.html[UuidGenerator] when generating split file names
+to avoid filename collisions
+* Fixed `JpaProducer` and `JpaConsumer` of the link:jpa.html[JPA]
+component to not share/reuse the same `EntityManager` object which could
+cause problems if this would occur in the context of multiple/different
+threads.
+* Fixed link:http4.html[HTTP4] to support multiple custom component
+names in use, each configured using different `SSLContext`.
+* Fixed link:content-based-router.html[Content Based Router] using
+method call's as link:predicate.html[Predicate]s if threw an exception,
+the link:content-based-router.html[Content Based Router] will call next
+predicate before triggering link:error-handler.html[Error Handler].
+* Fixed link:netty-http.html[Netty HTTP] producer with query parameters
+may use wrong parameters from a previous call.
+* Fixed link:netty.html[Netty] producer may cause `NullPointerException`
+in `messageReceived` in client handler, if a `Channel` was destroyed
+from the producer pool.
+* Fixed link:file2.html[File] and link:ftp2.html[FTP] consumer(s) when
+`idempotent=true` could not detect changed file(s) as a new file, but
+would regard the file as idempotent.
+* Fixed link:stream.html[Stream] consumer reading a file using
+`groupLines` would not read last group of message if there was not
+enough lines to hit the threshold.
+* Fixed deleting the _done file_ if link:file2.html[File] or
+link:ftp2.html[FTP] consumer rollback and the `moveFailed` option is in
+use.
+* Fixed link:avro.html[avro] data format in OSGi not being able to load
+schema classes.
+* Fixed link:camel-jmx.html[JMX] when using custom beans in routes with
+`@ManagedResource` to expose JMX attributes/operations to not include
+Camel standard attributes/operations from its processors, which would be
+shown as unavailable in JMX consoles.
+* Fixed link:quartz2.html[Quartz2] simple trigger repeat count default
+value not working causing the trigger to only fire once, instead of
+forever.
+* Fixed link:jms.html[JMS] with a JMSRepyTo header using a topic, was
+mistakenly used as a queue instead. 
+* Fixed link:csv.html[CSV] to not modify the properties of the strategy
+constants declared by `org.apache.commons.csv.CSVStrategy` which would
+cause side effects when multiple `CsvDataFormat` objects are
+*concurrently* in use.
+* Fixed camel-script may return result from previous evaluation instead
+of result from current exchange.
+* Fixed `ThreadsProcessor` to resolve `RejectedPolicy` from the
+referenced `ThreadPoolProfile`
+(https://issues.apache.org/jira/browse/CAMEL-7240[CAMEL-7240])
+* Fixed link:xmljson.html[XmlJson] `elementName` and `arrayName`
+properties when setting them from the `xmljson(Map)` DSL.
+
+[[Camel2.13.0Release-New]]
+New link:enterprise-integration-patterns.html[Enterprise Integration
+Patterns]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+[[Camel2.13.0Release-New.1]]
+New link:components.html[Components]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* link:hdfs2.html[camel-hdfs2] - integration with HDFS using Hadoop 2.x
+client
+* `camel-infinispan` - to interact with
+http://www.infinispan.org/[Infinispan] distributed data grid / cache.
+* `camel-jgroups` - provides exchange of messages between Camel
+infrastructure and http://www.jgroups.org[JGroups] clusters.
+* camel-kafka - integration with Apache Kafka
+* link:optaplanner.html[`camel-optaplanner`] - to use
+http://www.optaplanner.org/[OptaPlanner] for problem solving plans.
+* link:splunk.html[`camel-splunk`] - enables you to publish and search
+for events in Splunk
+* link:aws-swf.html[camel-swf] - for managing workflows running on
+Amazon's http://aws.amazon.com/swf[Simple Workflow Service]
+
+[[Camel2.13.0Release-New.2]]
+New link:camel-maven-archetypes.html[Camel Maven Archetypes]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* camel-archetype-cxf-code-first-blueprint
+* camel-archetype-cxf-contract-first-blueprint
+
+[[Camel2.13.0Release-NewDSL]]
+New DSL
+^^^^^^^
+
+[[Camel2.13.0Release-NewAnnotations]]
+New Annotations
+^^^^^^^^^^^^^^^
+
+* link:bean-injection.html[`@BeanInject`]
+
+[[Camel2.13.0Release-NewDataFormats]]
+New link:data-format.html[Data Formats]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+[[Camel2.13.0Release-New.3]]
+New link:languages.html[Languages]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* link:jsonpath.html[JSonPath] - To perform
+link:expression.html[Expression] and link:predicate.html[Predicate] on
+json payloads.
+
+[[Camel2.13.0Release-New.4]]
+New link:examples.html[Examples]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+[[Camel2.13.0Release-New.5]]
+New link:tutorials.html[Tutorials]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+[[Camel2.13.0Release-NewTooling]]
+New Tooling
+^^^^^^^^^^^
+
+[[Camel2.13.0Release-APIchanges]]
+API changes
+~~~~~~~~~~~
+
+* The interface of
+link:http4.html[http4] `org.apache.camel.component.http4.HttpClientConfigurer's method configureHttpClient(HttpClient client) was changed to configureHttpClient(HttpClientBuilder clientBuilder)`
+* `Added getRegistry(T) to CamelContext`
+
+[[Camel2.13.0Release-KnownIssues]]
+Known Issues
+~~~~~~~~~~~~
+
+* Spring 4.x is not yet official supported.
+* Cannot build the source code using Java 8.
+
+[[Camel2.13.0Release-DependencyUpgrades]]
+Dependency Upgrades
+~~~~~~~~~~~~~~~~~~~
+
+You can see any dependency changes using
+http://vdiff.notsoclever.cc/[Camel Dependencies Version Differences web
+tool] created by Tracy Snell from the Camel link:team.html[Team].
+
+The below list is a best effort, and we may miss some updates, its
+better to use the http://vdiff.notsoclever.cc/[Camel Dependencies
+Version Differences web tool] which uses the released projects for
+comparison.
+
+* ActiveMQ 5.8.0 to 5.9.0
+* AHC 1.7.20 to 1.8.3
+* APNS 0.1.6 to 0.2.3
+* Atomikos 3.8.0 to 3.9.2
+* AWS-SDK 1.5.1 to 1.6.3
+* Avro 1.7.3 to 1.7.5
+* BeanIO 2.0.6 to 2.0.7
+* Classmate from 0.8.0 to 1.0.0
+* Commons Httpclient 4.2.5 to 4.3.3
+* Commons Httpcore 4.2.4 to 4.3.2
+* CXF 2.7.6 to 2.7.10
+* Ehcache 2.7.2 to 2.8.1
+* Elasticsearch 0.20.6 to 1.0.0
+* FOP 1.0 to 1.1
+* Guava 14.0.1 to 16.0.1
+* Hadoop 1.2.0 to 1.2.1. Hadoop 2.3.0 supported by camel-hdfs2
+component.
+* Hazelcast 2.6 to 3.0.2
+* Hibernate Validator 5.0.1.Final to 5.0.3.Final
+* ICal4j 1.0.4 to 1.0.5.2
+* Jackson 2.2.2 to 2.3.2
+* Jclouds 1.6.2-incubating to 1.7.0
+* Jettison 1.3.4 to 1.3.5
+* Jetty 7.6.9 to 8.1.12
+* JLine 0.9.94 to 2.11
+* Joda time 2.1 to 2.3
+* JRuby 1.7.4 to 1.7.5
+* JSCH 0.1.49 to 0.1.50
+* LevelDb JNI 1.7 to 1.8. 
+* Lucene 3.6.0 to 4.6.1
+* MongoDB Java Driver 2.11.2 to 2.11.4
+* Mustache 0.8.12 to 0.8.13
+* MVEL 2.1.6.Final to 2.1.7.Final
+* MyBatis 3.2.2 to 3.2.5
+* Netty3 3.8.0.Final to 3.9.0.Final
+* OGNL 3.0.6 to 3.0.8
+* Pax Logging 1.6.10 to 1.7.1
+* Protobuf 2.3 to 2.5
+* Qpid 0.20 to 0.26
+* Quartz 2.2.0 to 2.2.1
+* RabbitMQ amqp Java Client 3.1.3 to 3.2.2.
+* Restlet 2.0.15 to 2.1.7
+* RxJava 0.11.1 to 0.17.1
+* Saxon 9.5.0.2 to 9.5.1-4
+* Scala 2.10.2 to 2.10.3
+* Servlet API 2.5 to 3.0
+* Shiro to 1.2.3.
+* Slf4j 1.7.5 to 1.7.6
+* Snappy 1.0.4.1 to 1.1.0.1
+* SNMP4J 2.2.2 to 2.2.3
+* SolrJ 3.6.2 to 4.6.1
+* Spring Batch 2.2.1.RELEASE to 2.2.2.RELEASE
+* Spring Integration 2.2.4.RELEASE to 2.2.6.RELEASE
+* Spring Redis 1.0.4.RELEASE to 1.1.1.RELEASE
+* Spring WS 2.1.3.RELEASE to 2.1.4.RELEASE
+* SSHD 0.8.0 to 0.10.1
+* StompJMS 1.17 to 1.19
+* TestNG 6.8.5 to 6.8.7
+* Twitter4j 3.0.3 to 3.0.5
+* Weld 1.1.5.Final to 1.1.18.Final
+* XBean Spring 3.14 to 3.16
+* XmlSec 1.5.5 to 1.5.6
+* XStream 1.4.4 to 1.4.7
+
+[[Camel2.13.0Release-Internalchanges]]
+Internal changes
+~~~~~~~~~~~~~~~~
+
+* Add `RouteAware` API to inject `Route` for `Service`'s in routes, for
+example the `Consumer`'s of the routes.
+* `IOHelper.gerCharsetName` will now lookup key `Exchange.CHARSET_NAME`
+in header first and then fallback to property.
+* Camel Spring no longer automatic registers "spring-event://default"
+endpoint, which wasn't in use anyway.
+* link:bam.html[BAM] component now uses raw `EntityManager` JPA API
+instead of deprecated Spring `JpaTemplate`
+
+[[Camel2.13.0Release-Changesthatmayaffectendusers]]
+Changes that may affect end users
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+* Components depending on Servlet API has been upgrade from Servlet API
+2.5 to 3.0
+* Jetty upgraded from 7.6.x to 8.1.x
+* link:hazelcast-component.html[Hazelcast Component] uses `Object`
+instead of `String` as the key.
+* link:hazelcast-component.html[Hazelcast Component] atomic number
+producer was using incorrect name
+(https://issues.apache.org/jira/browse/CAMEL-6833[CAMEL-6833]). Name
+will be different with this release.
+* link:hazelcast-component.html[Hazelcast Component] instance consumer
+was incorrectly writing headers to the "out" message as opposed to the
+"in" message. Headers are now written to the "in" message.
+* link:hazelcast-component.html[Hazelcast Component] map/multimap
+consumer were sending header value "envict" when an item was evicted.
+This has been corrected and the value "evicted" is used now.
+* The enum value `NON_BLOCKING` has been removed in `camel-apns` as its
+no longer support in APNS itself.
+* `DefaultTimeoutMap` must call `start` to initialize the map before
+use.
+* `@ExcludeRoutes` test annotation now accepts only classes implementing
+`RoutesBuilder` interface.
+* The MBean names registered by link:camel-jmx.html[Camel JMX] no longer
+include the hostname in the `context` part, eg before
+`context=myHost/myCamelId` and now after `context=myCamelId`. Having the
+hostname in the MBean name does not bring much value, and in fact makes
+things more complicated as the mbean name changes depending on the host
+running Camel. There is an option `includeHostName` that can be
+configure as `true` to preserve the old behavior.
+* link:camel-jmx.html[MBean naming] in OSGi cleaned up to use simpler
+naming with symbolicName. Before we could have MBean names with
+duplicate bundle ids such as `context=114-114-camel-6`, which now is
+using the symbolic name instead, `context=MyApplication`.
+* Added `beforeAddRoutes` and `afterAddRoutes` to
+`org.apache.camel.component.servletlistener.CamelContextLifecycle` in
+link:servletlistener-component.html[ServletListener Component]
+* The link:language.html[Language] component now no longer caches the
+compiled script as that could cause side-effects. You can set
+`cacheScript=true` to enable the previous behavior if your script is
+safe to do so.
+* The default value of `urlDecodeHeaders` option on
+link:netty-http.html[Netty HTTP] has been changed from `true` to
+`false`.
+* When using <jmxAgent> in spring/blueprint then the createConnector
+attribute has changed default value from true to false (which is also
+the default in camel-core without spring/blueprint)
+* link:cache.html[camel-cache] no longer includes ehcache.xml out of the
+box. Instead the default configuration from ehcache is in use, if end
+user has not explicit configured a configuration file to be used.
+* camel-cdi upgraded from deltaspike 0.3 to 0.5 which may affect
+upgrades.
+* Java DSL when using onException.backOffMultiplier or
+onException.collisionAvoidancePercent/collisionAvoidanceFactor will
+automatic enable backoff/collision avoidance. Before you had to
+call useExponentialBackOff/useCollisionAvoidance as well. This is now
+aligned how errorHandler does the same.
+* changed default value
+of http://docs.oracle.com/javaee/6/api/javax/jms/Session.html#createConsumer(javax.jms.Destination,%20java.lang.String,%20boolean)[NoLocal]
+from true to false in camel-sjms when creating consumer. 
+
+[[Camel2.13.0Release-Importantchangestoconsiderwhenupgrading]]
+Important changes to consider when upgrading
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+* Spring 3.1.x is no longer supported.
+* Using <camelContext> in Spring will now shutdown <camelContext> eager
+by default. This ensure a cleaner shutdown of Camel, as dependent <bean>
+are not shutdown at this moment. The <bean> will then be shutdown after
+<camelContext>. There is a new attribute shutdownEager on <camelContext>
+to turn this off, and use the old behavior.
+* If using `groupedExchanges` option on link:aggregator2.html[Aggregate]
+EIP then the link:exchange.html[Exchange]s is now stored on the message
+body as well. The old way of storing as a property is considered
+deprecated. See more details at link:aggregator2.html[Aggregate].
+* JMX Load statistics has been disabled by default. You can enable this
+by setting loadStatisticsEnabled=true in <jmxAgent>. See more details at
+link:camel-jmx.html[Camel JMX].
+* Java 6 support is being deprecated and dropped from next release
+onwards.
+
+[[Camel2.13.0Release-GettingtheDistributions]]
+Getting the Distributions
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+[[Camel2.13.0Release-BinaryDistributions]]
+Binary Distributions
+^^^^^^^^^^^^^^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Description |Download Link |PGP Signature file of download
+|Windows Distribution
+|http://archive.apache.org/dist/camel/apache-camel/2.13.0/apache-camel-2.13.0.zip[apache-camel-2.13.0.zip]
+|http://archive.apache.org/dist/camel/apache-camel/2.13.0/apache-camel-2.13.0.zip.asc[apache-camel-2.13.0.zip.asc]
+
+|Unix/Linux/Cygwin Distribution
+|http://archive.apache.org/dist/camel/apache-camel/2.13.0/apache-camel-2.13.0.tar.gz[apache-camel-2.13.0.tar.gz]
+|http://archive.apache.org/dist/camel/apache-camel/2.13.0/apache-camel-2.13.0.tar.gz.asc[apache-camel-2.13.0.tar.gz.asc]
+|=======================================================================
+
+[Info]
+====
+ **The above URLs use redirection**
+
+The above URLs use the Apache Mirror system to redirect you to a
+suitable mirror for your download. Some users have experienced issues
+with some versions of browsers (e.g. some Safari browsers). If the
+download doesn't seem to work for you from the above URL then try using
+http://www.mozilla.com/en-US/firefox/[FireFox]
+
+====
+
+[[Camel2.13.0Release-SourceDistributions]]
+Source Distributions
+^^^^^^^^^^^^^^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Description |Download Link |PGP Signature file of download
+|Source for Windows
+|http://archive.apache.org/dist/camel/apache-camel/2.13.0/apache-camel-2.13.0-src.zip[apache-camel-2.13.0-src.zip]
+|http://archive.apache.org/dist/camel/apache-camel/2.13.0/apache-camel-2.13.0-src.zip.asc[apache-camel-2.13.0-src.zip.asc]
+
+|Source for Unix/Linux/Cygwin
+|http://archive.apache.org/dist/camel/apache-camel/2.13.0/apache-camel-2.13.0-src.tar.gz[apache-camel-2.13.0-src.tar.gz]
+|http://archive.apache.org/dist/camel/apache-camel/2.13.0/apache-camel-2.13.0-src.tar.gz.asc[apache-camel-2.13.0-src.tar.gz.asc]
+|=======================================================================
+
+[[Camel2.13.0Release-GettingtheBinariesusingMaven2]]
+Getting the Binaries using Maven 2
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To use this release in your maven project, the proper dependency
+configuration that you should use in your
+http://maven.apache.org/guides/introduction/introduction-to-the-pom.html[Maven
+POM] is:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<dependency>
+  <groupId>org.apache.camel</groupId>
+  <artifactId>camel-core</artifactId>
+  <version>2.13.0</version>
+</dependency>
+----
+
+[[Camel2.13.0Release-GitTagCheckout]]
+Git Tag Checkout
+^^^^^^^^^^^^^^^^
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+git clone https://git-wip-us.apache.org/repos/asf/camel.git
+git checkout camel-2.13.0
+----
+
+[[Camel2.13.0Release-Changelog]]
+Changelog
+~~~~~~~~~
+
+For a more detailed view of new features and bug fixes, see the:
+
+* https://issues.apache.org/jira/secure/ReleaseNote.jspa?version=12324786&styleName=Html&projectId=12311211[release
+notes for 2.13.0]

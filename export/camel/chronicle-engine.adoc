@@ -1,0 +1,128 @@
+[[ConfluenceContent]]
+[[ChronicleEngine-ChronicleEngineComponent]]
+Chronicle Engine Component
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+*Available as of Camel 2.18*
+
+The chronicle component let you leverage the power of
+OpenHFT's https://github.com/OpenHFT/Chronicle-Engine[Chronicle-Engine]
+in Apache Camel.
+
+ 
+
+Maven users will need to add the following dependency to
+their `pom.xml` for this component:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<dependency>
+    <groupId>org.apache.camel</groupId>
+    <artifactId>camel-chronicle</artifactId>
+    <version>x.x.x</version>
+    <!-- use the same version as your Camel core version -->
+</dependency>
+----
+
+[[ChronicleEngine-URIformat]]
+URI format
+^^^^^^^^^^
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+chronicle-engine://addresses/path[?options]
+----
+
+You can append query options to the URI in the following
+format, `?option=value&option=#beanRef&...`
+
+ 
+
+[[ChronicleEngine-Options]]
+Options
+^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Name |Default Value |Description
+|wireType |BINARY |The Wire type to use, default is
+https://github.com/OpenHFT/Chronicle-Wire#binary-formats[binary wire]
+
+|subscribeMapEvents |true |Set if consumer should subscribe to Map
+events
+
+|filteredMapEvents |null a|
+The list of Map event type to filer, valid values are:
+
+* INSERT
+* UPDATE
+* REMOVE
+
+|subscribeTopologicalEvents |false |Set if consumer should subscribe to
+TopologicalEvents
+
+|subscribeTopicEvents |false |Set if consumer should subscribe to
+TopicEvents
+
+|action |null a|
+The default action to perform, valid values are:
+
+* PUBLISH
+* PUBLISH_AND_INDEX
+* PUT
+* GET_AND_PUT
+* PUT_ALL
+* PUT_IF_ABSENT
+* GET
+* GET_AND_REMOVE
+* REMOVE
+* IS_EMPTY
+* SIZE
+
+|persistent |true |Enable/disable data persistence
+|=======================================================================
+
+[[ChronicleEngine-Headervariables]]
+Header variables
+^^^^^^^^^^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Name |Type |Description
+|ChronicleEngineAssetName |java.lang.String |The asset name
+
+|ChronicleEnginePath |java.lang.String |The data path
+
+|ChronicleEngineTopic |java.lang.Object |A topic
+
+|ChronicleEngineTopologicalEventName |java.lang.String |The name of the
+TopologicalEvent
+
+|ChronicleEngineTopologicalEventFullName |java.lang.String |The full
+name of the TopologicalEvent
+
+|ChronicleEngineTopologicalEventAdded |java.lang.String | 
+
+|ChronicleEngineMapEventType |ChronicleEngineMapEventType |The map event
+type
+
+|ChronicleEngineResult |java..lang.Object |The result of an operation
+
+|ChronicleEngineQueueIndex |long |The index of the event being published
+
+|ChronicleEngineKey |java.lang.String |The key
+
+|ChronicleEngineDefaultValue |java..lang.Object |The default value for
+operations that support default value
+
+|ChronicleEngineOldValue |java..lang.Object |The old value associated to
+a key
+
+|ChronicleEngineAction |java.lang.String |The action to perform
+|=======================================================================
+
+ 
+
+ 
+
+ 

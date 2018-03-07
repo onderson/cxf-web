@@ -1,0 +1,48 @@
+[[ConfluenceContent]]
+When writing software these days, its important to try and decouple as
+much middleware code from your business logic as possible.
+
+This provides a number of benefits...
+
+* you can choose the right middleware solution for your deployment and
+switch at any time
+* you don't have to spend a large amount of time learning the specifics
+of any particular technology, whether its link:jms.html[JMS] or
+link:javaspace.html[JavaSpace] or link:hibernate.html[Hibernate] or
+link:jpa.html[JPA] or link:ibatis.html[iBatis] whatever
+
+For example if you want to implement some kind of message passing,
+remoting, reliable load balancing or asynchronous processing in your
+application we recommend you use Camel annotations to bind your services
+and business logic to Camel link:components.html[Components] which means
+you can then easily switch between things like
+
+* in JVM messaging with link:seda.html[SEDA]
+* using JMS via link:activemq.html[ActiveMQ] or other link:jms.html[JMS]
+providers for reliable load balancing, grid or publish and subscribe
+* for low volume, but easier administration since you're probably
+already using a database you could use
+** link:hibernate.html[Hibernate] or link:jpa.html[JPA] to use an entity
+bean / table as a queue
+** link:ibatis.html[iBatis] to work with SQL
+** link:jdbc.html[JDBC] for raw SQL access
+* use link:javaspace.html[JavaSpace]
+
+[[HidingMiddleware-HowtodecouplefrommiddlewareAPIs]]
+How to decouple from middleware APIs
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The best approach when using remoting is to use
+link:spring-remoting.html[Spring Remoting] which can then use any
+messaging or remoting technology under the covers. When using Camel's
+implementation you can then use any of the Camel
+link:components.html[Components] along with any of the
+link:enterprise-integration-patterns.html[Enterprise Integration
+Patterns].
+
+Another approach is to bind Java beans to Camel endpoints via the
+link:bean-integration.html[Bean Integration]. For example using
+link:pojo-consuming.html[POJO Consuming] and
+link:pojo-producing.html[POJO Producing] you can avoid using any Camel
+APIs to decouple your code both from middleware APIs _and_ Camel APIs!
+image:https://cwiki.apache.org/confluence/s/en_GB/5997/6f42626d00e36f53fe51440403446ca61552e2a2.1/_/images/icons/emoticons/smile.png[(smile)]

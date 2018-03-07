@@ -1,0 +1,45 @@
+[[ConfluenceContent]]
+[[Queue-QueueComponent]]
+Queue Component
+~~~~~~~~~~~~~~~
+
+**Deprecated**
+
+To avoid confusion with JMS queues, this component is now deprecated in
+1.1 onwards. Please use the link:seda.html[SEDA] component instead
+
+The *queue:* component provides asynchronous
+http://www.eecs.harvard.edu/~mdw/proj/seda/[SEDA] behaviour so that
+messages are exchanged on a
+http://java.sun.com/j2se/1.5.0/docs/api/java/util/BlockingQueue.html[BlockingQueue]
+and consumers are invoked in a seperate thread pool to the producer.
+
+Note that queues are only visible within a single
+link:camelcontext.html[CamelContext]. If you want to communicate across
+CamelContext instances such as to communicate across web applications,
+see the link:vm.html[VM] component.
+
+Note also that this component has nothing to do with link:jms.html[JMS],
+if you want a distributed SEA then try using either link:jms.html[JMS]
+or link:activemq.html[ActiveMQ] or even link:mina.html[MINA]
+
+[[Queue-URIformat]]
+URI format
+^^^^^^^^^^
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+queue:someName
+----
+
+Where *someName* can be any string to uniquely identify the endpoint
+within the current link:camelcontext.html[CamelContext]
+
+[[Queue-SeeAlso]]
+See Also
+^^^^^^^^
+
+* link:configuring-camel.html[Configuring Camel]
+* link:component.html[Component]
+* link:endpoint.html[Endpoint]
+* link:getting-started.html[Getting Started]

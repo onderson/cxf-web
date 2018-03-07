@@ -1,0 +1,146 @@
+[[ConfluenceContent]]
+[[Camel2.7.4Release-Camel2.7.4release]]
+Camel 2.7.4 release
+-------------------
+
+image:http://camel.apache.org/download.data/camel-box-v1.0-150x200.png[image]
+
+[[Camel2.7.4Release-NewandNoteworthy]]
+New and Noteworthy
+~~~~~~~~~~~~~~~~~~
+
+Welcome to the 2.7.4 patch release which 14 issues resolved. Many issues
+reported by users and patches supplied have been applied to make 2.7.4
+as "stable" and bug free as possible.
+
+[[Camel2.7.4Release-New]]
+New link:enterprise-integration-patterns.html[Enterprise Integration
+Patterns]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+[[Camel2.7.4Release-New.1]]
+New link:components.html[Components]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+[[Camel2.7.4Release-NewDSL]]
+New DSL
+^^^^^^^
+
+[[Camel2.7.4Release-NewAnnotations]]
+New Annotations
+^^^^^^^^^^^^^^^
+
+[[Camel2.7.4Release-NewDataFormats]]
+New link:data-format.html[Data Formats]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+[[Camel2.7.4Release-New.2]]
+New link:languages.html[Languages]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+[[Camel2.7.4Release-New.3]]
+New link:examples.html[Examples]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+[[Camel2.7.4Release-New.4]]
+New link:tutorials.html[Tutorials]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+[[Camel2.7.4Release-APIbreaking]]
+API breaking
+~~~~~~~~~~~~
+
+[[Camel2.7.4Release-KnownIssues]]
+Known Issues
+~~~~~~~~~~~~
+
+[[Camel2.7.4Release-Importantchangestoconsiderwhenupgrading]]
+Important changes to consider when upgrading
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+[[Camel2.7.4Release-GettingtheDistributions]]
+Getting the Distributions
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+[[Camel2.7.4Release-BinaryDistributions]]
+Binary Distributions
+^^^^^^^^^^^^^^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Description |Download Link |PGP Signature file of download
+|Windows Distribution
+|http://archive.apache.org/dist/camel/apache-camel/2.7.4/apache-camel-2.7.4.zip[apache-camel-2.7.4.zip]
+|http://archive.apache.org/dist/camel/apache-camel/2.7.4/apache-camel-2.7.4.zip.asc[apache-camel-2.7.4.zip.asc]
+
+|Unix/Linux/Cygwin Distribution
+|http://archive.apache.org/dist/camel/apache-camel/2.7.4/apache-camel-2.7.4.tar.gz[apache-camel-2.7.4.tar.gz]
+|http://archive.apache.org/dist/camel/apache-camel/2.7.3/apache-camel-2.7.3.tar.gz.asc[apache-camel-2.7.4.tar.gz.asc]
+|=======================================================================
+
+[Info]
+====
+ **The above URLs use redirection**
+
+The above URLs use the Apache Mirror system to redirect you to a
+suitable mirror for your download. Some users have experienced issues
+with some versions of browsers (e.g. some Safari browsers). If the
+download doesn't seem to work for you from the above URL then try using
+http://www.mozilla.com/en-US/firefox/[FireFox]
+
+====
+
+[[Camel2.7.4Release-SourceDistributions]]
+Source Distributions
+^^^^^^^^^^^^^^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Description |Download Link |PGP Signature file of download
+|Source for Windows
+|http://archive.apache.org/dist/camel/apache-camel/2.7.4/apache-camel-2.7.4-src.zip[apache-camel-2.7.4-src.zip]
+|http://archive.apache.org/dist/camel/apache-camel/2.7.4/apache-camel-2.7.4-src.zip.asc[apache-camel-2.7.4-src.zip.asc]
+|=======================================================================
+
+[width="100%",cols="34%,33%,33%",]
+|=======================================================================
+|Source for Unix/Linux/Cygwin
+|http://archive.apache.org/dist/camel/apache-camel/2.7.4/apache-camel-2.7.4-src.tar.gz[apache-camel-2.7.4-src.tar.gz]
+|http://archive.apache.org/dist/camel/apache-camel/2.7.4/apache-camel-2.7.4-src.tar.gz.asc[apache-camel-2.7.4-src.tar.gz.asc]
+|=======================================================================
+
+[[Camel2.7.4Release-GettingtheBinariesusingMaven2]]
+Getting the Binaries using Maven 2
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To use this release in your maven project, the proper dependency
+configuration that you should use in your
+http://maven.apache.org/guides/introduction/introduction-to-the-pom.html[Maven
+POM] is:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<dependency>
+  <groupId>org.apache.camel</groupId>
+  <artifactId>camel-core</artifactId>
+  <version>2.7.4</version>
+</dependency>
+----
+
+[[Camel2.7.4Release-SVNTagCheckout]]
+SVN Tag Checkout
+^^^^^^^^^^^^^^^^
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+svn co http://svn.apache.org/repos/asf/camel/tags/camel-2.7.4
+----
+
+[[Camel2.7.4Release-Changelog]]
+Changelog
+~~~~~~~~~
+
+For a more detailed view of new features and bug fixes, see the:
+
+* http://issues.apache.org/jira/secure/ReleaseNote.jspa?projectId=12311211&version=12317151&styleName=Html[release
+notes for 2.7.4]

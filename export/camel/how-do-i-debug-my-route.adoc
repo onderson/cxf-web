@@ -1,0 +1,18 @@
+[[ConfluenceContent]]
+[[HowdoIdebugmyroute-HowdoIdebugmyroute?]]
+How do I debug my route?
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+If you've created a route and its not doing what you think it is you
+could try using one of these features from link:download.html[version
+1.4 onwards]
+
+* link:tracer.html[Tracer] to trace in commons-logging / log4j each step
+that Camel takes
+* link:debugger.html[Debugger] to let you set breakpoints at points in
+the route and examine historic message exchanges
+* link:debugger.html[Debug] from your unit test if you use the Camel
+`camel-test` component
+
+Some link:user-stories.html[third party tools] offers Apache Camel route
+debugging.

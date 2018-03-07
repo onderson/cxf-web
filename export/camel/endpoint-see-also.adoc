@@ -1,0 +1,9 @@
+[[ConfluenceContent]]
+[[EndpointSeeAlso-SeeAlso]]
+See Also
+^^^^^^^^
+
+* link:configuring-camel.html[Configuring Camel]
+* link:component.html[Component]
+* link:endpoint.html[Endpoint]
+* link:getting-started.html[Getting Started]

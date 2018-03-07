@@ -1,0 +1,23 @@
+[[ConfluenceContent]]
+To use different expression and predicates in your IDE you need to
+perform a static import of the builder class for the language(s) you
+wish to use.
+
+[width="100%",cols="50%,50%",options="header",]
+|=======================================================================
+|Language(s) |Builder class to import
+|link:scripting-languages.html[Scripting Languages] such as
+link:beanshell.html[BeanShell], link:javascript.html[JavaScript],
+link:groovy.html[Groovy], link:php.html[PHP], link:python.html[Python]
+and link:ruby.html[Ruby]
+|http://camel.apache.org/maven/current/camel-script/apidocs/org/apache/camel/builder/script/ScriptBuilder.html[org.apache.camel.builder.script.ScriptBuilder]
+
+|link:sql.html[SQL]
+|http://camel.apache.org/maven/current/camel-josql/apidocs/org/apache/camel/builder/sql/SqlBuilder.html[org.apache.camel.builder.josql.SqlBuilder]
+
+|link:xpath.html[XPath]
+|http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/builder/xml/XPathBuilder.html[org.apache.camel.builder.xml.XPathBuilder]
+
+|link:xquery.html[XQuery]
+|http://camel.apache.org/maven/current/camel-saxon/apidocs/org/apache/camel/builder/saxon/XQueryBuilder.html[org.apache.camel.builder.saxon.XQueryBuilder]
+|=======================================================================

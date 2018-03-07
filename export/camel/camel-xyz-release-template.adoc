@@ -1,0 +1,145 @@
+[[ConfluenceContent]]
+[[Camelx.y.zRelease(template)-Camelx.y.zRelease(currentlyinprogress)]]
+Camel x.y.z Release (currently in progress)
+-------------------------------------------
+
+image:http://camel.apache.org/images/camel-box-small.png[image]
+
+ 
+
+[[Camelx.y.zRelease(template)-NewandNoteworthy]]
+New and Noteworthy
+~~~~~~~~~~~~~~~~~~
+
+Welcome to the x.y.z release which approx XXX issues resolved (new
+features, improvements and bug fixes such as...)
+
+* highlighted issue fixed
+* highlighted issue fixed
+
+[[Camelx.y.zRelease(template)-New]]
+New link:enterprise-integration-patterns.html[Enterprise Integration
+Patterns]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+[[Camelx.y.zRelease(template)-New.1]]
+New link:components.html[Components]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+[[Camelx.y.zRelease(template)-NewDSL]]
+New DSL
+^^^^^^^
+
+[[Camelx.y.zRelease(template)-NewAnnotations]]
+New Annotations
+^^^^^^^^^^^^^^^
+
+[[Camelx.y.zRelease(template)-NewDataFormats]]
+New link:data-format.html[Data Formats]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+[[Camelx.y.zRelease(template)-New.2]]
+New link:languages.html[Languages]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+[[Camelx.y.zRelease(template)-New.3]]
+New link:examples.html[Examples]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+[[Camelx.y.zRelease(template)-New.4]]
+New link:tutorials.html[Tutorials]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+[[Camelx.y.zRelease(template)-APIbreaking]]
+API breaking
+~~~~~~~~~~~~
+
+[[Camelx.y.zRelease(template)-KnownIssues]]
+Known Issues
+~~~~~~~~~~~~
+
+[[Camelx.y.zRelease(template)-Importantchangestoconsiderwhenupgrading]]
+Important changes to consider when upgrading
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+[[Camelx.y.zRelease(template)-GettingtheDistributions]]
+Getting the Distributions
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+[[Camelx.y.zRelease(template)-BinaryDistributions]]
+Binary Distributions
+^^^^^^^^^^^^^^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Description |Download Link |PGP Signature file of download
+|Windows Distribution
+|http://www.apache.org/dyn/closer.cgi/camel/apache-camel/x.y.x/apache-camel-x.y.x.zip[apache-camel-x.y.x.zip]
+|http://www.apache.org/dist/camel/apache-camel/x.y.x/apache-camel-x.y.x.zip.asc[apache-camel-x.y.x.zip.asc]
+
+|Unix/Linux/Cygwin Distribution
+|http://www.apache.org/dyn/closer.cgi/camel/apache-camel/x.y.x/apache-camel-x.y.x.tar.gz[apache-camel-x.y.x.tar.gz]
+|http://www.apache.org/dist/camel/apache-camel/x.y.x/apache-camel-x.y.x.tar.gz.asc[apache-camel-x.y.x.tar.gz.asc]
+|=======================================================================
+
+[Info]
+====
+ **The above URLs use redirection**
+
+The above URLs use the Apache Mirror system to redirect you to a
+suitable mirror for your download. Some users have experienced issues
+with some versions of browsers (e.g. some Safari browsers). If the
+download doesn't seem to work for you from the above URL then try using
+http://www.mozilla.com/en-US/firefox/[FireFox]
+
+====
+
+[[Camelx.y.zRelease(template)-SourceDistributions]]
+Source Distributions
+^^^^^^^^^^^^^^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Description |Download Link |PGP Signature file of download
+|Source (zip)
+|http://www.apache.org/dyn/closer.cgi/camel/apache-camel/x.y.x/apache-camel-x.y.x-src.zip[apache-camel-x.y.x-src.zip]
+|http://www.apache.org/dist/camel/apache-camel/x.y.x/apache-camel-x.y.x-src.zip.asc[apache-camel-x.y.x-src.zip.asc]
+|=======================================================================
+
+[[Camelx.y.zRelease(template)-GettingtheBinariesusingMaven2]]
+Getting the Binaries using Maven 2
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To use this release in your maven project, the proper dependency
+configuration that you should use in your
+http://maven.apache.org/guides/introduction/introduction-to-the-pom.html[Maven
+POM] is:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<dependency>
+  <groupId>org.apache.camel</groupId>
+  <artifactId>camel-core</artifactId>
+  <version>x.y.x</version>
+</dependency>
+----
+
+[[Camelx.y.zRelease(template)-GitTagCheckout]]
+Git Tag Checkout
+^^^^^^^^^^^^^^^^
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+git clone https://git-wip-us.apache.org/repos/asf/camel.git
+cd camel
+git checkout camel-x.y.x
+----
+
+[[Camelx.y.zRelease(template)-Changelog]]
+Changelog
+~~~~~~~~~
+
+For a more detailed view of new features and bug fixes, see the:
+
+* http://issues.apache.org/jira/secure/ReleaseNote.jspa?projectId=12311211&styleName=Html[Release
+notes for x.y.x]

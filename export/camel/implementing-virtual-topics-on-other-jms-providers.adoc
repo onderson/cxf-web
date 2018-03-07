@@ -1,0 +1,39 @@
+[[ConfluenceContent]]
+[[ImplementingVirtualTopicsonotherJMSproviders-ImplementingVirtualTopicsonotherJMSproviders]]
+Implementing Virtual Topics on other JMS providers
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+http://activemq.apache.org/[ActiveMQ] supports
+http://activemq.apache.org/virtual-destinations.html[Virtual Topics]
+since durable topic subscriptions kinda suck (see
+http://activemq.apache.org/virtual-destinations.html[this page for more
+detail]) mostly since they don't support
+link:competing-consumers.html[Competing Consumers].
+
+Most folks want Queue semantics when consuming messages; so that you can
+support link:competing-consumers.html[Competing Consumers] for load
+balancing along with things like
+http://activemq.apache.org/message-groups.html[Message Groups] and
+http://activemq.apache.org/exclusive-consumer.html[Exclusive Consumers]
+to preserve ordering or partition the queue across consumers.
+
+However if you are using another JMS provider you can implement Virtual
+Topics by switching to ActiveMQ
+image:https://cwiki.apache.org/confluence/s/en_GB/5997/6f42626d00e36f53fe51440403446ca61552e2a2.1/_/images/icons/emoticons/smile.png[(smile)]
+or you can use the following Camel pattern.
+
+First here's the ActiveMQ approach.
+
+* send to *activemq:topic:VirtualTopic.Orders*
+* for consumer A consume from *activemq:Consumer.A.VirtualTopic.Orders*
+
+When using another message broker use the following pattern
+
+* send to *jms:Orders*
+* add this route with a to() for each logical durable topic subscriber
++
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from("jms:Orders").to("jms:Consumer.A", "jms:Consumer.B", ...); 
+----
+* for consumer A consume from *jms:Consumer.A*

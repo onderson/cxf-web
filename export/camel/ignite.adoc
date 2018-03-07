@@ -1,0 +1,727 @@
+[[ConfluenceContent]]
+[[Ignite-CamelIgnitecomponent]]
+Camel Ignite component
+~~~~~~~~~~~~~~~~~~~~~~
+
+*Available as of Camel 2.17*
+
+https://ignite.apache.org/[Apache Ignite] In-Memory Data Fabric is a
+high-performance, integrated and distributed in-memory platform for
+computing and transacting on large-scale data sets in real-time, orders
+of magnitude faster than possible with traditional disk-based or flash
+technologies. It is designed to deliver uncompromised performance for a
+wide set of in-memory computing use cases from high performance
+computing, to the industry most advanced data grid, highly available
+service grid, and streaming. See all
+https://ignite.apache.org/features.html[features].
+
+image:https://ignite.apache.org/images/apache-ignite.png[image,height=250]
+
+This component offers seven endpoints to cover much of Ignite's
+functionality:
+
+* Ignite Cache.
+* Ignite Compute.
+* Ignite Messaging.
+* Ignite Events.
+* Ignite Sets.
+* Ignite Queues.
+* Ignite ID Generator.
+
+*To use this component*, add the following dependency to your `pom.xml`:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<dependency>
+    <groupId>org.apache.camel</groupId>
+    <artifactId>camel-ignite</artifactId>
+    <version>${camel.version}</version> <!-- use the same version as your Camel core version -->
+</dependency>
+----
+
+[Warning]
+====
+ **Running in OSGi**
+
+If running in an OSGi container, please don't miss the
+link:ignite.html[OSGi Support] section below.
+
+====
+
+[[Ignite-Tableofcontents]]
+Table of contents
+~~~~~~~~~~~~~~~~~
+
+* #Ignite-CACHE:IgniteCacheendpoint[CACHE: Ignite Cache endpoint]
+* #Ignite-COMPUTE:IgniteComputeendpoint[COMPUTE: Ignite Compute
+endpoint]
+* #Ignite-EVENTS:IgniteEventsendpoint[EVENTS: Ignite Events endpoint]
+* #Ignite-SETS:IgniteSetsendpoint[SETS: Ignite Sets endpoint]
+* #Ignite-QUEUE:IgniteQueueendpoint[QUEUE: Ignite Queue endpoint]
+* #Ignite-IDGEN:IgniteIDGeneratorendpoint[IDGEN: Ignite ID Generator
+endpoint]
+* link:#Ignite-InitializingtheIgnitecomponent[Initializing the Ignite
+component]
+* link:#Ignite-Generaloptions[General options]
+* link:#Ignite-OSGiSupportosgi-support[OSGi Support]
+
+[[Ignite-CACHE:IgniteCacheendpoint]]
+CACHE: Ignite Cache endpoint
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This endpoint allows you to interact with an
+https://apacheignite.readme.io/docs/data-grid[Ignite Cache]:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+ignite:cache:cacheName?option1=value1&option2=value2...
+----
+
+Offers both a Producer (to invoke cache operations on an Ignite cache)
+and a Consumer (to consume changes from a continuous query).
+
+The cache value is always the body of the message, whereas the cache key
+is always stored in the `IgniteConstants.IGNITE_CACHE_KEY` message
+header.
+
+Even if you configure a fixed operation in the endpoint URI, you can
+vary it per-exchange by setting the
+`IgniteConstants.IGNITE_CACHE_OPERATION` message header.
+
+[[Ignite-Options]]
+Options
++++++++
+
+[width="99%",cols="20%,16%,16%,16%,16%,16%",options="header",]
+|=======================================================================
+|Option |Type |Default value |Description |Compulsory |Consumer/producer
+|`operation` |IgniteCacheOperation enum |--- a|
+Cache operation to perform.
+
+Possible values: GET, PUT, REMOVE, SIZE, REBALANCE, QUERY, CLEAR.
+
+ |N |*Producer*
+
+|`failIfInexistentCache` |boolean |false |Whether to fail the
+initialization if the cache doesn't exist. |N |*Producer*
+
+|`cachePeekMode` |CachePeekMode (Ignite) enum |ALL |The cache peek mode
+used for SIZE operations. |N |*Producer*
+
+|`query` |Query |--- |The query used for QUERY operations (as a
+producer) or to launch the continuous query (as a consumer). You can use
+a reference to a registry bean with a syntax like: ?query=#myQuery. |Y
+for the consumer / N for the producer |*Producer* (for QUERY operation)
+and *Consumer*
+
+|`remoteFilter` |CacheEntryEventSerializableFilter |--- |An optional
+remote filter for the continuous query consumer. You can use a reference
+to a registry bean with a syntax like: ?remoteFilter=#myRemoteFilter. |N
+|*Consumer*
+
+|`oneExchangePerUpdate` |boolean |true |Whether to send one exchange per
+cache update, even if multiple changes arrive in a group. |N |*Consumer*
+
+|`fireExistingQueryResults` |boolean |false |When starting the
+continuous query consumer, whether to fire existing cache results. |N
+|*Consumer*
+
+|`autoUnsubscribe` |boolean |ContinuousQuery.DFLT_AUTO_UNSUBSCRIBE
+|Auto-unsubscribe flag on the Continuous Query (see Ignite docs). |N
+|*Consumer*
+
+|`pageSize` |int |ContinuousQuery.DFLT_PAGE_SIZE |Page size on the
+Continuous Query (see Ignite docs). |N |*Consumer*
+
+|`timeInterval` |long |ContinuousQuery.DFLT_TIME_INTERVAL |Time interval
+in millis on the Continuous Query (see Ignite docs). |N |*Consumer*
+|=======================================================================
+
+[[Ignite-Headersused]]
+Headers used
+++++++++++++
+
+This endpoint uses the following headers:
+
+[width="100%",cols="25%,25%,25%,25%",options="header",]
+|=======================================================================
+|Header name |Constant |Expected type |Description
+|`CamelIgniteCacheKey` |`IgniteConstants.IGNITE_CACHE_KEY` |`String`
+|The cache key for the entry value in the message body.
+
+|`CamelIgniteCacheQuery` |`IgniteConstants.IGNITE_CACHE_QUERY` |`Query`
+|The query to run (producer) when invoking the QUERY operation.
+
+|`CamelIgniteCacheOperation` |`IgniteConstants.IGNITE_CACHE_OPERATION`
+|`IgniteCacheOperation enum` |Allows you to dynamically change the cache
+operation to execute (producer).
+
+|`CamelIgniteCachePeekMode` |`IgniteConstants.IGNITE_CACHE_PEEK_MODE`
+|`CachePeekMode enum` |Allows you to dynamically change the cache peek
+mode when running the SIZE operation.
+
+|`CamelIgniteCacheEventType` |`IgniteConstants.IGNITE_CACHE_EVENT_TYPE`
+|`int (EventType constants)` |This header carries the received event
+type when using the continuous query consumer.
+
+|`CamelIgniteCacheName` |`IgniteConstants.IGNITE_CACHE_NAME` |`String`
+a|
+This header carries the cache name for which a continuous query event
+was received (consumer).
+
+It does not allow you to dynamically change the cache against which a
+producer operation is performed. Use EIPs for that (e.g. recipient list,
+dynamic router).
+
+|`CamelIgniteCacheOldValue` |`IgniteConstants.IGNITE_CACHE_OLD_VALUE`
+|`Object` |This header carries the old cache value when passed in the
+incoming cache event (consumer).
+|=======================================================================
+
+[[Ignite-COMPUTE:IgniteComputeendpoint]]
+COMPUTE: Ignite Compute endpoint
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This endpoint allows you to run
+https://apacheignite.readme.io/docs/compute-grid[compute operations] on
+the cluster by passing in an IgniteCallable, an IgniteRunnable, an
+IgniteClosure, or collections of them, along with their parameters if
+necessary. 
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+ignite:compute:endpointId?executionType=...&option1=value1&option2=value2...
+----
+
+This endpoint only supports producers.
+
+The host part of the endpoint URI is a symbolic endpoint ID, it is not
+used for any purposes.
+
+The endpoint tries to run the object passed in the body of the IN
+message as the compute job. It expects different payload types depending
+on the execution type.
+
+[[Ignite-Expectedpayloadtypes]]
+Expected payload types
+++++++++++++++++++++++
+
+Each operation expects the indicated types:
+
+[width="100%",cols="50%,50%",options="header",]
+|=======================================================================
+|Operation |Expected payloads
+a|
+....
+CALL
+....
+
+ |Collection of IgniteCallable, or a single IgniteCallable.
+
+a|
+....
+BROADCAST
+....
+
+ |IgniteCallable, IgniteRunnable, IgniteClosure.
+
+a|
+....
+APPLY
+....
+
+ |IgniteClosure.
+
+a|
+....
+EXECUTE
+....
+
+ |ComputeTask, Class<? extends ComputeTask> or an object representing
+parameters if the taskName option is not null.
+
+a|
+....
+RUN
+....
+
+ |A Collection of IgniteRunnables, or a single IgniteRunnable.
+
+a|
+....
+AFFINITY_CALL
+....
+
+ |IgniteCallable.
+
+a|
+....
+AFFINITY_RUN
+....
+
+ |IgniteRunnable.
+|=======================================================================
+
+[[Ignite-Options.1]]
+Options
++++++++
+
+[width="99%",cols="20%,16%,16%,16%,16%,16%",options="header",]
+|=======================================================================
+|Option |Type |Default value |Description |Compulsory |Consumer/producer
+|`executionType` |`IgniteComputeExecutionType enum` |`---` a|
+The compute operation to perform. Possible values: CALL,
+BROADCAST, APPLY, EXECUTE, RUN, AFFINITY_CALL, AFFINITY_RUN.
+
+The component expects different payload types depending on the
+operation. See above.
+
+ |Y |*Producer*
+
+|`clusterGroupExpression` |`ClusterGroupExpression` |`---` |An
+expression that returns the Cluster Group for the IgniteCompute
+instance. |N |*Producer*
+
+|`taskName` |`String` |`---` |The task name, only used when performing
+the EXECUTE if a ComputeTask is not passed in the payload. |N
+|*Producer*
+
+|`computeName` |`String` |`---` |The name for the IgniteCompute
+instances produced by this endpoint. |N |*Producer*
+
+|`timeoutMillis` |`Long` |`---` |The timeout for the compute job. |N
+|*Producer*
+|=======================================================================
+
+[[Ignite-Headersused.1]]
+Headers used
+++++++++++++
+
+This endpoint uses the following headers:
+
+[width="100%",cols="25%,25%,25%,25%",options="header",]
+|=======================================================================
+|Header name |Constant |Expected type |Description
+|`CamelIgniteComputeExecutionType`
+|`IgniteConstants.IGNITE_COMPUTE_EXECUTION_TYPE`
+|IgniteComputeExecutionType enum |Allows you to dynamically change the
+compute operation to perform.
+
+|`CamelIgniteComputeParameters `
+|`IgniteConstants.IGNITE_COMPUTE_PARAMS` |Any object or Collection of
+objects. |Parameters for APPLY, BROADCAST and EXECUTE operations.
+
+|`CamelIgniteComputeReducer` |`IgniteConstants.IGNITE_COMPUTE_REDUCER`
+|IgniteReducer |Reducer for the APPLY and CALL operations.
+
+|`CamelIgniteComputeAffinityCacheName`
+|`IgniteConstants.IGNITE_COMPUTE_AFFINITY_CACHE_NAME` |String |Affinity
+cache name for the AFFINITY_CALL and AFFINITY_RUN operations.
+
+|`CamelIgniteComputeAffinityKey`
+|`IgniteConstants.IGNITE_COMPUTE_AFFINITY_KEY` |Object |Affinity key for
+the AFFINITY_CALL and AFFINITY_RUN operations.
+|=======================================================================
+
+[[Ignite-MESSAGING:IgniteMessagingendpoint]]
+MESSAGING: Ignite Messaging endpoint
+++++++++++++++++++++++++++++++++++++
+
+ The Ignite Messaging endpoint allows you to send and consume messages
+from an https://apacheignite.readme.io/docs/messaging[Ignite topic].
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+ignite:messaging:topicName?option1=value1&option2=value2...
+----
+
+This endpoint supports producers (to send messages) and consumers (to
+receive messages).
+
+[[Ignite-Options.2]]
+Options
+^^^^^^^
+
+[width="99%",cols="20%,16%,16%,16%,16%,16%",options="header",]
+|=======================================================================
+|Option |Type |Default value |Description |Compulsory |Consumer/producer
+|`clusterGroupExpression` |`ClusterGroupExpression` |`---` |An
+expression that returns the Cluster Group for the IgniteMessaging
+instance. |N |*Consumer* and *Producer*
+
+|`sendMode` |`IgniteMessagingSendMode enum` |UNORDERED a|
+The send mode to use.
+
+Possible values: `UNORDERED, ORDERED`.
+
+ |N |*Producer*
+
+|`timeout` |`Long` |`---` |The timeout for the send operation when using
+ordered messages. |N |*Producer*
+|=======================================================================
+
+[[Ignite-Headersused.2]]
+Headers used
+^^^^^^^^^^^^
+
+This endpoint uses the following headers:
+
+[width="100%",cols="25%,25%,25%,25%",options="header",]
+|=======================================================================
+|Header name |Constant |Expected type |Description
+|`CamelIgniteMessagingTopic` |`IgniteConstants.IGNITE_MESSAGING_TOPIC`
+|`String` |Allows you to dynamically change the topic to send messages
+to (producer). +
+It also carries the topic on which a message was received (consumer).
+
+|`CamelIgniteMessagingUUID` |`IgniteConstants.IGNITE_MESSAGING_UUID`
+|`UUID` |This header is filled in with the UUID of the subscription when
+a message arrives (consumer).
+|=======================================================================
+
+[[Ignite-EVENTS:IgniteEventsendpoint]]
+EVENTS: Ignite Events endpoint
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The Ignite Events endpoint allows you to
+https://apacheignite.readme.io/docs/events[receive events] from the
+Ignite cluster by creating a local event listener.
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+ignite:events:endpointId?option1=value1&option2=value2...
+----
+
+This endpoint only supports consumers.
+
+The Exchanges created by this consumer put the received `Event` object
+into the body of the IN message.
+
+[[Ignite-Options.3]]
+Options
+^^^^^^^
+
+[width="99%",cols="20%,16%,16%,16%,16%,16%",options="header",]
+|=======================================================================
+|Option |Type |Default value |Description |Compulsory |Consumer/producer
+|`events` |`Set<Integer> or String` |`EventType.EVTS_ALL` |The event IDs
+to subscribe to. You can set a `Set<Integer>` directly where the IDs are
+the different constants in `org.apache.ignite.events.EventType`, or you
+can specify a comma-separated list of constant names. +
+For example:
+`EVT_CACHE_ENTRY_CREATED,EVT_CACHE_OBJECT_REMOVED,EVT_IGFS_DIR_CREATED`.
+|N |*Consumer*
+
+|`clusterGroupExpression` |`ClusterGroupExpression` |`---` |An
+expression that returns the Cluster Group to be used by the IgniteEvents
+instance. |N |*Consumer*
+|=======================================================================
+
+[[Ignite-SETS:IgniteSetsendpoint]]
+SETS: Ignite Sets endpoint
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The Ignite Sets endpoint allows you to interact with
+https://apacheignite.readme.io/docs/queue-and-set[Ignite Set data
+structures].
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+ignite:sets:setName?option1=value1&option2=value2...
+----
+
+This endpoint only supports producers.
+
+[[Ignite-Options.4]]
+Options
+^^^^^^^
+
+[width="99%",cols="20%,16%,16%,16%,16%,16%",options="header",]
+|=======================================================================
+|Option |Type |Default value |Description |Compulsory |Consumer/producer
+|`operation` |`IgniteSetOperation enum` |`---` |The operation to invoke
+on the Ignite Set. +
+Superseded by the `IgniteConstants.IGNITE_SETS_OPERATION` header in the
+IN message. +
+Possible values:
+`CONTAINS, ADD, SIZE, REMOVE, ITERATOR, CLEAR, RETAIN_ALL, ARRAY`. |N
+|*Producer*
+
+|`configuration` |`CollectionConfiguration`
+|`empty CollectionConfiguration` a|
+The configuration for this data structure. You can also specify inner
+properties by using the `config.` prefix.
+
+For example: `?config.backups=4`
+
+ |N |*Producer*
+|=======================================================================
+
+[[Ignite-Headersused.3]]
+Headers used
+^^^^^^^^^^^^
+
+This endpoint uses the following headers:
+
+[width="100%",cols="25%,25%,25%,25%",options="header",]
+|=======================================================================
+|Header name |Constant |Expected type |Description
+|`CamelIgniteSetsOperation` |`IgniteConstants.IGNITE_SETS_OPERATION`
+|`IgniteSetOperation` enum |Allows you to dynamically change the set
+operation.
+|=======================================================================
+
+[[Ignite-QUEUE:IgniteQueueendpoint]]
+QUEUE: Ignite Queue endpoint
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The Ignite Queue endpoint allows you to interact with
+https://apacheignite.readme.io/docs/queue-and-set[Ignite Queue data
+structures].
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+ignite:queue:queueName?option1=value1&option2=value2...
+----
+
+This endpoint only supports producers.
+
+[[Ignite-Options.5]]
+Options
+^^^^^^^
+
+[width="99%",cols="20%,16%,16%,16%,16%,16%",options="header",]
+|=======================================================================
+|Option |Type |Default value |Description |Compulsory |Consumer/producer
+|`operation` |`IgniteQueueOperation` enum a|
+[source,p1]
+----
+---
+----
+
+ a|
+The operation to invoke on the Ignite Queue.
+
+Superseded by the `IgniteConstants.IGNITE_QUEUE_OPERATION` header in the
+IN message.
+
+Possible values:
+`CONTAINS, ADD, SIZE, REMOVE, ITERATOR, CLEAR, RETAIN_ALL, ARRAY, DRAIN, ELEMENT, PEEK, OFFER, POLL, TAKE, PUT`.
+
+ |N |*Producer*
+
+|`configuration` a|
+[source,p1]
+----
+CollectionConfiguration
+----
+
+ |empty `CollectionConfiguration` a|
+The configuration for this data structure. You can also specify inner
+properties by using the `config.` prefix.
+
+For example: `?config.backups=4`
+
+ |N |*Producer*
+
+|`timeoutMillis` |`Long` |--- |The timeout in milliseconds to use when
+invoking the OFFER or POLL operations. |N |*Producer*
+
+|`capacity` |`int` |--- (unbounded) |The queue capacity if you'd like to
+use a bounded queue. |N |*Producer*
+|=======================================================================
+
+[[Ignite-Headersused.4]]
+Headers used
+^^^^^^^^^^^^
+
+This endpoint uses the following headers:
+
+[width="100%",cols="25%,25%,25%,25%",options="header",]
+|=======================================================================
+|Header name |Constant |Expected type |Description
+|`CamelIgniteQueueOperation` |`IgniteConstants.IGNITE_QUEUE_OPERATION`
+|`IgniteQueueOperation` enum |Allows you to dynamically change the queue
+operation.
+
+|`CamelIgniteQueueMaxElements`
+|`IgniteConstants.IGNITE_QUEUE_MAX_ELEMENTS` |`Integer or int` |When
+invoking the DRAIN operation, the amount of items to drain.
+
+|`CamelIgniteQueueTransferredCount`
+|`IgniteConstants.IGNITE_QUEUE_TRANSFERRED_COUNT` |`Integer or int` |The
+amount of items transferred as the result of the DRAIN operation.
+
+|`CamelIgniteQueueTimeoutMillis`
+|`IgniteConstants.IGNITE_QUEUE_TIMEOUT_MILLIS` |`Long or long`
+|Dynamically sets the timeout in milliseconds to use when invoking the
+OFFER or POLL operations. 
+|=======================================================================
+
+[[Ignite-IDGEN:IgniteIDGeneratorendpoint]]
+IDGEN: Ignite ID Generator endpoint
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The Ignite ID Generator endpoint allows you to interact with
+https://apacheignite.readme.io/docs/id-generator[Ignite Atomic Sequences
+and ID Generators].
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+ignite:idgen:sequenceName?option1=value1&option2=value2...
+----
+
+This endpoint only supports producers.
+
+[[Ignite-Options.6]]
+Options
+^^^^^^^
+
+[width="99%",cols="20%,16%,16%,16%,16%,16%",options="header",]
+|=======================================================================
+|Option |Type |Default value |Description |Compulsory |Consumer/producer
+|`operation` |`IgniteIdGenOperation enum` a|
+[source,p1]
+----
+---
+----
+
+ a|
+The operation to invoke on the Ignite ID Generator.
+
+Superseded by the `IgniteConstants.IGNITE_IDGEN_OPERATION` header in the
+IN message.
+
+Possible values:
+`ADD_AND_GET, GET, GET_AND_ADD, GET_AND_INCREMENT, INCREMENT_AND_GET`.
+
+ |N |*Producer*
+
+|`configuration` a|
+[source,p1]
+----
+CollectionConfiguration
+----
+
+ |empty CollectionConfiguration a|
+The configuration for this data structure. You can also specify inner
+properties by using the `config.` prefix.
+
+For example: `?config.backups=4`
+
+ |N |*Producer*
+|=======================================================================
+
+[[Ignite-InitializingtheIgnitecomponent]]
+Initializing the Ignite component
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Each instance of the Ignite component is associated with an underlying
+`org.apache.ignite.Ignite` instance. You can interact with two Ignite
+clusters by initializing two instances of the Ignite component and
+binding them to different `IgniteConfiguration`s. There are 3 ways to
+initialize the Ignite component:
+
+* By passing in an existing `org.apache.ignite.Ignite` instance. Here's
+an example using Spring config:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<bean name="ignite" class="org.apache.camel.component.ignite.IgniteComponent">
+   <property name="ignite" ref="ignite" />
+</bean>
+----
+
+* By passing in an `IgniteConfiguration`, either constructed
+programmatically or through inversion of control (e.g. Spring,
+Blueprint, etc.). Here's an example using Spring config:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<bean name="ignite" class="org.apache.camel.component.ignite.IgniteComponent">
+   <property name="igniteConfiguration">
+      <bean class="org.apache.ignite.configuration.IgniteConfiguration">
+         [...]
+      </bean>
+   </property>
+</bean>
+----
+
+* By passing in a `URL`, `InputStream` or `String` URL to a Spring-based
+configuration file. In all three cases, you inject them in the same
+property called `configurationResource`. Here's an example using Spring
+config:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<bean name="ignite" class="org.apache.camel.component.ignite.IgniteComponent">
+   <property name="configurationResource" value="file:[...]/ignite-config.xml" />
+</bean>
+----
+
+ +
+Additionally, if using Camel programmatically, there are several
+convenience static methods in `IgniteComponent` that return a component
+out of any of these configuration options:
+
+* `IgniteComponent#fromIgnite(Ignite)`
+* `IgniteComponent#fromConfiguration(IgniteConfiguration)`
+* `IgniteComponent#fromInputStream(InputStream)`
+* `IgniteComponent#fromUrl(URL)`
+* `IgniteComponent#fromLocation(String)`
+
+ +
+
+You may use those methods to quickly create an `IgniteComponent` with
+your chosen configuration technique.
+
+[[Ignite-Generaloptions]]
+General options
+~~~~~~~~~~~~~~~
+
+All endpoints share the following options:
+
+[cols=",,,",options="header",]
+|=======================================================================
+|Option |Type |Default value |Description
+|`propagateIncomingBodyIfNoReturnValue` |`boolean` |`true` |If the
+underlying Ignite operation returns void (no return type), this flag
+determines whether the producer will copy the IN body into the OUT body.
+
+|`treatCollectionsAsCacheObjects` |`boolean` |`false` |Some Ignite
+operations can deal with multiple elements at once, if passed a
+Collection. Enabling this option will treat Collections as a single
+object, invoking the operation variant for cardinality 1.
+|=======================================================================
+
+[[Ignite-OSGiSupportosgi-support]]
+OSGi Support[[Ignite-osgi-support]]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+[Info]
+====
+
+
+Apache Ignite supports OSGi from version 1.5.0.final onwards.
+
+====
+
+*NOTES when installing on http://karaf.apache.org/[Apache Karaf]:*
+
+1.  Installing the camel-ignite feature will require the *Ignite feature
+repository* to be present.
+2.  You must have exported from the JRE (system bundle) some low-level,
+non-standard packages that Ignite requires.
+
+Please refer to the OSGi section in the
+https://apacheignite.readme.io/docs/osgi-installation-in-karaf[Ignite
+documentation] for more information.
+
+[[Ignite-SeeAlso]]
+See Also
+^^^^^^^^
+
+* link:configuring-camel.html[Configuring Camel]
+* link:component.html[Component]
+* link:endpoint.html[Endpoint]
+* link:getting-started.html[Getting Started]

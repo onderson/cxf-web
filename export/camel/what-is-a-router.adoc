@@ -1,0 +1,25 @@
+[[ConfluenceContent]]
+[[Whatisarouter-Whatisarouter?]]
+What is a router?
+~~~~~~~~~~~~~~~~~
+
+We often talk about that Camel is a mediation and routing framework; so
+what exactly is a router and what does it do?
+
+Basically a router just consumes link:message.html[Message] exchanges
+from some link:endpoint.html[Endpoint], then sends them on to some other
+link:endpoint.html[Endpoint] using some kind of
+link:enterprise-integration-patterns.html[Enterprise Integration
+Patterns].
+
+For example a router could implement the
+link:content-based-router.html[Content Based Router] pattern, to route
+from an endpoint to one or more destination endpoints using a
+link:predicate.html[Predicate] based on the message content.
+
+Typically a route or router consists of one or more consumers; either an
+link:event-driven-consumer.html[Event Driven Consumer] or a
+link:polling-consumer.html[Polling Consumer] or possibly a
+link:transactional-client.html[Transactional Client]. Then there are one
+or more link:processor.html[Processor] instances which could send the
+message to one or more endpoints.

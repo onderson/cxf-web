@@ -1,0 +1,120 @@
+[[ConfluenceContent]]
+[[Slack-SlackComponent]]
+Slack Component
+~~~~~~~~~~~~~~~
+
+*Available as of Camel 2.16*
+
+The **slack** component allows you to connect to an instance
+of http://www.slack.com/[Slack] and delivers a message contained in the
+message body via a pre
+established https://api.slack.com/incoming-webhooks[Slack incoming
+webhook].
+
+Maven users will need to add the following dependency to their `pom.xml`
+for this component:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<dependency>
+    <groupId>org.apache.camel</groupId>
+    <artifactId>camel-slack</artifactId>
+    <version>x.x.x</version>
+    <!-- use the same version as your Camel core version -->
+</dependency>
+----
+
+[[Slack-URIformat]]
+URI format
+^^^^^^^^^^
+
+To send a message to a channel.
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+slack:#channel[?options]
+----
+
+To send a direct message to a slackuser.
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+slack:@username[?options]
+----
+
+[[Slack-Options]]
+Options
+^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Name |Description |Example
+|username |This is the username that the bot will have when sending
+messages to a channel or user. |username=CamelUser
+
+|iconUrl |The avatar that the component will use when sending message to
+a channel or user. |iconUrl=http://somehost.com/avatar.gif
+
+|iconEmoji |Use a Slack emoji as an avatar |iconEmoji=:camel:
+|=======================================================================
+
+ 
+
+[[Slack-SlackComponent.1]]
+SlackComponent
+^^^^^^^^^^^^^^
+
+The SlackComponent with XML must be configured as a Spring or Blueprint
+bean that contains the incoming webhook url for the integration as a
+parameter.
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<bean id="slack" class="org.apache.camel.component.slack.SlackComponent">
+    <property name="webhookUrl" value="https://hooks.slack.com/services/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"/>
+</bean>
+----
+
+ 
+
+For Java you can configure this using Java code.
+
+[[Slack-Example]]
+Example
+^^^^^^^
+
+A CamelContext with Blueprint could be as:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" default-activation="lazy">
+
+    <bean id="slack" class="org.apache.camel.component.slack.SlackComponent">
+        <property name="webhookUrl" value="https://hooks.slack.com/services/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"/>
+    </bean>
+
+    <camelContext xmlns="http://camel.apache.org/schema/blueprint">
+        <route>
+            <from uri="direct:test"/>
+            <to uri="slack:#channel?iconEmoji=:camel:&amp;username=CamelTest"/>
+        </route>
+    </camelContext>
+
+</blueprint>
+----
+
+ 
+
+ 
+
+ 
+
+[[Slack-SeeAlso]]
+See Also
+^^^^^^^^
+
+* link:configuring-camel.html[Configuring Camel]
+* link:component.html[Component]
+* link:endpoint.html[Endpoint]
+* link:getting-started.html[Getting Started]

@@ -1,0 +1,23 @@
+[[ConfluenceContent]]
+[[HowdoesCamelworkwithActiveMQ-HowdoesCamelworkwithActiveMQ?]]
+How does Camel work with ActiveMQ?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+You can use Camel to do smart routing and implement the
+link:enterprise-integration-patterns.html[Enterprise Integration
+Patterns] inside
+
+* the ActiveMQ message broker
+* the ActiveMQ JMS client
+
+So Camel can route messages to and from link:mail.html[Mail],
+link:file2.html[File], link:ftp2.html[FTP], link:jpa.html[JPA],
+link:xmpp.html[XMPP] other link:jms.html[JMS] providers and any of the
+other Camel link:components.html[Components] as well as implementating
+all of the link:enterprise-integration-patterns.html[Enterprise
+Integration Patterns] such as link:content-based-router.html[Content
+Based Router] or link:message-translator.html[Message Translator].
+
+For more details see
+http://activemq.apache.org/enterprise-integration-patterns.html[ActiveMQ
+EIP]

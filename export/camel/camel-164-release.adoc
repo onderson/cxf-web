@@ -1,0 +1,152 @@
+[[ConfluenceContent]]
+[[Camel1.6.4Release-Camel1.6.4release]]
+Camel 1.6.4 release
+-------------------
+
+image:http://camel.apache.org/download.data/camel-box-v1.0-150x200.png[image]
+
+[[Camel1.6.4Release-NewandNoteworthy]]
+New and Noteworthy
+~~~~~~~~~~~~~~~~~~
+
+Welcome to the 1.6.4 release that includes 7 issues resolved. This is
+the last release of the camel-1.x branch.
+
+* Message content redelivered asynchronously by DLC is now rereadable
+* Aggregator - Exception thrown from custom aggregation strategy could
+cause BatchSender thread to terminate
+* Updated constants in the Documentation for HTTP Component
+* Merged the http chuncked option support from trunk to camel 1.x branch
+* Added META-INF to link:sql.html[SQL] to make it discoverable by
+camel-core
+* Upgrade to velocity 1.6.4
+* Upgrade cxf version of camel-cxf to 2.2.9
+
+[[Camel1.6.4Release-New]]
+New link:enterprise-integration-patterns.html[Enterprise Integration
+Patterns]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+[[Camel1.6.4Release-New.1]]
+New link:components.html[Components]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+[[Camel1.6.4Release-NewDSL]]
+New DSL
+^^^^^^^
+
+[[Camel1.6.4Release-NewAnnotations]]
+New Annotations
+^^^^^^^^^^^^^^^
+
+[[Camel1.6.4Release-NewDataFormats]]
+New link:data-format.html[Data Formats]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+[[Camel1.6.4Release-New.2]]
+New link:languages.html[Languages]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+[[Camel1.6.4Release-New.3]]
+New link:examples.html[Examples]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+[[Camel1.6.4Release-New.4]]
+New link:tutorials.html[Tutorials]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+[[Camel1.6.4Release-APIbreaking]]
+API breaking
+~~~~~~~~~~~~
+
+[[Camel1.6.4Release-KnownIssues]]
+Known Issues
+~~~~~~~~~~~~
+
+[[Camel1.6.4Release-Importantchangestoconsiderwhenupgrading]]
+Important changes to consider when upgrading
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+[[Camel1.6.4Release-GettingtheDistributions]]
+Getting the Distributions
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+[[Camel1.6.4Release-BinaryDistributions]]
+Binary Distributions
+^^^^^^^^^^^^^^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Description |Download Link |PGP Signature file of download
+|Windows Distribution
+|http://archive.apache.org/dist/camel/apache-camel/1.6.4/apache-camel-1.6.4.zip[apache-camel-1.6.4.zip]
+|http://archive.apache.org/dist/camel/apache-camel/1.6.4/apache-camel-1.6.4.zip.asc[apache-camel-1.6.4.zip.asc]
+
+|Unix/Linux/Cygwin Distribution
+|http://archive.apache.org/dist/camel/apache-camel/1.6.4/apache-camel-1.6.4.tar.gz[apache-camel-1.6.4.tar.gz]
+|http://archive.apache.org/dist/camel/apache-camel/1.6.4/apache-camel-1.6.4.tar.gz.asc[apache-camel-1.6.4.tar.gz.asc]
+|=======================================================================
+
+[Info]
+====
+ **The above URLs use redirection**
+
+The above URLs use the Apache Mirror system to redirect you to a
+suitable mirror for your download. Some users have experienced issues
+with some versions of browsers (e.g. some Safari browsers). If the
+download doesn't seem to work for you from the above URL then try using
+http://www.mozilla.com/en-US/firefox/[FireFox]
+
+====
+
+[[Camel1.6.4Release-SourceDistributions]]
+Source Distributions
+^^^^^^^^^^^^^^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Description |Download Link |PGP Signature file of download
+|Source for Windows
+|http://archive.apache.org/dist/camel/apache-camel/1.6.4/apache-camel-1.6.4-src.zip[apache-camel-1.6.4-src.zip]
+|http://archive.apache.org/dist/camel/apache-camel/1.6.4/apache-camel-1.6.4-src.zip.asc[apache-camel-1.6.4-src.zip.asc]
+
+|Source for Unix/Linux/Cygwin
+|http://archive.apache.org/dist/camel/apache-camel/1.6.4/apache-camel-1.6.4-src.tar.gz[apache-camel-1.6.4-src.tar.gz]
+|http://archive.apache.org/dist/camel/apache-camel/1.6.4/apache-camel-1.6.4-src.tar.gz.asc[apache-camel-1.6.4-src.tar.gz.asc]
+|=======================================================================
+
+[[Camel1.6.4Release-GettingtheBinariesusingMaven2]]
+Getting the Binaries using Maven 2
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To use this release in your maven project, the proper dependency
+configuration that you should use in your
+http://maven.apache.org/guides/introduction/introduction-to-the-pom.html[Maven
+POM] is:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<dependency>
+  <groupId>org.apache.camel</groupId>
+  <artifactId>camel-core</artifactId>
+  <version>1.6.4</version>
+</dependency>
+----
+
+[[Camel1.6.4Release-SVNTagCheckout]]
+SVN Tag Checkout
+^^^^^^^^^^^^^^^^
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+svn co http://svn.apache.org/repos/asf/camel/tags/camel-1.6.4
+----
+
+[[Camel1.6.4Release-Changelog]]
+Changelog
+~~~~~~~~~
+
+For a more detailed view of new features and bug fixes, see the:
+
+* https://issues.apache.org/jira/secure/ReleaseNote.jspa?projectId=12311211&styleName=Html&version=12315681[release
+notes for 1.6.4]

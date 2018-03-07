@@ -1,0 +1,5 @@
+[[ConfluenceContent]]
+link:download.html[Download] | link:javadoc.html[JavaDoc] |
+link:source.html[Source] | https://github.com/apache/camel/[GitHub] |
+https://gitter.im/apache/apache-camel[Gitter]
+| link:support.html[Support]

@@ -1,0 +1,86 @@
+[[ConfluenceContent]]
+The Camel DSL is a language that allows to configure the behaviour of
+the Camel Routing Engine. It comes in two main flavours. The Java DSL
+and the Spring XML Config. Both variants share the same functions though
+the syntax is somewhat different.
+
+[[CamelDSL-Languages]]
+Languages
+---------
+
+* link:dsl.html[Java DSL]
+* link:spring.html[Camel Spring XML Schema]
+* link:scala-dsl.html[Scala DSL]
+
+[[CamelDSL-GeneralFunctions]]
+General Functions
+-----------------
+
+* link:convertbodyto.html[convertBodyTo] — Convert the message body to
+the given class type
+* link:dsl-function-template.html[DSL Function Template] — Use this as
+the basis for a wiki page describing a DSL function
+* link:from.html[from] — Starting point for a Camel Route that starts a
+route with a given Endpoint
+
+[[CamelDSL-EIPPatterns]]
+EIP Patterns
+------------
+
+* link:aggregator.html[Aggregator]
+* link:aggregator2.html[Aggregator2]
+* link:claim-check.html[Claim Check]
+* link:competing-consumers.html[Competing Consumers]
+* link:composed-message-processor.html[Composed Message Processor]
+* link:content-based-router.html[Content Based Router]
+* link:content-enricher.html[Content Enricher]
+* link:content-filter.html[Content Filter]
+* link:controlbus.html[ControlBus]
+* link:correlation-identifier.html[Correlation Identifier]
+* link:dead-letter-channel.html[Dead Letter Channel]
+* link:delayer.html[Delayer]
+* link:detour.html[Detour]
+* link:durable-subscriber.html[Durable Subscriber]
+* link:dynamic-router.html[Dynamic Router]
+* link:event-driven-consumer.html[Event Driven Consumer]
+* link:event-message.html[Event Message]
+* link:guaranteed-delivery.html[Guaranteed Delivery]
+* link:hystrix-eip.html[Hystrix EIP]
+* link:idempotent-consumer.html[Idempotent Consumer]
+* link:load-balancer.html[Load Balancer]
+* link:logeip.html[LogEIP]
+* link:loop.html[Loop]
+* link:message.html[Message]
+* link:message-bus.html[Message Bus]
+* link:message-channel.html[Message Channel]
+* link:message-dispatcher.html[Message Dispatcher]
+* link:message-endpoint.html[Message Endpoint]
+* link:message-filter.html[Message Filter]
+* link:message-history.html[Message History]
+* link:message-router.html[Message Router]
+* link:message-translator.html[Message Translator]
+* link:messaging-gateway.html[Messaging Gateway]
+* link:messaging-mapper.html[Messaging Mapper]
+* link:multicast.html[Multicast]
+* link:normalizer.html[Normalizer]
+* link:pipes-and-filters.html[Pipes and Filters]
+* link:point-to-point-channel.html[Point to Point Channel]
+* link:polling-consumer.html[Polling Consumer]
+* link:publish-subscribe-channel.html[Publish Subscribe Channel]
+* link:recipient-list.html[Recipient List]
+* link:request-reply.html[Request Reply]
+* link:resequencer.html[Resequencer]
+* link:return-address.html[Return Address]
+* link:routing-slip.html[Routing Slip]
+* link:sampling.html[Sampling]
+* link:scatter-gather.html[Scatter-Gather]
+* link:script.html[Script]
+* link:selective-consumer.html[Selective Consumer]
+* link:service-activator.html[Service Activator]
+* link:servicecall-eip.html[ServiceCall EIP]
+* link:sort.html[Sort]
+* link:splitter.html[Splitter]
+* link:throttler.html[Throttler]
+* link:transactional-client.html[Transactional Client]
+* link:validate.html[Validate]
+* link:wire-tap.html[Wire Tap]

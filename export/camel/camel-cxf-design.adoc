@@ -1,0 +1,112 @@
+[[ConfluenceContent]]
+[[CamelCXFDesign-CamelCXFDesign]]
+Camel CXF Design
+----------------
+
+[[CamelCXFDesign-IntegratingCXFintoCamel]]
+Integrating CXF into Camel
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Camel provides a component API , after defined the
+link:cxf.html[endpoint URI format], we just need implement the Camel
+component API by using CXF as a library to create the client and server
+for camel-cxf component's consumer and producer.
+
+[[CamelCXFDesign-CXFConsumer]]
+CXFConsumer
+^^^^^^^^^^^
+
+http://svn.apache.org/repos/asf/camel/trunk/components/camel-cxf/src/main/java/org/apache/camel/component/cxf/CxfConsumer.java[CXFConsumer]
+works as the CXF server, so we create the CXF server with the
+http://svn.apache.org/repos/asf/camel/trunk/components/camel-cxf/src/main/java/org/apache/camel/component/cxf/CxfEndpoint.java[CXFEndpoint]
+which holds the cxf endpoint information such as SEI class, wsdl
+location, service name and endpoint name etc. You can configure the cxf
+endpoint according to this
+https://svn.apache.org/repos/asf/camel/trunk/components/camel-cxf/src/main/resources/schema/cxfEndpoint.xsd[schema]
+in spring. +
+Now we just leverage the CXF's
+http://cxf.apache.org/docs/invokers.html[invoker] to override the
+default invoker by setting a
+http://svn.apache.org/repos/asf/camel/trunk/components/camel-cxf/src/main/java/org/apache/camel/component/cxf/CamelInvoker.java[CamelInvoker]
+to the
+http://cxf.apache.org/docs/server-service-and-client-factorybeans.html[ServerFactoryBean].
+
+[[CamelCXFDesign-CXFProducer]]
+CXFProducer
+^^^^^^^^^^^
+
+CXF
+http://cxf.apache.org/docs/server-service-and-client-factorybeans.html[Client]
+is used to send out the incoming message from the
+http://svn.apache.org/repos/asf/camel/trunk/components/camel-cxf/src/main/java/org/apache/camel/component/cxf/CxfProducer.java[CXFProducer]
+and pass the response back. +
+To support the client which just sends the stream request , we write the
+http://svn.apache.org/repos/asf/camel/trunk/components/camel-cxf/src/main/java/org/apache/camel/component/cxf/invoker/CxfClient.java[CxfClient]
+and
+http://svn.apache.org/repos/asf/camel/trunk/components/camel-cxf/src/main/java/org/apache/camel/component/cxf/invoker/CxfClientFactoryBean.java[CxfClientFactoryBean].
+
+[[CamelCXFDesign-DataFormat]]
+DataFormat
+^^^^^^^^^^
+
+camel-cxf component supports to handle the CXF message with different
+http://svn.apache.org/repos/asf/camel/trunk/components/camel-cxf/src/main/java/org/apache/camel/component/cxf/DataFormat.java[DataFormat].
+
+To get the best reuse of the CXF generic message layer, we use the CXF
+http://cxf.apache.org/docs/features.html[feature] API to setup the
+interceptors for different types message handling.
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+if (!dataFormat.equals(DataFormat.POJO)...) {
+   List<AbstractFeature> features = new ArrayList<AbstractFeature>();
+   // adding the logging feature here for debug
+   features.add(new LoggingFeature());
+
+   if (dataFormat.equals(DataFormat.PAYLOAD)) {
+       features.add(new PayLoadDataFormatFeature());       
+   }
+   
+   if (dataFormat.equals(DataFormat.MESSAGE)) {
+       features.add(new MessageDataFormatFeature());
+   }
+   
+  // set the feature to the ServerFactoryBean or ClientFactoryBean 
+  ...
+}
+----
+
+[[CamelCXFDesign-IntegrateCamelintoCXF]]
+Integrate Camel into CXF
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Currently , we introduce link:camel-transport-for-cxf.html[Camel
+Transport for CXF] to integrate the Camel as an transport library in
+CXF.
+
+[[CamelCXFDesign-Bindingtheconduitanddestinationwiththecontextendpoint]]
+Binding the conduit and destination with the context endpoint
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+As http://cxf.apache.org/docs/cxf-architecture.html[CXF transport API]
+side, CXF transport API includes
+http://svn.apache.org/repos/asf/cxf/trunk/api/src/main/java/org/apache/cxf/transport/Conduit.java[Conduit]
+and
+http://svn.apache.org/repos/asf/cxf/trunk/api/src/main/java/org/apache/cxf/transport/Destination.java[Destination]
+that we need to implement with Camel. +
+We use the the
+http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/CamelTemplate.html[CamelTemplate]
+to send out the message for a certain endpoint in the
+http://svn.apache.org/repos/asf/camel/trunk/components/camel-cxf/src/main/java/org/apache/camel/component/cxf/transport/CamelConduit.java[CamelConduit],
+and bind a consumer process for the
+http://svn.apache.org/repos/asf/camel/trunk/components/camel-cxf/src/main/java/org/apache/camel/component/cxf/transport/CamelDestination.java[CamelDestination]. +
+When you specify the endpoint URI that start with camel in
+http://svn.apache.org/repos/asf/camel/trunk/components/camel-cxf/src/main/java/org/apache/camel/component/cxf/transport/CamelConduit.java[CamelConduit]
+or
+http://svn.apache.org/repos/asf/camel/trunk/components/camel-cxf/src/main/java/org/apache/camel/component/cxf/transport/CamelDestination.java[CamelDestination]
+the endpoint address, Camel transport will bind it to the endpoint which
+is in the
+http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/CamelContext.html[CamelContext].
+
+Here are some link:cxf-example.html[examples] of configuring the Camel
+transport.

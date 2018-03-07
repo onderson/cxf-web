@@ -1,0 +1,75 @@
+[[ConfluenceContent]]
+[[MessagingGateway-MessagingGateway]]
+Messaging Gateway
+^^^^^^^^^^^^^^^^^
+
+Camel has several endpoint components that support the
+http://www.enterpriseintegrationpatterns.com/MessagingGateway.html[Messaging
+Gateway] from the link:enterprise-integration-patterns.html[EIP
+patterns].
+
+image:http://www.enterpriseintegrationpatterns.com/img/MessagingGatewaySolution.gif[image]
+
+Components like link:bean.html[Bean] and link:cxf.html[CXF] provide a a
+way to bind a Java interface to the message exchange.
+
+However you may want to read the link:using-camelproxy.html[Using
+CamelProxy] documentation as a true
+link:messaging-gateway.html[Messaging Gateway] EIP solution. +
+Another approach is to use `@Produce` which you can read about in
+link:pojo-producing.html[POJO Producing] which also can be used as a
+link:messaging-gateway.html[Messaging Gateway] EIP solution.
+
+ 
+
+[[MessagingGateway-Example]]
+Example
++++++++
+
+The following example how
+the link:cxf.html[CXF] and link:bean.html[Bean] components can be used
+to abstract the developer from the underlying messaging system API
+
+* +
+*
+
+*Using the link:fluent-builders.html[Fluent Builders]*
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from("cxf:bean:soapMessageEndpoint")
+    .to("bean:testBean?method=processSOAP");
+----
+
+ 
+
+**Using the link:spring-xml-extensions.html[Spring XML Extensions]**
+
+[source,brush:,xml;,gutter:,false;,theme:,Default]
+----
+<route>
+    <from uri="cxf:bean:soapMessageEndpoint"/>
+    <to uri="bean:testBean?method=processSOAP"/>
+</route>
+----
+
+[[MessagingGateway-SeeAlso]]
+See Also
+++++++++
+
+* link:bean.html[Bean]
+* link:cxf.html[CXF]
+* link:using-camelproxy.html[Using CamelProxy]
+* link:pojo-producing.html[POJO Producing]
+* link:spring-remoting.html[Spring Remoting]
+
+[[MessagingGateway-UsingThisPattern]]
+Using This Pattern
+++++++++++++++++++
+
+If you would like to use this EIP Pattern then please read the
+link:getting-started.html[Getting Started], you may also find the
+link:architecture.html[Architecture] useful particularly the description
+of link:endpoint.html[Endpoint] and link:uris.html[URIs]. Then you could
+try out some of the link:examples.html[Examples] first before trying
+this pattern out.

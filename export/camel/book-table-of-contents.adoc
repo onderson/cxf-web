@@ -1,0 +1,20 @@
+[[ConfluenceContent]]
+[[toc]]
+[[BookTableofContents-TableofContents]]
+Table of Contents
+-----------------
+
+* link:#toc[Table of Contents]
+* link:#chapter-introduction[Introduction]
+* link:#chapter-quickstart[Quickstart]
+* link:#chapter-getting-started[Getting Started]
+* link:#chapter-architecture[Architecture]
+* link:#chapter-enterprise-integration-patterns[Enterprise Integration
+Patterns]
+* link:#chapter-cook-book[Cook Book]
+* link:#chapter-tutorials[Tutorials]
+* link:#chapter-languages-supported-Appendix[Language Appendix]
+* link:#chapter-dataformat-Appendix[DataFormat Appendix]
+* link:#chapter-pattern-appendix[Pattern Appendix]
+* link:#chapter-component-appendix[Component Appendix]
+* link:#index[Index]

@@ -1,0 +1,245 @@
+[[ConfluenceContent]]
+DSL supported
+
+The link:scala-dsl.html[Scala DSL] supports *every* DSL from the
+link:dsl.html[Java DSL].
+
+On this page we have examples for a number of the link:eip.html[EIP]s. +
+You can check the
+https://svn.apache.org/repos/asf/camel/trunk/components/camel-scala/src/test/scala/[unit
+test source code] for the Scala Component to find more examples.
+
+3truenone
+
+[[ScalaDSL-EIP-Messagingsystems]]
+Messaging systems
+^^^^^^^^^^^^^^^^^
+
+[[ScalaDSL-EIP-Pipelinepipeline]]
+Pipeline pipeline
++++++++++++++++++
+
+There is a simple syntax available for specifying pipeline, by simple
+putting `to` or `→` between the different steps in the pipeline.
+
+\{snippet:id=simple|lang=java|url=camel/trunk/components/camel-scala/src/test/scala/org/apache/camel/scala/dsl/PipelineRouteBuilderTest.scala}
+
+For more advanced use cases, you can also use a block-based syntax,
+where every step in the pipeline starts with either `to` or `→`.
+
+\{snippet:id=block|lang=java|url=camel/trunk/components/camel-scala/src/test/scala/org/apache/camel/scala/dsl/PipelineRouteBuilderTest.scala}
+
+[[ScalaDSL-EIP-Filterfilter]]
+Filter filter
++++++++++++++
+
+For a message filter, use the `when()` method with a parameter of type
+The `Exchange ⇒ Boolean`. In the example below, we use a Scala
+convenience method named `in` to access the 'in' message body; only
+messages where the 'in' message is `<hello/>` will arrive at the
+`mock:a` endpoint.
+
+\{snippet:id=simple|lang=java|url=camel/trunk/components/camel-scala/src/test/scala/org/apache/camel/scala/dsl/FilterRouteBuilderTest.scala}
+
+Once again, if you need to specify a more advanced route, you can use
+the more elaborate syntax.
+
+\{snippet:id=alternatives|lang=java|url=camel/trunk/components/camel-scala/src/test/scala/org/apache/camel/scala/dsl/FilterRouteBuilderTest.scala}
+
+[[ScalaDSL-EIP-Messagingchannels]]
+Messaging channels
+^^^^^^^^^^^^^^^^^^
+
+[[ScalaDSL-EIP-Deadletterchannel]]
+Dead letter channel
++++++++++++++++++++
+
+The http://www.eaipatterns.com/DeadLetterChannel.html[dead letter
+channel] can be created with the syntax similar to the one used in
+http://camel.apache.org/dead-letter-channel.html[Java DSL].
+
+java"jms:in" errorHandler(deadLetterChannel("jms:error")) to "jms:out"
+
+You can also use different error handler available for the
+http://camel.apache.org/error-handler.html[Java DSL]. In particular
+Scala DSL supports
+http://camel.apache.org/defaulterrorhandler.html[DefaultErrorHandler]
+and
+http://camel.apache.org/error-handler.html#ErrorHandler-LoggingErrorHandler[LoggingErrorHandler].
+
+java// DefaultErrorHandler "jms:in" errorHandler(defaultErrorHandler) to
+"jms:out" // LoggingErrorHandler "jms:in"
+errorHandler(loggingErrorHandler.level(LoggingLevel.INFO).logName("com.example.MyLogger"))
+to "jms:out"
+
+[[ScalaDSL-EIP-Messagerouting]]
+Message routing
+^^^^^^^^^^^^^^^
+
+[[ScalaDSL-EIP-Aggregator]]
+Aggregator
+++++++++++
+
+The aggregator EIP aggregates messages based on some message correlation
+criteria. In the Scala DSL, the `aggregate` method takes a function
+`Exchange ⇒ Any` to determine the correlation value for the exchange. In
+the sample below, message are being aggregated if the first 7 letters in
+the message body are the same.
+
+\{snippet:id=block|lang=java|url=camel/trunk/components/camel-scala/src/test/scala/org/apache/camel/scala/dsl/AggregatorTest.scala}
+
+[[ScalaDSL-EIP-Contentbasedrouter]]
+Content based router
+++++++++++++++++++++
+
+Similar to the link:scala-dsl-eip.html[Filter], the content based router
+uses `when` methods with `Exchange ⇒ Boolean` function literals and an
+optional `otherwise`. The function literal can contain plain Scala code
+as well as any of the link:scala-dsl-supported-languages.html[supported
+languages]. The example below routes a given message based on the
+language of the message body.
+
+\{snippet:id=cbr|lang=java|url=camel/trunk/components/camel-scala/src/test/scala/org/apache/camel/scala/dsl/ContentBasedRouterTest.scala}
+
+[[ScalaDSL-EIP-Delayer]]
+Delayer
++++++++
+
+Unlike a throttler, which only slows down messages if the rate exceeds a
+treshold, a delayer delays every messages with a fixed amount of time.
+An example: to delay every message going from `seda:a` to `mock:a` with
+1 second, you write...
+
+\{snippet:id=simple|lang=java|url=camel/trunk/components/camel-scala/src/test/scala/org/apache/camel/scala/dsl/DelayerTest.scala}
+
+Our second example will delay the entire block (containing `mock:c`)
+without doing anything to `mock:b`
+
+\{snippet:id=block|lang=java|url=camel/trunk/components/camel-scala/src/test/scala/org/apache/camel/scala/dsl/DelayerTest.scala}
+
+[[ScalaDSL-EIP-Loadbalancer]]
+Load balancer
++++++++++++++
+
+To distribute the message handling load over multiple endpoints, we add
+a `loadbalance` to our route definition. You can optionally specify a
+load balancer strategy, like `roundrobin`
+
+\{snippet:id=loadbalance|lang=java|url=camel/trunk/components/camel-scala/src/test/scala/org/apache/camel/scala/dsl/LoadBalancerTest.scala}
+
+[[ScalaDSL-EIP-Multicast]]
+Multicast
++++++++++
+
+Multicast allows you to send a message to multiple endpoints at the same
+time. In a simple route, you can specify multiple targets in the `to` or
+`→` method call:
+
+\{snippet:id=simple|lang=java|url=camel/trunk/components/camel-scala/src/test/scala/org/apache/camel/scala/dsl/PipelineAndMulticastTest.scala}
+
+[[ScalaDSL-EIP-Recipientlist]]
+Recipient list
+++++++++++++++
+
+You can handle a static recipient list with a multicast or
+link:scala-dsl-eip.html[pipeline], but this EIP is usually applied when
+you want to dynamically determine the name(s) of the next endpoint(s) to
+route to. Use the `recipients()` method with a function literal
+(`Exchange => Any`) that returns the endpoint name(s). In the example
+below, the target endpoint name can be found in the String message
+starting at position 21.
+
+\{snippet:id=simple|lang=java|url=camel/trunk/components/camel-scala/src/test/scala/org/apache/camel/scala/dsl/RecipientListRouteTest.scala}
+
+Because the `recipients()` method just takes a function literal, you can
+basically use any kind of valid Scala code to determine the endpoint
+name. Have a look at the next example which uses pattern matching to
+figure out where to send the message:
+
+\{snippet:id=pattern|lang=java|url=camel/trunk/components/camel-scala/src/test/scala/org/apache/camel/scala/dsl/RecipientListRouteTest.scala}
+
+Again, we can also use the same thing in a more block-like syntax. For
+this example, we use the Scala DSL's
+link:scala-dsl-supported-languages.html[support for JXPath] to determine
+the target.
+
+\{snippet:id=block|lang=java|url=camel/trunk/components/camel-scala/src/test/scala/org/apache/camel/scala/dsl/RecipientListRouteTest.scala}
+
+[[ScalaDSL-EIP-Resequencer]]
+Resequencer
++++++++++++
+
+Use the `resequence` method to add a resequencer to the RouteBuilder.
+The method takes a function (`Exchange ⇒ Unit`) that determines the
+value to resequence on. In this example, we resequence messages based on
+the 'in' message body.
+
+\{snippet:id=simple|lang=java|url=camel/trunk/components/camel-scala/src/test/scala/org/apache/camel/scala/dsl/ResequencerTest.scala}
+
+The same EIP can also be used with a block-like syntax...
+
+\{snippet:id=block|lang=java|url=camel/trunk/components/camel-scala/src/test/scala/org/apache/camel/scala/dsl/ResequencerTest.scala}
+
+... and with configurable batch size. In this last example, messages
+will be send to `mock:e` whenever a batch of 5 messages is available.
+
+\{snippet:id=batch|lang=java|url=camel/trunk/components/camel-scala/src/test/scala/org/apache/camel/scala/dsl/ResequencerTest.scala}
+
+[[ScalaDSL-EIP-Splitter]]
+Splitter
+++++++++
+
+To handle large message in smaller chunks, you can write a Scala
+`Exchange ⇒ Any*` method and add it to your route with the `splitter`
+method. As with many other EIPs, we support a short, in-line version as
+well as a more elaborate block based one.
+
+\{snippet:id=simple|lang=java|url=camel/trunk/components/camel-scala/src/test/scala/org/apache/camel/scala/dsl/SplitterRouteBuilderTest.scala}
+\{snippet:id=block|lang=java|url=camel/trunk/components/camel-scala/src/test/scala/org/apache/camel/scala/dsl/SplitterRouteBuilderTest.scala}
+
+The above examples also show you how
+link:scala-dsl-supported-languages.html[other languages] like XPath can
+be within the Scala DSL.
+
+[[ScalaDSL-EIP-Throttler]]
+Throttler
++++++++++
+
+The throttler allows you to slow down messages before sending them
+along. The `throttle` methods allows you to specify the maximum
+throughput rate of message:
+
+\{snippet:id=simple|lang=java|url=camel/trunk/components/camel-scala/src/test/scala/org/apache/camel/scala/dsl/ThrottlerTest.scala}
+
+It can also be used in front of block to throttle messages at that
+point. In the example below, message are passed on to `mock:b` in a
+normal rate (i.e. as fast as possible), but a maximum 3 messages/2
+seconds will arrive at the `mock:c` endpoint.
+
+\{snippet:id=block|lang=java|url=camel/trunk/components/camel-scala/src/test/scala/org/apache/camel/scala/dsl/ThrottlerTest.scala}
+
+[[ScalaDSL-EIP-Messagetransformation]]
+Message transformation
+^^^^^^^^^^^^^^^^^^^^^^
+
+[[ScalaDSL-EIP-Contentenricher]]
+Content enricher
+++++++++++++++++
+
+Using a processor function (`Exchange → Unit`), you can alter/enrich the
+message content. This example uses a simple function literal to append
+`" says Hello"` to the message content:
+
+\{snippet:id=simple|lang=java|url=camel/trunk/components/camel-scala/src/test/scala/org/apache/camel/scala/dsl/ContentEnricherTest.scala}
+
+However, you can also define a separate method/function to handle the
+transformation and pass that to the `process` method instead. The
+example below uses pattern matching to enrich the message content:
+
+\{snippet:id=def|lang=java|url=camel/trunk/components/camel-scala/src/test/scala/org/apache/camel/scala/dsl/ContentEnricherTest.scala}
+
+Off course, you can also use any other Camel component (e.g.
+link:velocity.html[Velocity]) to enrich the content and add it to a
+pipeline
+
+\{snippet:id=velocity|lang=java|url=camel/trunk/components/camel-scala/src/test/scala/org/apache/camel/scala/dsl/ContentEnricherTest.scala}

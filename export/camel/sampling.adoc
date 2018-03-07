@@ -1,0 +1,63 @@
+[[ConfluenceContent]]
+[[Sampling-SamplingThrottler]]
+Sampling Throttler
+~~~~~~~~~~~~~~~~~~
+
+*Available as of Camel 2.1*
+
+A sampling throttler allows you to extract a sample of the exchanges
+from the traffic through a route. +
+It is configured with a sampling period during which only a single
+exchange is allowed to pass through. All other exchanges will be
+stopped.
+
+Will by default use a sample period of 1 seconds.
+
+[[Sampling-Options]]
+Options
+^^^^^^^
+
+confluenceTableSmall
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Name |Default Value |Description
+|`messageFrequency` |  |Samples the message every N'th message. You can
+only use either frequency or period.
+
+|`samplePeriod` |`1` |Samples the message every N'th period. You can
+only use either frequency or period.
+
+|`units` |`SECOND` |Time unit as an enum of
+`java.util.concurrent.TimeUnit` from the JDK.
+|=======================================================================
+
+[[Sampling-Samples]]
+Samples
+^^^^^^^
+
+You use this EIP with the `sample` DSL as show in these samples.
+
+*Using the link:fluent-builders.html[Fluent Builders]* +
+These samples also show how you can use the different syntax to
+configure the sampling period:
+
+\{snippet:id=e1|lang=java|url=camel/trunk/camel-core/src/test/java/org/apache/camel/processor/SamplingThrottlerTest.java}
+
+*Using the link:spring-xml-extensions.html[Spring XML Extensions]* +
+And the same example in Spring XML is:
+
+\{snippet:id=e1|lang=xml|url=camel/trunk/components/camel-spring/src/test/resources/org/apache/camel/spring/processor/samplingThrottler.xml}
+
+And since it uses a default of 1 second you can omit this configuration
+in case you also want to use 1 second
+
+\{snippet:id=e1|lang=xml|url=camel/trunk/components/camel-spring/src/test/resources/org/apache/camel/spring/processor/samplingThrottlerWithDefault.xml}
+link:using-this-pattern.html[Using This Pattern]
+
+[[Sampling-SeeAlso]]
+See Also
+^^^^^^^^
+
+* link:throttler.html[Throttler]
+* link:aggregator.html[Aggregator]

@@ -1,0 +1,510 @@
+[[ConfluenceContent]]
+[[uniVocity-parsersformats-uniVocity-parsers]]
+uniVocity-parsers
+~~~~~~~~~~~~~~~~~
+
+*Available as of Camel 2.15.0*
+
+This link:data-format.html[Data
+Format] uses http://www.univocity.com/pages/about-parsers[uniVocity-parsers]
+for reading and writing 3 kinds of tabular data text files:
+
+* CSV (Comma Separated Values), where the values are separated by a
+symbol (usually a comma)
+* fixed-width, where the values have known sizes
+* TSV (Tabular Separated Values), where the fields are separated by a
+tabulation
+
+Thus there are 3 data formats based on uniVocity-parsers.
+
+If you use Maven you can just add the following to your pom.xml,
+substituting the version number for the latest and greatest release
+(see https://cwiki.apache.org/confluence/display/CAMEL/Download[the
+download page for the latest versions]).
+
+[source,brush:,xml;,gutter:,false;,theme:,Default]
+----
+<dependency>
+    <groupId>org.apache.camel</groupId>
+    <artifactId>camel-univocity-parsers</artifactId>
+    <version>x.x.x</version>
+</dependency>
+----
+
+[[uniVocity-parsersformats-Options]]
+Options
+^^^^^^^
+
+Most configuration options of the uniVocity-parsers are available in the
+data formats. If you want more information about a particular option,
+please refer to their
+http://www.univocity.com/pages/parsers-documentation[documentation
+page].
+
+The 3 data formats share common options and have dedicated ones, this
+section presents them all.
+
+[[uniVocity-parsersformats-Commonoptions,sharedbyallthedataformats]]
+Common options, shared by all the data formats
+++++++++++++++++++++++++++++++++++++++++++++++
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Parameter name |Type |Description
+|`nullValue` |`String` a|
+The string representation of a `null` value.
+
+This option is `null` by default. When `null`, it uses the default
+uniVocity-parser value which is `null`.
+
+|`skipEmptyLines` |`Boolean` a|
+Whether or not the empty lines must be ignored.
+
+This option is `null` by default. When `null`, it uses the default
+uniVocity-parser value which is `true`.
+
+|`ignoreTrailingWhitespaces` |`Boolean` a|
+Whether or not the trailing white spaces must ignored.
+
+This option is `null` by default. When `null`, it uses the default
+uniVocity-parser value which is `true`.
+
+|`ignoreLeadingWhitespaces` |`Boolean` a|
+Whether or not the leading white spaces must be ignored.
+
+This option is `null` by default. When `null`, it uses the default
+uniVocity-parser value which is `true`.
+
+|`headersDisabled` |`boolean` a|
+Whether or not the headers are disabled. When defined, this option
+explicitly sets the headers as `null` which indicates that there is no
+header.
+
+This option is `false` by default.
+
+|`headers` |`String[]` a|
+The headers to use.
+
+This option is `null` by default. When `null`, it uses the default
+uniVocity-parser value which is `null`.
+
+In the XML DSL, this option is configured using children
+`<univocity-header>` tags:
+
+[source,brush:,xml;,gutter:,false;,theme:,Default]
+----
+<univocity-csv>
+    <univocity-header>first</univocity-header>
+    <univocity-header>second</univocity-header>
+</univocity-csv>
+----
+
+See other marshalling and unmarshalling examples for more information.
+
+|`headersExtractionEnabled` |`Boolean` a|
+Whether or not the header must be read in the first line of the test
+document
+
+This option is `null` by default. When `null`, it uses the default
+uniVocity-parser value which is `false`.
+
+|`numberOfRecordsToRead` |`Integer` a|
+The maximum number of record to read.
+
+This option is `null` by default. When `null`, it uses the default
+uniVocity-parser value which is `-1`.
+
+|`emptyValue` |`String` a|
+The String representation of an empty value
+
+This option is `null` by default. When `null`, it uses the default
+uniVocity-parser value which is `""`.
+
+|`lineSeparator` |`String` a|
+The line separator of the files
+
+This option is `null` by default. When `null`, it uses the default
+uniVocity-parser value which is the platform line separator.
+
+|`normalizedLineSeparator` |`Character` a|
+The normalized line separator of the files
+
+This option is `null` by default. When `null`, it uses the default
+uniVocity-parser value which is `"\n"`.
+
+|`comment` |`Character` a|
+The comment symbol.
+
+This option is `null` by default. When `null`, it uses the default
+uniVocity-parser value which is `'#'`.
+
+|`lazyLoad` |`boolean` a|
+Whether the unmarshalling should produce an iterator that reads the
+lines on the fly or if all the lines must be read at one.
+
+This option is `false` by default.
+
+|`asMap` |`boolean` a|
+Whether the unmarshalling should produce maps for the lines values
+instead of lists. It requires to have header (either defined or
+collected).
+
+This options is `false` by default.
+
+|=======================================================================
+
+[[uniVocity-parsersformats-CSVformatoptions]]
+CSV format options
+++++++++++++++++++
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Parameter name |Type |Description
+|`quoteAllFields` |`Boolean` a|
+Whether or not all values must be quoted when writing them.
+
+This option is `null` by default. When `null`, it uses the default
+uniVocity-parser value which is `false`.
+
+|`quote` |`Character` a|
+The quote symbol.
+
+This option is `null` by default. When `null`, it uses the default
+uniVocity-parser value which is '"'.
+
+|`quoteEscape` |`Character` a|
+The quote escape symbol.
+
+This option is `null` by default. When `null`, it uses the default
+uniVocity-parser value which is `'"'`.
+
+|`delimiter` |`Character` a|
+The delimiter of values
+
+This option is `null` by default. When `null`, it uses the default
+uniVocity-parser value which is `','`.
+
+|=======================================================================
+
+[[uniVocity-parsersformats-Fixed-widthformatoptions]]
+Fixed-width format options
+++++++++++++++++++++++++++
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Parameter name |Type |Description
+|`fieldLengths` |`int[]` a|
+This options is required and defines the length of each values
+
+In the XML DSL, this option is configured using children
+`<univocity-header>` tags:
+
+[source,brush:,xml;,gutter:,false;,theme:,Default]
+----
+<univocity-fixed>
+    <univocity-header length="3"/>
+    <univocity-header length="8"/>
+</univocity-fixed>
+----
+
+See other marshalling and unmarshalling examples for more information.
+
+|`skipTrailingCharsUntilNewline` |`Boolean` a|
+Whether or not the trailing characters until new line must be ignored.
+
+This option is `null` by default. When `null`, it uses the default
+uniVocity-parser value which is `false`.
+
+|`recordEndsOnNewLine` |`Boolean` a|
+Whether or not the record ends on new line.
+
+This option is `null` by default. When `null`, it uses the default
+uniVocity-parser value which is `false`.
+
+|`padding` |`Character` a|
+The padding character.
+
+This option is `null` by default. When `null`, it uses the default
+uniVocity-parser value which is `' '` (space).
+
+|=======================================================================
+
+[[uniVocity-parsersformats-TSVformatoptions]]
+TSV format options
+++++++++++++++++++
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Parameter name |Type |Description
+|`escapeChar` |`Character` a|
+The escape character.
+
+This option is `null` by default. When `null`, it uses the default
+uniVocity-parser value which is `'\'`.
+
+|=======================================================================
+
+[[uniVocity-parsersformats-Marshallingusages]]
+Marshalling usages
+^^^^^^^^^^^^^^^^^^
+
+The marshalling accepts either:
+
+* A list of maps (L`ist<Map<String, ?>>`), one for each line
+* A single map (`Map<String, ?>`), for a single line
+
+Any other body will throws an exception.
+
+[[uniVocity-parsersformats-Usageexample:marshallingaMapintoCSVformat]]
+Usage example: marshalling a Map into CSV format
+++++++++++++++++++++++++++++++++++++++++++++++++
+
+[width="100%",cols="50%,50%",]
+|==================================================
+|Considering the following body a|
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+Map<String, Object> body = new HashMap<>();
+body.put("A", "one");
+body.put("B", "two");
+body.put("C", "three");
+----
+
+|and this Java route definition a|
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from("direct:input")
+    .marshal(new UniVocityCsvDataFormat())
+    .to("mock:result");
+----
+
+|or this XML route definition a|
+[source,brush:,xml;,gutter:,false;,theme:,Default]
+----
+<route>
+    <from uri="direct:input"/>
+    <marshal>
+        <univocity-csv/>
+    </marshal>
+    <to uri="mock:result"/>
+</route>
+----
+
+|then it will produce a|
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+one,two,three
+----
+
+|==================================================
+
+[[uniVocity-parsersformats-Usageexample:marshallingaMapintofixed-widthformat]]
+Usage example: marshalling a Map into fixed-width format
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+[width="100%",cols="50%,50%",]
+|==================================================
+|Considering the following body a|
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+Map<String, Object> body = new HashMap<>();
+body.put("A", "one");
+body.put("B", "two");
+body.put("C", "three");
+----
+
+|and this Java route definition a|
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from("direct:input")
+    .marshal(new UniVocityFixedWidthDataFormat()
+        .setFieldLengths(new int[] {5, 5, 5})
+        .padding('_')
+    )
+    .to("mock:result");
+----
+
+|  a|
+[source,brush:,xml;,gutter:,false;,theme:,Default]
+----
+<route>
+    <from uri="direct:input"/>
+    <marshal>
+        <univocity-fixed padding="_">
+            <univocity-header length="5"/>
+            <univocity-header length="5"/>
+            <univocity-header length="5"/>
+        </univocity-fixed>
+    </marshal>
+    <to uri="mock:result"/>
+</route>
+----
+
+|then it will produce a|
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+one__two__three
+----
+
+|==================================================
+
+[[uniVocity-parsersformats-Usageexample:marshallingaMapintoTSVformat]]
+Usage example: marshalling a Map into TSV format
+++++++++++++++++++++++++++++++++++++++++++++++++
+
+[width="100%",cols="50%,50%",]
+|==================================================
+|Considering the following body a|
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+Map<String, Object> body = new HashMap<>();
+body.put("A", "one");
+body.put("B", "two");
+body.put("C", "three");
+----
+
+|and this Java route definition a|
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from("direct:input")
+    .marshal(new UniVocityTsvDataFormat())
+    .to("mock:result");
+----
+
+|or this XML route definition a|
+[source,brush:,xml;,gutter:,false;,theme:,Default]
+----
+<route>
+    <from uri="direct:input"/>
+    <marshal>
+        <univocity-tsv/>
+    </marshal>
+    <to uri="mock:result"/>
+</route>
+----
+
+|then it will produce a|
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+one two three
+----
+
+(with tabs separating the values)
+
+|==================================================
+
+[[uniVocity-parsersformats-Unmarshallingusages]]
+Unmarshalling usages
+^^^^^^^^^^^^^^^^^^^^
+
+The unmarshalling uses an `InputStream` in order to read the data.
+
+Each row produces either:
+
+* a list with all the values in it (`asMap` option with `false`);
+* A map with all the values indexed by the
+headers (`asMap` option with `true`).
+
+All the rows can either:
+
+* be collected at once into a list (`lazyLoad` option with `false`);
+* be read on the fly using an iterator (`lazyLoad` option with `true`).
+
+[[uniVocity-parsersformats-Usageexample:unmarshallingaCSVformatintomapswithautomaticheaders]]
+Usage example: unmarshalling a CSV format into maps with automatic
+headers
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+[width="100%",cols="50%,50%",]
+|===================================================================
+|Considering the following body a|
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+A,B,C
+one,two,three
+four,five,six
+----
+
+|and this Java route definition a|
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from("direct:input")
+    .unmarshal(new UniVocityCsvDataFormat()
+        .setAsMap(true)
+        .setHeaderExtractionEnabled(true)
+    )
+    .to("mock:result");
+----
+
+|or this XML route definition a|
+[source,brush:,xml;,gutter:,false;,theme:,Default]
+----
+<route>
+    <from uri="direct:input"/>
+    <unmarshal>
+        <univocity-csv headerExtractionEnabled="true" asMap="true"/>
+    </unmarshal>
+    <to uri="mock:result"/>
+</route>
+----
+
+|then it will produce a|
+[source,brush:,js;,gutter:,false;,theme:,Default]
+----
+[
+    {A: 'one', B: 'two', C: 'three'},
+    {A: 'four', B: 'five', C: 'six'}
+]
+----
+
+|===================================================================
+
+[[uniVocity-parsersformats-Usageexample:unmarshallingafixed-widthformatintolists]]
+Usage example: unmarshalling a fixed-width format into lists
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+[width="100%",cols="50%,50%",]
+|==================================================
+|Considering the following body a|
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+one  two  three
+four five six
+----
+
+|and this Java route definition a|
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from("direct:input")
+    .unmarshal(new UniVocityFixedWidthDataFormat()
+        .setFieldLengths(new int[] {5,5,5})
+    )
+    .to("mock:result");
+----
+
+|or this XML route definition a|
+[source,brush:,xml;,gutter:,false;,theme:,Default]
+----
+<route>
+    <from uri="direct:input"/>
+    <unmarshal>
+        <univocity-fixed>
+            <univocity-header length="5"/>
+            <univocity-header length="5"/>
+            <univocity-header length="5"/>
+        </univocity-fixed>
+    </unmarshal>
+    <to uri="mock:result"/>
+</route>
+----
+
+|then it will produce a|
+[source,brush:,js;,gutter:,false;,theme:,Default]
+----
+[
+    ['one', 'two', 'three'],
+    ['four', 'five', 'six']
+]
+----
+
+|==================================================

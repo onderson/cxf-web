@@ -1,0 +1,83 @@
+[[ConfluenceContent]]
+[[UserGuide-UserGuide]]
+User Guide
+~~~~~~~~~~
+
+If you want to get more familiar with what Apache Camel has to offer,
+please try the following resources:
+
+* link:#UserGuide-Wikipages[Wiki pages]
+* link:#UserGuide-PDF[PDF]
+* link:#UserGuide-OtherResources.[Other Resources.]
+
+[[UserGuide-Wikipages]]
+Wiki pages
+^^^^^^^^^^
+
+* link:getting-started.html[Getting Started]
+* link:book-getting-started.html[Longer Getting Started Guide]
+* link:camel-jar-dependencies.html[Camel JAR Dependencies]
+* link:camel-boot.html[Camel Boot]
+* link:cdi.html[Working with Camel and CDI]
+* link:spring.html[Working with Camel and Spring]
+* link:guice.html[Working with Camel and Guice]
+* link:karaf.html[Working with Camel and Karaf]
+* link:how-do-i-configure-endpoints.html[How Do I Configure Endpoints?]
+* link:bean-integration.html[Bean Integration]
+* link:configuring-camel.html[Configuring Camel]
+* link:configuring-route-startup-ordering-and-autostartup.html[Configuring
+route startup ordering and autostartup]
+* link:graceful-shutdown.html[Graceful Shutdown]
+* link:asyncprocessorawaitmanager.html[AsyncProcessorAwaitManager] for
+insight into the routing engine when it has been forced to block threads
+while exchanges are being processed asynchronous.
+* link:error-handling-in-camel.html[Error handling in Camel]
+* link:using-propertyplaceholder.html[How to use Camel property
+placeholders]
+* link:tutorials.html[Tutorials]
+* link:examples.html[Examples]
+* link:testing.html[Testing]
+* link:xml-configuration.html[Xml Configuration]
+* link:using-camelproxy.html[Using CamelProxy] for how to use proxies
+for clients to easily invoke camel routes without them knowing
+* link:camel-maven-plugin.html[Camel Maven Plugin] for running Camel
+from a Maven goal
+* link:guice-maven-plugin.html[Guice Maven Plugin] for working with
+link:guice.html[Guice]
+* link:camel-maven-archetypes.html[Camel Maven Archetypes]
+* link:creating-a-new-spring-based-camel-route.html[Creating a new
+Spring based Camel Route]
+* link:camel-jmx.html[Camel JMX]
+* link:how-to-run-camel-in-a-osgi-container.html[How to run Camel in a
+osgi container]
+* link:using-osgi-blueprint-with-camel.html[Using OSGi blueprint with
+Camel]
+* link:karaf.html[Karaf] for working with
+http://karaf.apache.org/[Apache Karaf]
+* link:camel-and-scr.html[Working with Camel and SCR]
+* Working with REST and link:rest-dsl.html[Rest DSL]
+
+[[UserGuide-PDF]]
+PDF
+^^^
+
+You can try the link:manual.html[Manual] if you want to get a PDF of
+this documentation.
+
+[[UserGuide-OtherResources.]]
+Other Resources.
+^^^^^^^^^^^^^^^^
+
+The http://architects.dzone.com/articles/apache-camel-integration[Apache
+Camel: Integration Nirvana] article by Jonathan Anstey, a great place to
+start your journey.
+
+The link:books.html[Camel in Action] book.
+
+The Camel Components Poster -
+http://gliesian.com/camel/ApacheCamelComponents.pdf[Free PDF],
+http://fineartamerica.com/featured/apache-camel-2122-components-poster-robert-liguori.html[36"x24"
+Print]
+
+Try these online link:articles.html[Articles] and
+link:tutorials.html[Tutorials].

@@ -1,0 +1,16 @@
+[[ConfluenceContent]]
+[[Includes-Includes]]
+Includes
+~~~~~~~~
+
+This contains a number of reusable page fragments which are included in
+multiple real pages in the documentation.
+
+* link:component-list.html[Component List]
+* link:component-list-external.html[Component List External]
+* link:data-format-list.html[Data Format List]
+* link:endpoint-see-also.html[Endpoint See Also]
+* link:languages-supported.html[Languages Supported]
+* link:testing-summary-include.html[Testing Summary Include]
+* link:uses-commons-logging.html[Uses Commons Logging]
+* link:using-this-pattern.html[Using This Pattern]

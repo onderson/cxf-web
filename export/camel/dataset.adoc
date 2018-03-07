@@ -1,0 +1,311 @@
+[[ConfluenceContent]]
+[[DataSet-DataSetComponent]]
+DataSet Component
+~~~~~~~~~~~~~~~~~
+
+link:testing.html[Testing] of distributed and asynchronous processing is
+notoriously difficult. The link:mock.html[Mock], link:test.html[Test]
+and link:dataset.html[DataSet] endpoints work great with the
+link:testing.html[Camel Testing Framework] to simplify your unit and
+integration testing using
+link:enterprise-integration-patterns.html[Enterprise Integration
+Patterns] and Camel's large range of link:components.html[Components]
+together with the powerful link:bean-integration.html[Bean Integration].
+
+The DataSet component provides a mechanism to easily perform load & soak
+testing of your system. It works by allowing you to create
+http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/component/dataset/DataSet.html[DataSet
+instances] both as a source of messages and as a way to assert that the
+data set is received.
+
+Camel will use the link:log.html[throughput logger] when sending
+dataset's.
+
+[[DataSet-URIformat]]
+URI format
+^^^^^^^^^^
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+dataset:name[?options]
+----
+
+Where *`name`* is used to find the
+http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/component/dataset/DataSet.html[DataSet
+instance] in the link:registry.html[Registry]
+
+Camel ships with a support implementation of
+*`org.apache.camel.component.dataset.DataSet`*, the
+*`org.apache.camel.component.dataset.DataSetSupport`* class, that can be
+used as a base for implementing your own *`DataSet`*.
+
+Camel also ships with some implementations that can be used for testing:
+ 
+
+* *`org.apache.camel.component.dataset.SimpleDataSet`*
+* **`org.apache.camel.component.dataset.ListDataSet`** +
+* **`org.apache.camel.component.dataset.FileDataSet`** +
+
+all of which extend *`DataSetSupport`*.
+
+[[DataSet-Options]]
+Options
+^^^^^^^
+
+Option
+
+Default
+
+Description
+
+`produceDelay`
+
+`3`
+
+Allows a delay in ms to be specified, which causes producers to pause in
+order to simulate slow producers.
+
+Uses a minimum of *`3ms`* delay. Set to *`-1`* to force no delay at all.
+
+`consumeDelay`
+
+`0`
+
+Allows a delay in ms to be specified, which causes consumers to pause in
+order to simulate slow consumers.
+
+`preloadSize`
+
+`0`
+
+Sets how many messages should be pre-loaded (sent) before the route
+completes its initialization.
+
+`initialDelay`
+
+`1000`
+
+*Camel 2.1:* Time period in milliseconds to wait before starting sending
+messages.
+
+`minRate`
+
+`0`
+
+Wait until the *`DataSet`* contains at least this number of messages.
+
+`dataSetIndex`
+
+`lenient`
+
+*Camel 2.17:* Controls the behavior of the *`CamelDataSetIndex`* header.
+
+The supported values are:
+
+* *`strict`*
+* *`lenient`*
+* *`off`*
+
+The default behavior prior to *Camel 2.17* can be restored using
+*`dataSetIndex=strict`*.
+
+Client Type
+
+`dataSetIndex` Value
+
+*`CamelDataSetIndex`* Header Behavior
+
+Consumer +
+ +
+
+`strict`
+
+The header will always be set.
+
+`lenient`
+
+`off`
+
+The header will NOT be set.
+
+Producer +
+ +
+
+`strict`
+
+The header must be present and the value of the header will be verified.
+
+`lenient`
+
+If the header is present, the value of the header will be verified. If
+the header is not present, it will be set.
+
+`off`
+
+If the header is present, the value of the header will not be verified.
+If the header is not present, it will not be set.
+
+You can append query options to the URI in the following format:
+*`?option=value&option=value&...`*
+
+[[DataSet-ConfiguringDataSet]]
+Configuring DataSet
+^^^^^^^^^^^^^^^^^^^
+
+Camel will lookup in the link:registry.html[Registry] for a bean
+implementing the *`DataSet`* interface. So you can register your
+own *`DataSet`* as:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<bean id="myDataSet" class="com.mycompany.MyDataSet">
+  <property name="size" value="100"/>
+</bean>
+----
+
+[[DataSet-Example]]
+Example
+^^^^^^^
+
+For example, to test that a set of messages are sent to a queue and then
+consumed from the queue without losing any messages:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+// Send the dataset to a queue
+from("dataset:foo")
+  .to("activemq:SomeQueue");
+
+// Now lets test that the messages are consumed correctly
+from("activemq:SomeQueue")
+  .to("dataset:foo");
+----
+
+The above would look in the link:registry.html[Registry] to find
+the *`foo`* *`DataSet`* instance which is used to create the messages.
+Then you create a *DataSet* implementation, such as using the
+*`SimpleDataSet`* as described below, configuring things like how big
+the data set is and what the messages look like etc.  
+
+ 
+
+[[DataSet-DataSetSupport(abstractclass)]]
+*`DataSetSupport`* (abstract class)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The *`DataSetSupport`* abstract class is a nice starting point for new
+DataSets, and provides some useful features to derived classes.
+
+[[DataSet-PropertiesonDataSetSupport]]
+Properties on `DataSetSupport`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+[width="100%",cols="25%,25%,25%,25%",options="header",]
+|=======================================================================
+|Property |Type |Default |Description
+|`defaultHeaders` |`Map<String,Object>` |`null` a|
+Specifies the default message body.
+
+For *`SimpleDataSet`* it is a constant payload; though if you want to
+create custom payloads per message, create your own derivation of
+*`DataSetSupport`*.
+
+|`outputTransformer` |`org.apache.camel.Processor` |null | 
+
+|`size` |`long` |`10` |Specifies how many messages to send/consume.
+
+|`reportCount` |`long` |`-1` a|
+Specifies the number of messages to be received before reporting
+progress. Useful for showing progress of a large load test.
+
+If < 0, then **`size`** */ 5*
+
+If == 0 then **`size`** 
+
+Else set to **`reportCount`** value.
+
+|=======================================================================
+
+[[DataSet-SimpleDataSet]]
+`SimpleDataSet`
+^^^^^^^^^^^^^^^
+
+The *`SimpleDataSet`* extends *`DataSetSupport`*, and adds a default
+body.
+
+[[DataSet-AdditionalPropertiesonSimpleDataSet]]
+Additional Properties on SimpleDataSet
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+[width="100%",cols="25%,25%,25%,25%",options="header",]
+|=======================================================================
+|Property |Type |Default |Description
+|`defaultBody` |`Object` |`<hello>world!</hello>` |Specifies the default
+message body. By default, the *`SimpleDataSet`* produces the same
+constant payload for each exchange. If you want to customize the payload
+for each exchange, create a Camel *`Processor`* and configure the
+*`SimpleDataSet`* to use it by setting the *`outputTransformer`*
+property.
+|=======================================================================
+
+[[DataSet-ListDataSet(Camel2.17)]]
+`ListDataSet (Camel 2.17)`
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The *`ListDataSet`* extends *`DataSetSupport`*, and adds a list of
+default bodies.
+
+[[DataSet-AdditionalPropertiesonListDataSet]]
+Additional Properties on ListDataSet
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+[width="100%",cols="25%,25%,25%,25%",options="header",]
+|=======================================================================
+|Property |Type |Default |Description
+|`defaultBodies` |`List<Object>` |`empty LinkedList<Object>` |Specifies
+the default message body. By default, the **`ListDataSet`** selects a
+constant payload from the list of *`defaultBodies`* using the
+*`CamelDataSetIndex`*. If you want to customize the payload, create a
+Camel *`Processor`* and configure the **`ListDataSet`** to use it by
+setting the **`outputTransformer`** property.
+
+|`size` |`long` |the size of the *`defaultBodies`* list |Specifies how
+many messages to send/consume. This value can be different from the size
+of the *`defaultBodies`* list. If the value is less than the size of the
+*`defaultBodies`* list, some of the list elements will not be used. If
+the value is greater than the size of the *`defaultBodies`* list, the
+payload for the exchange will be selected using the modulus of the
+*`CamelDataSetIndex`* and the size of the *`defaultBodies`* list (i.e.
+`CamelDataSetIndex % defaultBodies.size()` )
+|=======================================================================
+
+[[DataSet-FileDataSet(Camel2.17)]]
+`FileDataSet (Camel 2.17)`
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The *`SimpleDataSet`* extends *`ListDataSet`*, and adds support for
+loading the bodies from a file.
+
+[[DataSet-AdditionalPropertiesonFileDataSet]]
+Additional Properties on `FileDataSet`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+[width="100%",cols="25%,25%,25%,25%",options="header",]
+|=======================================================================
+|Property |Type |Default |Description
+|`sourceFile` |`File` |null |Specifies the source file for payloads
+
+|`delimiter` |`String` |\z |Specifies the delimiter pattern used by a
+*`java.util.Scanner`* to split the file into multiple payloads.
+|=======================================================================
+
+[[DataSet-SeeAlso]]
+See Also
+^^^^^^^^
+
+* link:configuring-camel.html[Configuring Camel]
+* link:component.html[Component]
+* link:endpoint.html[Endpoint]
+* link:getting-started.html[Getting Started]
+
+* link:spring-testing.html[Spring Testing]

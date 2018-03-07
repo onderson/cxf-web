@@ -1,0 +1,393 @@
+[[ConfluenceContent]]
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Component / ArtifactId / URI |License |Description
+a|
+link:activemq.html[ActiveMQ] / `activemq-camel`
+
+[source,brush:,xml;,gutter:,false;,theme:,Default]
+----
+activemq:[queue|topic:]destinationName
+----
+
+ |Apache |For JMS Messaging with http://activemq.apache.org/[Apache
+ActiveMQ.]
+
+a|
+http://activemq.apache.org/broker-camel-component.html[ActiveMQ Broker]
+/ `activemq-camel`
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+broker:[queue|topic:]destinationName
+----
+
+ |Apache |For internal message routing in the
+link:activemq.html[ActiveMQ] broker using Camel.
+
+a|
+http://activiti.org/userguide/index.html#bpmnCamelTask[Activiti]
+/ `activiti-camel`
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+activiti:camelProcess:serviceTask
+----
+
+ |Apache |For working with http://www.activiti.org/[Activiti], a
+light-weight workflow and Business Process Management (BPM) platform
+which supports BPMN 2.
+
+a|
+https://rhiot.gitbooks.io/rhiotdocumentation/content/gateway/camel_components/camel_bluetooth_component.html[Bluetooth]/ `camel-bluetooth`
+/ https://rhiot.gitbooks.io/rhiotdocumentation/content/[rhiot.io]
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+bluetooth:label
+----
+
+ |Apache |Camel Bluetooth component can retrieve information about the
+Bluetooth devices available within the device range.
+
+a|
+link:couchbase.html[Couchbase] / `camel-couchbase` /
+https://code.google.com/a/apache-extras.org/p/camel-extra/[camel-extra]
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+couchbase:protocol://host[:port]/bucket
+----
+
+ |Couchbase |Working with http://www.couchbase.com/[Couchbase NoSQL]
+document database.
+
+a|
+link:db4o.html[Db4o] / `camel-db4o` /
+http://code.google.com/p/camel-extra/[camel-extra]
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+db4o://className
+----
+
+ |GPL |For using a db4o datastore as a queue via the
+http://www.db4o.com/[db4o] library.
+
+a|
+link:esper.html[Esper] / `camel-esper` /
+http://code.google.com/p/camel-extra/[camel-extra]
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+esper:name
+----
+
+ |GPL |Working with the http://esper.codehaus.org[Esper Library] for
+Event Stream Processing.
+
+a|
+Fabric http://fabric8.io/gitbook/camelEndpointAmq.html[AMQ]
+/ `mq-fabric-camel` /
+http://code.google.com/p/camel-extra/[f]http://fabric8.io/[abric8]
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+amq:[queue|topic:]destinationName
+----
+
+ |Apache |The *http://fabric8.io/gitbook/camelEndpointAmq.html[amq:]*
+endpoint works exactly like the *activemq:* endpoint in Apache Camel;
+only it uses the http://fabric8.io/[fabric] to automatically discover
+the broker. So there is no configuration required; it'll just work out
+of the box and automatically discover whatever ActiveMQ message brokers
+are available; with failover and load balancing.
+
+a|
+Fabric http://fabric8.io/gitbook/camelEndpointFabric.html[Fabric]
+/ `fabric-camel` /
+http://code.google.com/p/camel-extra/[f]http://fabric8.io/[abric8]
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+fabric:logicalName:camelEndpointUri
+----
+
+ |Apache |The
+*http://fabric8.io/gitbook/camelEndpointFabric.html[fabric:]* endpoint
+uses Fabric's discovery mechanism to expose physical sockets, HTTP
+endpoints, etc. into the http://fabric8.io/gitbook/registry.html[runtime
+registry] using a logical name so that clients can use the existing
+Camel link:load-balancer.html[Load Balancer].
+
+a|
+Fabric http://fabric8.io/gitbook/camelEndpointMaster.html[Master]
+/ `fabric-camel` /
+http://code.google.com/p/camel-extra/[f]http://fabric8.io/[abric8]
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+master:clusterName:camelEndpointUri
+----
+
+ |Apache |The
+*http://fabric8.io/gitbook/camelEndpointMaster.html[master:]* endpoint
+provides a way to ensure only a single consumer in a cluster consumes
+from a given endpoint; with automatic failover if that JVM dies.
+
+a|
+https://rhiot.gitbooks.io/rhiotdocumentation/content/gateway/camel_components/camel_framebuffer_component.html[Framebuffer] 
+/ `camel-framebuffer` /
+https://rhiot.gitbooks.io/rhiotdocumentation/content/[rhiot.io]
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+framebuffer://name
+----
+
+ |Apache |Camel Framebuffer component can be used to manage any Linux
+Framebuffer.
+
+a|
+https://rhiot.gitbooks.io/rhiotdocumentation/content/gateway/camel_components/camel_gpsd_component.html[gpsd]
+/ `camel-gpsd` /
+https://rhiot.gitbooks.io/rhiotdocumentation/content/[rhiot.io]
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+gpsd:label[?options]
+----
+
+ |Apache |Camel http://www.catb.org/gpsd[GPSD] component can be used to
+read current GPS information from GPS devices.
+
+a|
+link:hibernate.html[Hibernate] / `camel-hibernate` /
+http://code.google.com/p/camel-extra/[camel-extra]
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+hibernate://entityName
+----
+
+ |GPL |For using a database as a queue via the
+http://www.hibernate.org/[Hibernate] library.
+
+a|
+link:jbi.html[JBI] / `servicemix-camel`
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+jbi:serviceName
+----
+
+ |Apache |For JBI integration such as working with
+http://servicemix.apache.org[Apache ServiceMix.]
+
+a|
+link:jcifs.html[JCIFS] / `camel-jcifs` /
+http://code.google.com/p/camel-extra/[camel-extra]
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+smb://user@server.example.com/sharename?password=secret&localWorkDirectory=/tmp
+----
+
+ |LGPL |This component provides access to remote file systems over the
+CIFS/SMB networking protocol by using the http://jcifs.samba.org/[JCIFS]
+library.
+
+a|
+https://rhiot.gitbooks.io/rhiotdocumentation/content/gateway/camel_components/camel_kura_cloud_component.html[kura-cloud]
+/ `camel-kura` /
+https://rhiot.gitbooks.io/rhiotdocumentation/content/[rhiot.io]
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+kura-wifi:networkInterface/ssid
+----
+
+ |Apache |Camel Kura Cloud component interacts directly with Kura
+CloudService.
+
+a|
+https://rhiot.gitbooks.io/rhiotdocumentation/content/gateway/camel_components/camel_kura_wifi_component.html[kura-wifi]
+/ `camel-kura` /
+https://rhiot.gitbooks.io/rhiotdocumentation/content/[rhiot.io]
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+kura-wifi:networkInterface/ssid
+----
+
+ |Apache |Camel Kura WiFi component can be used to retrieve the
+information about the WiFi access spots available within the device
+range.
+
+a|
+link:nmr.html[NMR] / `servicemix-nmr`
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+nmr://serviceName
+----
+
+ |Apache |Integration with the Normalized Message Router BUS in
+http://servicemix.apache.org/SMX4NMR/index.html[ServiceMix 4.x.]
+
+a|
+https://rhiot.gitbooks.io/rhiotdocumentation/content/backend/camel_components/camel_openimaj_component.html[OpenIMAJ]
+/ `camel-openimaj` /
+https://rhiot.gitbooks.io/rhiotdocumentation/content/[rhiot.io]
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+pi4j-gpio://gpioId[?options]
+----
+
+ |Apache |Camel http://www.openimaj.org/[OpenIMAJ] component can be used
+to detect faces in images.
+
+a|
+https://cwiki.apache.org/confluence/pages/createpage.action?spaceKey=CAMEL&title=pi4j-gpio&linkCreation=true&fromPageId=27822235[pi4j-gpio]
+/ `camel-pi4j` /
+https://rhiot.gitbooks.io/rhiotdocumentation/content/[rhiot.io]
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+pi4j-gpio://gpioId[?options]
+----
+
+ |Apache |GPIO Component for RaspberryPi based on pi4j lib.
+
+a|
+https://github.com/camel-labs/camel-labs/tree/master/iot[pi4j-i2c]
+/ `camel-pi4j` /
+https://rhiot.gitbooks.io/rhiotdocumentation/content/[rhiot.io]
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+pi4j-i2c://busId/deviceId[?options]
+----
+
+ |Apache |i2c Component for RaspberryPi based on pi4j lib.
+
+a|
+https://github.com/camel-labs/camel-labs/tree/master/iot#camel-pubnub-component[PubNub]
+/ `camel-pubnub` /
+https://rhiot.gitbooks.io/rhiotdocumentation/content/[rhiot.io]
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+ pubnub://pubnubEndpointType:channel[?options]
+----
+
+ |Apache |Camel https://www.pubnub.com/[PubNub] component. More
+information
+https://rhiot.gitbooks.io/rhiotdocumentation/content/[rhiot.io project.]
+
+a|
+link:rcode.html[RCode] / `camel-rcode` /
+http://code.google.com/p/camel-extra/[camel-extra]
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+rcode://host[:port]/operation[?options]
+----
+
+ |LGPL |Uses http://www.rforge.net/Rserve/[Rserve] to integrate Camel
+with the statistics environment http://www.r-project.org/[R.]
+
+a|
+http://scalate.fusesource.org/camel.html[Scalate] / `scalate-camel`
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+scalate:templateName
+----
+
+ |Apache |Uses the given http://scalate.fusesource.org/[Scalate]
+template to transform the message.
+
+a|
+link:smooks.html[Smooks] / `camel-smooks` /
+http://code.google.com/p/camel-extra/[camel-extra]
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+unmarshal(edi)
+----
+
+ |GPL |For working with EDI parsing using the
+http://milyn.codehaus.org/Smooks[Smooks library]. This component is
+*deprecated* as Smooks now provides
+http://www.smooks.org/mediawiki/index.php?title=V1.5:Smooks_v1.5_User_Guide#Apache_Camel_Integration[Camel
+integration out of the box.]
+
+a|
+link:spring-neo4j.html[Spring Neo4j] / `camel-spring-neo4j` /
+http://code.google.com/p/camel-extra/[camel-extra]
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+spring-neo4j:http://hostname[:port]/database[?options]
+----
+
+ |TBA |Component for producing to Neo4j datastore using the
+http://www.springsource.org/spring-data/neo4j[Spring Data Neo4j]
+library.
+
+a|
+http://www.tinkerforge.com[Tinkerforge] / `camel-tinkerforge` /
+https://rhiot.gitbooks.io/rhiotdocumentation/content/[rhiot.io]
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+tinkerforge:[//hostname[:port]]/devicetype/uid/[?options]
+----
+
+ |Apache |The tinkerforge component allows interaction with Tinkerforge
+http://www.tinkerforge.com/en/doc/Primer.html#primer-bricklets[bricklets].
+It uses the standard
+http://www.tinkerforge.com/en/doc/Software/API_Bindings_Java.html#api-bindings-java[Java
+bindings] to connects to `brickd`. For more information see the
+https://rhiot.gitbooks.io/rhiotdocumentation/content/[rhiot.io].
+
+a|
+link:virtualbox.html[VirtualBox] / `camel-virtualbox` /
+http://code.google.com/p/camel-extra/[camel-extra]
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+virtualbox:machine[?options]
+----
+
+ |GPL V2 |The VitualBox component uses the webservice API that
+exposes https://www.virtualbox.org/wiki/VirtualBox[VirtualBox] functionality
+and consumes events generated by virtual machines.
+
+a|
+https://rhiot.gitbooks.io/rhiotdocumentation/content/gateway/camel_components/camel_webcam_component.html[Webcam]
+/ `camel-webcam` /
+https://rhiot.gitbooks.io/rhiotdocumentation/content/[rhiot.io]
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+webcam:label[?options]
+----
+
+ |Apache |Camel http://webcam-capture.sarxos.pl/[Webcam] component can
+be used to capture still images and detect motion.
+
+a|
+link:zeromq.html[ZeroMQ] / `camel-zeromq` /
+http://code.google.com/p/camel-extra/[camel-extra]
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+zeromq:(tcp|ipc)://hostname:port
+----
+
+ |LGPL |The ZeroMQ component allows you to consumer or produce messages
+using http://zeromq.org[ZeroMQ].
+|=======================================================================

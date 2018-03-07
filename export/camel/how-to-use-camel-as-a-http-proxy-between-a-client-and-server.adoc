@@ -1,0 +1,56 @@
+[[ConfluenceContent]]
+[[HowtouseCamelasaHTTPproxybetweenaclientandserver-HowtouseCamelasaHTTPproxybetweenaclientandserver]]
+How to use Camel as a HTTP proxy between a client and server
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+You may have an existing HTTP service, which you want to use Camel in
+between as a proxy, between the client and the server.
+
+This can be done using the link:jetty.html[Jetty] component as follows:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+  <route>
+    <from uri="jetty:http://0.0.0.0:8080/myapp?matchOnUriPrefix=true"/>
+    <to uri="jetty:http://realserverhostname:8090/myapp?bridgeEndpoint=true&amp;throwExceptionOnFailure=false"/>
+  </route>
+----
+
+In the example above, we expose a HTTP service on localhost (0.0.0.0
+means to expose on all network interfaces) port 8080, and using context
+path "myapp". +
+The option `matchOnUriPrefix` is set to `true`, to match any wildcards
+in the "myapp" context path. See more details here
+link:how-do-i-let-jetty-match-wildcards.html[How do I let Jetty match
+wildcards].
+
+Then we route to the `<to>` which is also a jetty endpoint, which sends
+the requests to the real HTTP server. The `bridgeEndpoint` option is set
+to `true`, to tell Camel that its a bridging from an incoming
+link:jetty.html[Jetty] service (ie. to act as a HTTP adapter/proxy). The
+option `throwExceptionOnFailure` is set to `false`, to rely back any
+errors communicating with the real HTTP server directly to the client,
+without using any Camel link:error-handling-in-camel.html[Error
+Handling] (ie. no exception is raised from Camel).
+
+You can also use link:servlet.html[Servlet] instead of
+link:jetty.html[Jetty], for example:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+  <route>
+    <from uri="servlet:myapp?matchOnUriPrefix=true"/>
+    <to uri="http://realserverhostname:8090/myapp?bridgeEndpoint=true&amp;throwExceptionOnFailure=false"/>
+  </route>
+----
+
+[[HowtouseCamelasaHTTPproxybetweenaclientandserver-Morecontrolofurlmappings]]
+More control of url mappings
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+From *Camel 2.11* onwards you can use a custom url rewriter which gives
+you control of the url mappings. Such as handling situations where the
+mapping is not identical 1:1 mapping. See more details at the
+`urlRewrite` option on link:http.html[HTTP], link:http4.html[HTTP4], and
+link:jetty.html[Jetty] components, and in particular read this page
+link:urlrewrite.html[UrlRewrite] about the `camel-urlrewrite` component.

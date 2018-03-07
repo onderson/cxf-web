@@ -1,0 +1,23 @@
+[[ConfluenceContent]]
+[[RunningUnitTests-Testing]]
+Testing
+~~~~~~~
+
+Before you can run the tests you need to follow the steps for
+link:building.html[Building].
+
+By default when you run the *install* goal in maven the unit tests will
+all be run.
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+mvn clean install
+----
+
+If you want to run the integration tests as well you can use the
+integration test profile...
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+mvn clean install -P integration
+----

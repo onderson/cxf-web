@@ -1,0 +1,9 @@
+[[ConfluenceContent]]
+[[Smooks-Smooks]]
+Smooks
+~~~~~~
+
+The camel-smooks component from
+http://code.google.com/p/camel-extra/[Camel Extra] has been removed. The
+http://milyn.codehaus.org/Smooks[Smooks Library] provides a module that
+integrates with Camel and we encourage end users to use that.

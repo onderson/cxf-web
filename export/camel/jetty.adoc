@@ -1,0 +1,863 @@
+[[ConfluenceContent]]
+[[Jetty-JettyComponent]]
+Jetty Component
+~~~~~~~~~~~~~~~
+
+The producer is deprecated - do not use. We only recommend using jetty
+as consumer (eg from jetty)
+
+ 
+
+The *`jetty`* component provides HTTP-based
+link:endpoint.html[endpoints] for consuming and producing HTTP requests.
+That is, the Jetty component behaves as a simple Web server. Jetty can
+also be used as an HTTP client which mean you can also use it with Camel
+as a producer.
+
+Stream
+
+The **`assert`** call appears in this example, because the code is part
+of an unit test. Jetty is stream based, which means the input it
+receives is submitted to Camel as a stream. That means you will only be
+able to read the content of the stream *once*.
+
+If you find a situation where the message body appears to be empty or
+you need to access the *`Exchange.HTTP_RESPONSE_CODE`* data multiple
+times, e.g., doing multi-casting, or re-delivery error handling, you
+should use link:stream-caching.html[Stream caching] or convert the
+message body to a *`String`* which is safe to be re-read multiple times.
+
+Maven users should add the following dependency to their *`pom.xml`* to
+use this component:
+
+xml<dependency> <groupId>org.apache.camel</groupId>
+<artifactId>camel-jetty</artifactId> <version>x.x.x</version> <!-- use
+the same version as your Camel core version --> </dependency>
+
+[[Jetty-URIFormat]]
+URI Format
+^^^^^^^^^^
+
+jetty:http://hostname[:port][/resourceUri][?options]
+
+Query options should be appended to the URI using the following format:
+*`?option=value&option=value&...`*
+
+[[Jetty-Options]]
+Options
+^^^^^^^
+
+confluenceTableSmall
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Option |Default Value |Description
+|`bridgeEndpoint` |`false` a|
+*Camel 2.1:* If the option is *`true`*, *`HttpProducer`* will ignore
+the *`Exchange.HTTP_URI`* header, and use the endpoint's URI for
+request. You may also set the *`throwExceptionOnFailure`* to be false to
+let the *`HttpProducer`* send all the fault response back.
+
+*Camel 2.3:* If the option is true, *`HttpProducer`*
+and *`CamelServlet`* will skip the gzip processing if
+the *`Content-Encoding`* is *`gzip`*.
+
+Consider setting *`disableStreamCache=true`* to optimize when bridging.
+
+|`chunked` |`true` |*Camel 2.2:* If this option is *`false`* Jetty
+Servlet will disable the HTTP streaming and set the *`Content-Length`*
+header on the response
+
+|`continuationTimeout` |`null` a|
+*Camel 2.6:* Allows to set a timeout in milliseconds when using
+link:jetty.html[Jetty] as consumer (server). By default Jetty uses
+*`30000`*. You can use a value of *`<= 0`* to never expire. If a timeout
+occurs then the request will be expired and Jetty will return back an
+HTTP error *`503`* to the client.
+
+This option is only in use when using link:jetty.html[Jetty] with the
+link:asynchronous-routing-engine.html[Asynchronous Routing Engine].
+
+|`cookieHandler` |`null` |*Camel 2.19: Producer only* Configure a cookie
+handler to maintain a HTTP session.
+
+|`disableStreamCache` |`false` a|
+*Camel 2.3:* Determines whether or not the raw input stream from Jetty
+is cached or not (Camel will read the stream into a in memory/overflow
+to file, link:stream-caching.html[Stream caching]) cache. By default
+Camel will cache the Jetty input stream to support reading it multiple
+times to ensure it Camel can retrieve all data from the stream. However,
+you can set this option to *`true`* when you for example need to access
+the raw stream, such as streaming it directly to a file or other
+persistent store. 
+
+*`DefaultHttpBinding`* will copy the request input stream into a stream
+cache and put it into message body if this option is *`false`* to
+support reading the stream multiple times. If you use
+link:jetty.html[Jetty] to bridge/proxy an endpoint then consider
+enabling this option to improve performance, in case you do not need to
+read the message payload multiple times.
+
+|`enableCORS` |`false` |*Camel 2.15:* if the option is *`true`*, Jetty
+server will setup the *`CrossOriginFilter`* which supports the
+https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS[CORS]
+out of box.
+
+|`enableJmx` |`false` |*Camel 2.3:* If this option is *`true`*, Jetty
+JMX support will be enabled for this endpoint. See link:jetty.html[Jetty
+JMX support] for more details.
+
+|`enablemulti-partFilter` |`true` a|
+*Camel 2.5:* Whether Jetty
+*`org.eclipse.jetty.servlets.multi-partFilter`* is enabled or not.
+
+Set this option to *`false`* when bridging endpoints, to ensure
+multi-part requests is proxied/bridged as well.
+
+|`filterInit.xxx` |`null` a|
+*Camel 2.17*: Configuration for the *`InitParameters`* of filter.
+
+For example, setting *`filterInit.parameter=value`* the parameter could
+be used when calling the filter *`init()`* method.
+
+|`filtersRef` |`null` |*Camel 2.9:* Allows using a custom filters which
+is putted into a list and can be find in the
+link:registry.html[Registry]
+
+|`handlers` |`null` a|
+Specifies a comma-delimited set of *`org.mortbay.jetty.Handler`*
+instances in your link:registry.html[Registry] (such as your Spring
+*`ApplicationContext`*). These handlers are added to the Jetty Servlet
+context (for example, to add security).
+
+*Note*: you can not use different handlers with different Jetty
+endpoints using the same port number. The handlers is associated to the
+port number. If you need different handlers, then use different port
+numbers.
+
+|`headerFilterStrategy` |`null` |*Camel 2.11:* Reference to a instance
+of *`org.apache.camel.spi.HeaderFilterStrategy`* in the
+link:registry.html[Registry]. It will be used to apply the
+custom *`headerFilterStrategy`* on the new create *`HttpJettyEndpoint`*.
+
+|`httpBindingRef` |`null` |Reference to an
+*`org.apache.camel.component.http.HttpBinding`* in the
+link:registry.html[Registry]. *`HttpBinding`* can be used to customize
+how a response should be written for the consumer.
+
+|`httpClient.xxx` |`null` |Configuration of Jetty's
+http://www.eclipse.org/jetty/documentation/current/http-client-api.html[HttpClient].
+For example, setting *`httpClient.idleTimeout=30000`* sets the idle
+timeout to *`30`* seconds. And *`httpClient.timeout=30000`* sets the
+request timeout to *`30`* seconds, in case you want to timeout sooner if
+you have long running request/response calls.
+
+|`httpClient` |`null` |To use a shared
+*`org.eclipse.jetty.client.HttpClient`* for all producers created by
+this endpoint. This option should only be used in special circumstances.
+
+|`httpClientMinThreads` |`null` |*Camel 2.11:* *Producer only*: To set a
+value for minimum number of threads in *`HttpClient`* thread pool. This
+setting override any setting configured on component level. Notice that
+both a min and max size must be configured. If not set it default to min
+8 threads used in Jetty's thread pool.
+
+|`httpClientMaxThreads` |`null` |*Camel 2.11:* *Producer only*: To set a
+value for maximum number of threads in *`HttpClient`* thread pool. This
+setting override any setting configured on component level. Notice that
+both a min and max size must be configured. If not set it default to
+max *`16`* threads used in Jetty's thread pool.
+
+|`httpMethodRestrict` |`null` |*Camel 2.11:* *Consumer only*: Used to
+only allow consuming if the *`HttpMethod`* matches, such
+as *`GET/POST/PUT`* etc. From **Camel 2.15**: multiple methods can be
+specified separated by comma.
+
+|`jettyHttpBindingRef` |`null` |*Camel 2.6.0+:* Reference to an
+*`org.apache.camel.component.jetty.JettyHttpBinding`* in the
+link:registry.html[Registry]. *`JettyHttpBinding`* can be used to
+customize how a response should be written for the producer.
+
+|`matchOnUriPrefix` |`false` a|
+Whether or not the *`CamelServlet`* should try to find a target consumer
+by matching the URI prefix if no exact match is found.
+
+See here link:how-do-i-let-jetty-match-wildcards.html[How do I let Jetty
+match wildcards].
+
+|`multi-partFilterRef` |`null` a|
+*Camel 2.6:* Allows using a custom multi-part filter.
+
+*Note*: setting *`multi-partFilterRef`* forces the value of
+*`enablemulti-partFilter`* to *`true`*.
+
+|`okStatusCodeRange` |`200-299` |**Camel 2.16:** *Producer only* The
+status codes which is considered a success response. The values are
+inclusive. The range must be defined as from-to with the dash included.
+
+|`optionsEnabled` |`false` |*Camel 2.17:* Specifies whether to
+enable *`HTTP OPTIONS`* for this Jetty consumer. By default *`OPTIONS`*
+is turned off.
+
+|`proxyHost` |`null` |*Camel 2.11:* *Producer only* The HTTP proxy Host
+URL which will be used by Jetty client.
+
+|`proxyPort` |`null` |*Camel 2.11:* *Producer only* The HTTP proxy port
+which will be used by Jetty client.
+
+|`responseBufferSize` |`null` |*Camel 2.12:* To use a custom buffer size
+on the *`javax.servlet.ServletResponse`*.
+
+|`sendDateHeader` |`false` a|
+*Camel 2.14:* if the option is true, jetty server will send the date
+header to the client which sends the request.
+
+*Note*: ensure that there are no any other *`camel-jetty`* endpoints
+that share the same port, otherwise this option may not work as
+expected.
+
+|`sendServerVersion` |`true` a|
+*Camel 2.13:* if the option is true, jetty will send the server header
+with the jetty version information to the client which sends the
+request.
+
+*Note*: ensure that there are no any other *`camel-jetty`* endpoints
+that share the same port, otherwise this option may not work as
+expected.
+
+|`sessionSupport` |`false` |Specifies whether to enable the session
+manager on the server side of Jetty.
+
+|`sslContextParameters` |`null` a|
+*Camel 2.17:* Reference to a
+**`org.apache.camel.util.jsse.SSLContextParameters`** in the
+link:registry.html[Registry].  This reference overrides any
+configured *`SSLContextParameters`* at the component level.   
+
+See link:camel-configuration-utilities.html[Using the JSSE Configuration
+Utility].
+
+|`sslContextParametersRef` |`null` a|
+*Camel 2.8:* *Deprecated* Reference to a
+*`org.apache.camel.util.jsse.SSLContextParameters`* in the
+link:registry.html[Registry].  This reference overrides any
+configured *`SSLContextParameters`* at the component level. 
+
+See link:camel-configuration-utilities.html[Using the JSSE Configuration
+Utility].
+
+|`throwExceptionOnFailure` |`true` |Option to disable throwing the
+*`HttpOperationFailedException`* in case of failed responses from the
+remote server. This allows you to get all responses regardless of the
+HTTP status code.
+
+|`traceEnabled` |`false` |Specifies whether to enable *`HTTP TRACE`* for
+this Jetty consumer. By default *`TRACE`* is turned off.
+
+|`transferException` |`false` a|
+*Camel 2.6:* If enabled and an link:exchange.html[Exchange] failed
+processing on the consumer side, and if the caused Exception was send
+back serialized in the response as a
+*`application/x-java-serialized-object`* content type.
+
+On the producer side the exception will be deserialized and thrown as
+is, instead of the *`HttpOperationFailedException`*. The caused
+exception is required to be serialized.
+
+|`urlRewrite` |`null` a|
+*Camel 2.11:* *Producer only* Refers to a custom
+*`org.apache.camel.component.http.UrlRewrite`* which allows you to
+rewrite URLs when you bridge/proxy endpoints.
+
+See more details at link:urlrewrite.html[UrlRewrite] and
+link:how-to-use-camel-as-a-http-proxy-between-a-client-and-server.html[How
+to use Camel as a HTTP proxy between a client and server].
+
+|`useContinuation` |`true` |*Camel 2.6:* Whether or not to use
+http://wiki.eclipse.org/Jetty/Feature/Continuations[Jetty continuations]
+for the Jetty Server.
+|=======================================================================
+
+[[Jetty-MessageHeaders]]
+Message Headers
+^^^^^^^^^^^^^^^
+
+Camel uses the same message headers as the link:http.html[HTTP]
+component. From *Camel 2.2*, it also uses
+(*`Exchange.HTTP_CHUNKED`*, *`CamelHttpChunked`*) header to toggle
+chunked encoding on the *`camel-jetty`* consumer. Camel also populates
+_all_ *`request.parameter`* and *`request.headers`*. For example, given
+a client request with the URL, `http://myserver/myserver?orderid=123`,
+the exchange will contain a header named *`orderid`* with the value
+*`123`*.
+
+From *Camel 2.2.0*: you can get the request.parameter from the message
+header not only from *`GET`* HTTP Method, but also other HTTP method.
+
+[[Jetty-Usage]]
+Usage
+^^^^^
+
+The Jetty component supports both consumer and producer endpoints.
+Another option for producing to other HTTP endpoints, is to use the
+link:http.html[HTTP Component]
+
+[[Jetty-ComponentOptions]]
+Component Options
+^^^^^^^^^^^^^^^^^
+
+The *`JettyHttpComponent`* provides the following options:
+
+confluenceTableSmall
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Option |Default Value |Description
+|`allowJavaSerializedObject` |`false` a|
+*Camel 2.16.1/2.15.5:* Whether to allow java serialization when a
+request uses *`context-type=application/x-java-serialized-object`*.
+
+When *`true`*, be aware that Java will deserialize the incoming data
+from the request to Java and that can be a potential security risk.
+
+|`enableJmx` |`false` |*Camel 2.3:* If this option is true, Jetty JMX
+support will be enabled for this endpoint. See link:jetty.html[Jetty JMX
+support] for more details.
+
+|`errorHandler` |`null` |*Camel 2.15*: This option is used to set
+the *`ErrorHandler`* that Jetty server uses.
+
+|`httpClient` |`null` a|
+*Deprecated:* *Producer only*: To use a custom *`HttpClient`* with the
+jetty producer.
+
+*Note*: from *Camel 2.11* this option has been removed. Set the option
+on the endpoint instead.
+
+|`httpClientMaxThreads` |`null` |*Producer only*: To set a value for
+maximum number of threads in *`HttpClient`* thread pool. Notice that
+both a min and max size must be configured.
+
+|`httpClientMinThreads` |`null` |*Producer only*: To set a value for
+minimum number of threads in *`HttpClient`* thread pool. Notice that
+both a min and max size must be configured.
+
+|`httpClientThreadPool` |`null` a|
+*Deprecated:* *Producer only*: To use a custom thread pool for the
+client.
+
+*Note*: this option has been removed from *Camel 2.11*.
+
+|`maxThreads` |`null` |*Camel 2.5* *Consumer only*: To set a value for
+maximum number of threads in server thread pool. Notice that both a min
+and max size must be configured.
+
+|`minThreads` |`null` |*Camel 2.5* *Consumer only*: To set a value for
+minimum number of threads in server thread pool. Notice that both a min
+and max size must be configured.
+
+|`proxyHost` |`null` |*Camel 2.12.2/2.11.3* To use an HTTP proxy.
+
+|`proxyPort` |`null` |*Camel 2.12.2/2.11.3:* To use an HTTP proxy.
+
+|`socketConnectors` |`null` |*Camel 2.5* *Consumer only:* A map which
+contains per port number specific HTTP connectors. Uses the same
+principle as *`sslSocketConnectors`* and therefore see section _SSL
+support_ for more details.
+
+|`socketConnectorProperties` |`null` |*Camel 2.5* *Consumer only*. A map
+which contains general HTTP connector properties. Uses the same
+principle as *`sslSocketConnectorProperties`* and therefore see section
+_SSL support_ for more details.
+
+|`sslContextParameters` |`null` a|
+*Camel 2.8:* To configure a custom SSL/TLS configuration options at the
+component level. 
+
+See  http://camel.apache.org/camel-configuration-utilities.html[Using
+the JSSE Configuration Utility] for more details.
+
+|`sslKeyPassword` |`null` |*Consumer only*: The password for the
+keystore when using SSL.
+
+|`sslKeystore` |`null` |*Consumer only*: The path to the keystore.
+
+|`sslPassword` |`null` |*Consumer only*: The password when using SSL.
+
+|`sslSocketConnectors` |`null` |*Camel 2.3* *Consumer only:* A map which
+contains per port number specific SSL connectors. See section _SSL
+support_ for more details.
+
+|`sslSocketConnectorProperties` |`null` |*Camel 2.5* *Consumer only*. A
+map which contains general SSL connector properties. See section _SSL
+support_ for more details.
+
+|`requestBufferSize` |`null` |*Camel 2.11.2:* Allows to configure a
+custom value of the request buffer size on the Jetty connectors.
+
+|`requestHeaderSize` |`null` |*Camel 2.11.2:* Allows to configure a
+custom value of the request header size on the Jetty connectors.
+
+|`responseBufferSize` |`null` |*Camel 2.11.2:* Allows to configure a
+custom value of the response buffer size on the Jetty connectors.
+
+|`responseHeaderSize` |`null` |*Camel 2.11.2:* Allows to configure a
+custom value of the response header size on the Jetty connectors.
+
+|`threadPool` |`null` |*Camel 2.5* *Consumer only*: To use a custom
+thread pool for the server. This option should only be used in special
+circumstances.
+|=======================================================================
+
+[[Jetty-ProducerExample]]
+Producer Example
+^^^^^^^^^^^^^^^^
+
+The following is a basic example of how to send an HTTP request to an
+existing HTTP endpoint.
+
+*Java DSL*:
+
+javafrom("direct:start") .to("jetty://http://www.google.com");
+
+*XML DSL*:
+
+xml<route> <from uri="direct:start"/> <to
+uri="jetty://http://www.google.com"/> <route>
+
+[[Jetty-ConsumerExample]]
+Consumer Example
+^^^^^^^^^^^^^^^^
+
+In this sample we define a route that exposes a HTTP service at
+`http://localhost:8080/myapp/myservice`:\{snippet:id=e1|lang=java|url=camel/trunk/components/camel-jetty9/src/test/java/org/apache/camel/component/jetty/JettyRouteTest.java}
+
+Usage of localhost
+
+When you specify *`localhost`* in a URL, Camel exposes the endpoint only
+on the local TCP/IP network interface, so it cannot be accessed from
+outside the machine it operates on.
+
+If you need to expose a Jetty endpoint on a specific network interface,
+the numerical IP address of this interface should be used as the host.
+If you need to expose a Jetty endpoint on all network interfaces, the
+*`0.0.0.0`* address should be used.
+
+To listen across an entire URI prefix, see
+link:how-do-i-let-jetty-match-wildcards.html[How do I let Jetty match
+wildcards].
+
+If you actually want to expose routes by HTTP and already have a
+Servlet, you should instead refer to the
+https://cwiki.apache.org/confluence/pages/viewpage.action?pageId=46339[Servlet
+Transport].
+
+ 
+
+Our business logic is implemented in the *`MyBookService`* class, which
+accesses the HTTP request contents and then returns a response. +
+*Note:* The *`assert`* call appears in this example, because the code is
+part of an unit
+test.\{snippet:id=e2|lang=java|url=camel/trunk/components/camel-jetty9/src/test/java/org/apache/camel/component/jetty/JettyRouteTest.java}The
+following sample shows a content-based route that routes all requests
+containing the URI parameter, *`one`*, to the endpoint, *`mock:one`*,
+and all others to
+*`mock:other`*.\{snippet:id=e1|lang=java|url=camel/trunk/components/camel-jetty9/src/test/java/org/apache/camel/component/jetty/JettyContentBasedRouteTest.java}If
+a client sends an HTTP request, `http://serverUri?one=hello`, the Jetty
+component will copy the HTTP request parameter, *`one`* to the
+exchange's *`in.header`*. We can then use the *`simple`* language to
+route exchanges that contain this header to a specific endpoint and all
+others to another. If we used a language more powerful than
+link:simple.html[Simple,] e.g., link:el.html[EL] or
+link:ognl.html[OGNL], then we can also test for the parameter value and
+route based on the header value as well.
+
+[[Jetty-SessionSupport]]
+Session Support
+^^^^^^^^^^^^^^^
+
+The session support option, *`sessionSupport`*, can be used to enable a
+*`HttpSession`* object and access the session object while processing
+the exchange.
+
+For example, the following route enables sessions:
+
+xml<route> <from
+uri="jetty:http://0.0.0.0/myapp/myservice/?sessionSupport=true"/>
+<processRef ref="myCode"/> <route>
+
+The *`myCode`* link:processor.html[Processor] can be instantiated by a
+Spring *`bean`* element:
+
+xml<bean id="myCode"class="com.mycompany.MyCodeProcessor"/>
+
+Where the processor implementation can access the *`HttpSession`* as
+follows:
+
+javapublic void process(Exchange exchange) throws Exception \{
+HttpSession session =
+exchange.getIn(HttpMessage.class).getRequest().getSession(); // ... }
+
+[[Jetty-SSLSupport(HTTPS)]]
+SSL Support (HTTPS)
+^^^^^^^^^^^^^^^^^^^
+
+[[Jetty-UsingtheJSSEConfigurationUtility]]
+Using the JSSE Configuration Utility
+
+From *Camel 2.8*: the *`camel-jetty`* component supports SSL/TLS
+configuration through the link:camel-configuration-utilities.html[Camel
+JSSE Configuration Utility].  This utility greatly decreases the amount
+of component specific code you need to write and is configurable at the
+endpoint and component levels.  The following examples demonstrate how
+to use the utility with the Jetty component.
+
+[[Jetty-Programmaticconfigurationofthecomponent]]
+Programmatic configuration of the component
+
+javaKeyStoreParameters ksp = new KeyStoreParameters();
+ksp.setResource("/users/home/server/keystore.jks");
+ksp.setPassword("keystorePassword"); KeyManagersParameters kmp = new
+KeyManagersParameters(); kmp.setKeyStore(ksp);
+kmp.setKeyPassword("keyPassword"); SSLContextParameters scp = new
+SSLContextParameters(); scp.setKeyManagers(kmp); JettyComponent
+jettyComponent = getContext().getComponent("jetty",
+JettyComponent.class); jettyComponent.setSslContextParameters(scp);
+
+[[Jetty-SpringDSLbasedconfigurationofendpoint]]
+Spring DSL based configuration of endpoint
+
+xml<camel:sslContextParameters id="sslContextParameters">
+<camel:keyManagers keyPassword="keyPassword"> <camel:keyStore
+resource="/users/home/server/keystore.jks" password="keystorePassword"/>
+</camel:keyManagers> </camel:sslContextParameters> <to
+uri="jetty:https://127.0.0.1/mail/?sslContextParametersRef=sslContextParameters"/>
+
+[[Jetty-ConfiguringJettyDirectly]]
+Configuring Jetty Directly
+
+Jetty provides SSL support out of the box. To enable Jetty to run in SSL
+mode, simply format the URI using the *`https://`* prefix.
+
+*Example*:
+
+xml<from uri="jetty:https://0.0.0.0/myapp/myservice/"/>
+
+Jetty also needs to know where to load your keystore from and what
+passwords to use in order to load the correct SSL certificate. Set the
+following JVM System Properties:
+
+*Before Camel 2.3*:
+
+confluenceTableSmall
+
+[width="100%",cols="50%,50%",options="header",]
+|=======================================================================
+|Property |Description
+|`jetty.ssl.keystore` |Specifies the location of the Java *`keystore`*
+file, which contains the Jetty server's own *`X.509`* certificate in a
+_key entry_. A key entry stores the *`X.509`* certificate (effectively,
+the _public key_) and also its associated private key.
+
+|`jetty.ssl.password` |The store password, which is required to access
+the *`keystore`* file (this is the same password that is supplied to the
+*`keystore`* command's *`-storepass`* option).
+
+|`jetty.ssl.keypassword` |The key password, which is used to access the
+certificate's key entry in the *`keystore`* (this is the same password
+that is supplied to the *`keystore`* command's *`-keypass`* option).
+|=======================================================================
+
+ 
+
+*From Camel 2.3*:
+
+confluenceTableSmall
+
+[width="100%",cols="50%,50%",options="header",]
+|=======================================================================
+|Property |Description
+|`org.eclipse.jetty.ssl.keystore` |Specifies the location of the
+Java *`keystore`* file, which contains the Jetty server's own *`X.509`*
+certificate in a _key entry_. A key entry stores the *`X.509`*
+certificate (effectively, the _public key_) and also its associated
+private key.
+
+|`org.eclipse.jetty.ssl.password` |The store password, which is required
+to access the *`keystore`* file (this is the same password that is
+supplied to the *`keystore`* command's *`keystore`* option).
+
+|`org.eclipse.jetty.ssl.keypassword` |The key password, which is used to
+access the certificate's key entry in the *`keystore`* (this is the same
+password that is supplied to the *`keystore`* command's *`keystore`*
+option).
+|=======================================================================
+
+For details of how to configure SSL on a Jetty endpoint, read the
+following
+http://www.eclipse.org/jetty/documentation/current/configuring-ssl.html[Jetty
+documentation]. Some SSL properties aren't exposed directly by Camel.
+However, Camel does expose the underlying *`SslSocketConnector`*, which
+will allow you to set properties like *`needClientAuth`* for mutual
+authentication requiring a client certificate or *`wantClientAuth`* for
+mutual authentication where a client doesn't need a certificate but can
+have one.
+
+There's a slight difference between the various Camel versions:
+
+*Up to Camel 2.2*
+
+xml<bean id="jetty"
+class="org.apache.camel.component.jetty.JettyHttpComponent"> <property
+name="sslSocketConnectors"> <map> <entry key="8043"> <bean
+class="org.mortbay.jetty.security.SslSocketConnector"> <property
+name="password"value="..."/> <property name="keyPassword"value="..."/>
+<property name="keystore"value="..."/> <property
+name="needClientAuth"value="..."/> <property
+name="truststore"value="..."/> </bean> </entry> </map> </property>
+</bean>
+
+*Camel 2.3, 2.4*
+
+xml<bean id="jetty"
+class="org.apache.camel.component.jetty.JettyHttpComponent"> <property
+name="sslSocketConnectors"> <map> <entry key="8043"> <bean
+class="org.eclipse.jetty.server.ssl.SslSocketConnector"> <property
+name="password"value="..."/> <property name="keyPassword"value="..."/>
+<property name="keystore"value="..."/> <property
+name="needClientAuth"value="..."/> <property
+name="truststore"value="..."/> </bean> </entry> </map> </property>
+</bean>
+
+From *Camel 2.5*: we switch to use *`SslSelectChannelConnector *`*
+
+xml<bean id="jetty"
+class="org.apache.camel.component.jetty.JettyHttpComponent"> <property
+name="sslSocketConnectors"> <map> <entry key="8043"> <bean
+class="org.eclipse.jetty.server.ssl.SslSelectChannelConnector">
+<property name="password"value="..."/> <property
+name="keyPassword"value="..."/> <property name="keystore"value="..."/>
+<property name="needClientAuth"value="..."/> <property
+name="truststore"value="..."/> </bean> </entry> </map> </property>
+</bean>
+
+The value you use as keys in the above map is the port you configure
+Jetty to listen on.
+
+[[Jetty-ConfiguringGeneralSSLProperties]]
+Configuring General SSL Properties
+++++++++++++++++++++++++++++++++++
+
+From *Camel 2.5*: instead of a per port number specific SSL socket
+connector (as shown above) you can now configure general properties
+which applies for all SSL socket connectors (which is not explicit
+configured as above with the port number as entry).
+
+xml<bean id="jetty"
+class="org.apache.camel.component.jetty.JettyHttpComponent"> <property
+name="sslSocketConnectorProperties"> <map> <entry
+key="password"value="..."/> <entry key="keyPassword"value="..."/> <entry
+key="keystore"value="..."/> <entry key="needClientAuth"value="..."/>
+<entry key="truststore"value="..."/> </map> </property> </bean>
+
+[[Jetty-HowtoObtainAReferencetotheX509Certificate]]
+How to Obtain A Reference to the `X509Certificate`
+++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Jetty stores a reference to the certificate in
+the *`HttpServletRequest`* which you can access from code as follows:
+
+javaHttpServletRequest req =
+exchange.getIn().getBody(HttpServletRequest.class); X509Certificate cert
+= (X509Certificate)
+req.getAttribute("javax.servlet.request.X509Certificate")
+
+[[Jetty-ConfiguringGeneralHTTPProperties]]
+Configuring General HTTP Properties
++++++++++++++++++++++++++++++++++++
+
+From *Camel 2.5*: instead of a per port number specific HTTP socket
+connector (as shown above) you can now configure general properties
+which applies for all HTTP socket connectors (which is not explicit
+configured as above with the port number as entry).
+
+xml<bean id="jetty"
+class="org.apache.camel.component.jetty.JettyHttpComponent"> <property
+name="socketConnectorProperties"> <map> <entry key="acceptors"
+value="4"/> <entry key="maxIdleTime" value="300000"/> </map> </property>
+</bean>
+
+[[Jetty-HowtoGettheValueofTheX-Forwarded-ForHTTPHeaderUsingHttpServletRequest.getRemoteAddr()]]
+How to Get the Value of The `X-Forwarded-For` HTTP Header Using
+`HttpServletRequest.getRemoteAddr()`
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+If the HTTP requests are handled by an Apache server and forwarded to
+Jetty with *`mod_proxy`*, the original client IP address is in
+the *`X-Forwarded-For`* header and
+the *`HttpServletRequest.getRemoteAddr()`* will return the address of
+the Apache proxy.
+
+Jetty has a forwarded property which takes the value
+from *`X-Forwarded-For`* and places it in
+the *`HttpServletRequest remoteAddr`* property.  This property is not
+available directly through the endpoint configuration but it can be
+easily added using the *`socketConnectors`* property:
+
+xml<bean id="jetty"
+class="org.apache.camel.component.jetty.JettyHttpComponent"> <property
+name="socketConnectors"> <map> <entry key="8080"> <bean
+class="org.eclipse.jetty.server.nio.SelectChannelConnector"> <property
+name="forwarded" value="true"/> </bean> </entry> </map> </property>
+</bean>
+
+This is particularly useful when an existing Apache server handles TLS
+connections for a domain and proxies them to application servers
+internally.
+
+[[Jetty-DefaultBehaviorforReturningHTTPStatusCodes]]
+Default Behavior for Returning HTTP Status Codes
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The default behavior of HTTP status codes is defined by the
+*`org.apache.camel.component.http.DefaultHttpBinding`* class, which
+handles how a response is written and also sets the HTTP status code. If
+the exchange was processed successfully, the *`200`* HTTP status code is
+returned. If the exchange failed with an exception, the *`500`* HTTP
+status code is returned, and the stacktrace is returned in the body. If
+you want to specify which HTTP status code to return, set the code in
+the *`Exchange.HTTP_RESPONSE_CODE`* header of the *`OUT`* message.
+
+[[Jetty-CustomizingHttpBinding]]
+Customizing `HttpBinding`
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+By default, Camel uses the
+*`org.apache.camel.component.http.DefaultHttpBinding`* to handle how a
+response is written. If you like, you can customize this behavior either
+by implementing your own *`HttpBinding`* class or by extending
+*`DefaultHttpBinding`* and overriding the appropriate methods.
+
+The following example shows how to customize the *`DefaultHttpBinding`*
+in order to change how exceptions are
+returned:\{snippet:id=e1|lang=java|url=camel/trunk/components/camel-jetty9/src/test/java/org/apache/camel/component/jetty/HttpBindingRefTest.java}We
+can then create an instance of our binding and register it in the Spring
+registry as follows:
+
+xml<bean id="mybinding"class="com.mycompany.MyHttpBinding"/>
+
+And then we can reference this binding when we define the route:
+
+xml<route> <from
+uri="jetty:http://0.0.0.0:8080/myapp/myservice?httpBindingRef=mybinding"/>
+<to uri="bean:doSomething"/> </route>
+
+[[Jetty-JettyHandlersandSecurityConfiguration]]
+Jetty Handlers and Security Configuration
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+You can configure a list of Jetty handlers on the endpoint, which can be
+useful for enabling advanced Jetty security features. These handlers are
+configured in Spring XML as follows:
+
+xml<-- Jetty Security handling --> <bean id="userRealm"
+class="org.mortbay.jetty.plus.jaas.JAASUserRealm"> <property name="name"
+value="tracker-users"/> <property name="loginModuleName"
+value="ldaploginmodule"/> </bean> <bean id="constraint"
+class="org.mortbay.jetty.security.Constraint"> <property name="name"
+value="BASIC"/> <property name="roles" value="tracker-users"/> <property
+name="authenticate" value="true"/> </bean> <bean id="constraintMapping"
+class="org.mortbay.jetty.security.ConstraintMapping"> <property
+name="constraint" ref="constraint"/> <property name="pathSpec"
+value="/*"/> </bean> <bean id="securityHandler"
+class="org.mortbay.jetty.security.SecurityHandler"> <property
+name="userRealm" ref="userRealm"/> <property name="constraintMappings"
+ref="constraintMapping"/> </bean>
+
+From *Camel 2.3*: you can configure a list of Jetty handlers as follows:
+
+xml<-- Jetty Security handling --> <bean id="constraint"
+class="org.eclipse.jetty.http.security.Constraint"> <property
+name="name" value="BASIC"/> <property name="roles"
+value="tracker-users"/> <property name="authenticate" value="true"/>
+</bean> <bean id="constraintMapping"
+class="org.eclipse.jetty.security.ConstraintMapping"> <property
+name="constraint" ref="constraint"/> <property name="pathSpec"
+value="/*"/> </bean> <bean id="securityHandler"
+class="org.eclipse.jetty.security.ConstraintSecurityHandler"> <property
+name="authenticator"> <bean
+class="org.eclipse.jetty.security.authentication.BasicAuthenticator"/>
+</property> <property name="constraintMappings"> <list> <ref
+bean="constraintMapping"/> </list> </property> </bean>
+
+You can then define the endpoint as:
+
+javafrom("jetty:http://0.0.0.0:9080/myservice?handlers=securityHandler")
+
+If you need more handlers, set the *`handlers`* option equal to a
+comma-separated list of bean IDs.
+
+[[Jetty-HowtoCustomizetheResponseonanHTTP500ServerError]]
+How to Customize the Response on an `HTTP 500` Server Error
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+You may want to return a custom reply message when something goes wrong,
+instead of the default reply message Camel link:jetty.html[Jetty]
+replies with. You could use a custom *`HttpBinding`* to be in control of
+the message mapping, but often it may be easier to use Camel's
+link:exception-clause.html[Exception Clause] to construct the custom
+reply message.
+
+Example: return the message: *`Dude something went wrong`* for the HTTP
+error code
+*`500`*:\{snippet:id=e1|lang=java|url=camel/trunk/components/camel-jetty9/src/test/java/org/apache/camel/component/jetty/JettyOnExceptionHandledTest.java}
+
+[[Jetty-Multi-PartFormSupport]]
+Multi-Part Form Support
+^^^^^^^^^^^^^^^^^^^^^^^
+
+From *Camel 2.3.0*: *`camel-jetty`* support to multi-part form post out
+of box. The submitted form-data are mapped into the message
+header. *`camel-jetty`* creates an attachment for each uploaded file.
+The file name is mapped to the name of the attachment. The content type
+is set as the content type of the attachment file name. You can find the
+example
+here.\{snippet:id=e1|lang=java|url=camel/components/camel-jetty9/src/test/java/org/apache/camel/component/jetty/MultiPartFormTest.java|title=Note:
+getName() functions as shown below in versions 2.5 and higher. In
+earlier versions you receive the temporary file name for the attachment
+instead}
+
+[[Jetty-JettyJMXSupport]]
+Jetty JMX Support
+^^^^^^^^^^^^^^^^^
+
+From *Camel 2.3.0*: *`camel-jetty`* supports the enabling of Jetty's JMX
+capabilities at the component and endpoint level with the endpoint
+configuration taking priority.
+
+*Note*: JMX must be enabled within the Camel context in order to enable
+JMX support in this component as the component provides Jetty with a
+reference to the *`MBeanServer`* registered with the Camel context.
+
+As the *`camel-jetty`* component caches and reuses Jetty resources for a
+given protocol/host/port pairing, this configuration option will only be
+evaluated during the creation of the first endpoint to use a
+protocol/host/port pairing.
+
+*Example*: given two routes created from the following XML fragments,
+JMX support would remain enabled for all endpoints listening on:
+*`https://0.0.0.0`*.
+
+xml<from uri="jetty:https://0.0.0.0/myapp/myservice1/?enableJmx=true"/>
+xml<from uri="jetty:https://0.0.0.0/myapp/myservice2/?enableJmx=false"/>
+
+The *`camel-jetty`* component also provides for direct configuration of
+the Jetty *`MBeanContainer`*. Jetty creates MBean names dynamically. If
+you are running another instance of Jetty outside of the Camel context
+and sharing the same *`MBeanContainer`* between the instances, you can
+provide both instances with a reference to the same *`MBeanContainer`*
+in order to avoid name collisions when registering Jetty MBeans.
+
+link:endpoint-see-also.html[Endpoint See Also]
+
+* link:http.html[HTTP]

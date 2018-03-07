@@ -1,0 +1,12 @@
+[[ConfluenceContent]]
+[[InProgress-ReleasesInProgress]]
+Releases In Progress
+~~~~~~~~~~~~~~~~~~~~
+
+The following releases are currently in progress
+
+* link:camel-2203-release.html[Camel 2.20.3 Release]
+* link:copy-of-camel-2195-release-template.html[Copy of Camel 2.19.5
+Release (template)]
+* link:camel-2210-release.html[Camel 2.21.0 Release]
+* link:camel-xyz-release-template.html[Camel x.y.z Release (template)]

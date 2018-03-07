@@ -1,0 +1,177 @@
+[[ConfluenceContent]]
+[[Spark-rest-Spark-restComponent]]
+Spark-rest Component
+~~~~~~~~~~~~~~~~~~~~
+
+*Available as of Camel 2.14*
+
+The Spark-rest component allows to define REST endpoints using the
+http://sparkjava.com/[Spark REST Java library] (not to be mistaken with
+http://spark.apache.org/[Apache Spark]) using the
+link:rest-dsl.html[Rest DSL].
+
+[Info]
+====
+
+
+This component integrates with Spark REST Java library which is a REST
+library. This is not related to http://spark.apache.org/[Apache Spark]
+which is a project about big data.
+
+Apache Camel also provides a Camel component
+(link:apache-spark.html[camel-spark]) for integrating Camel with Apache
+Spark.
+
+====
+
+[Info]
+====
+
+
+Spark REST Java Library requires Java 8 runtime. ====
+
+Maven users will need to add the following dependency to their pom.xml
+for this component:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+    <dependency>
+        <groupId>org.apache.camel</groupId>
+        <artifactId>camel-spark-rest</artifactId>
+        <version>${camel-version}</version>
+    </dependency>
+----
+
+[[Spark-rest-URIformat]]
+URI format
+^^^^^^^^^^
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+  spark-rest://verb:path?[options]
+----
+
+[[Spark-rest-URIOptions]]
+URI Options
+^^^^^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Name |Default Value |Description
+|verb |  |get, post, put, patch, delete, head, trace, connect, or
+options.
+
+|path |  |the content path which support Spark syntax. See further below
+for examples.
+
+|accept |  |accept type such as: 'text/xml', or 'application/json'. By
+default we accept all kinds of types.
+|=======================================================================
+
+[[Spark-rest-PathusingSparksyntax]]
+Path using Spark syntax
+^^^^^^^^^^^^^^^^^^^^^^^
+
+The path option is defined using a Spark REST syntax where you define
+the REST context path using support for parameters and splat. See more
+details at the http://sparkjava.com/readme.html#title1[Spark Java Route]
+documentation.
+
+The following is a Camel route using a fixed path
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+  from("spark-rest:get:hello")
+    .transform().constant("Bye World");
+----
+
+And the following route uses a parameter which is mapped to a Camel
+header with the key "me".
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+  from("spark-rest:get:hello/:me")
+    .transform().simple("Bye ${header.me}");
+----
+
+[[Spark-rest-MappingtoCamelMessage]]
+Mapping to Camel Message
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+The Spark Request object is mapped to a Camel Message as
+a `org.apache.camel.component.sparkrest.SparkMessage` which has access
+to the raw Spark request using the getRequest method. By default the
+Spark body is mapped to Camel message body, and any HTTP headers / Spark
+parameters is mapped to Camel Message headers. There is special support
+for the Spark splat syntax, which is mapped to the Camel message header
+with key splat.
+
+For example the given route below uses Spark splat (the asterisk
+sign) in the context path which we can access as a header form the
+Simple language to construct a response message.
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+  from("spark-rest:get:/hello/*/to/*")
+    .transform().simple("Bye big ${header.splat[1]} from ${header.splat[0]}");
+----
+
+[[Spark-rest-RestDSL]]
+Rest DSL
+^^^^^^^^
+
+Apache Camel provides a new Rest DSL that allow to define the REST
+services in a nice REST style. For example we can define a REST hello
+service as shown below:
+
+[[RestDslTabs]]
+
+[[RestDslTabsJava]]
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+  return new RouteBuilder() {
+      @Override
+      public void configure() throws Exception {
+            rest("/hello/{me}").get()
+                .route().transform().simple("Bye ${header.me}");
+        }
+    };
+----
+
+[[RestDslTabsXml]]
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+  <camelContext xmlns="http://camel.apache.org/schema/spring">
+    <rest uri="/hello/{me}">
+      <get>
+        <route>
+          <transform>
+            <simple>Bye ${header.me}</simple>
+          </transform>
+        </route>
+      </get>
+    </rest>
+  </camelContext>
+----
+
+See more details at the link:rest-dsl.html[Rest DSL].
+
+[[Spark-rest-Moreexamples]]
+More examples
+^^^^^^^^^^^^^
+
+There is a *camel-example-spark-rest-tomcat* example in the Apache Camel
+distribution, that demonstrates how to use camel-spark-rest in a web
+application that can be deployed on Apache Tomcat, or similar web
+containers.
+
+[[Spark-rest-SeeAlso]]
+See Also
+^^^^^^^^
+
+* link:configuring-camel.html[Configuring Camel]
+* link:component.html[Component]
+* link:endpoint.html[Endpoint]
+* link:getting-started.html[Getting Started]
+
+* link:rest.html[Rest]

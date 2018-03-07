@@ -1,0 +1,23 @@
+[[ConfluenceContent]]
+A few weeks back the Camel PMC voted another one of the active and
+talented contributors to become a committer.
+
+ 
+
+Franz Forsthofer was actively involved with Apache Camel for a while. In
+the past months his activity reached a new level. Franz contributed more
+than 20 patches and he was acting as a committer. In recognition of his
+work, the PMC only had to take care of the simple task of making that
+official. Franz got his committer account already setup, concluding the
+process of becoming the newest Camel rider.
+
+ 
+
+On behalf of the Camel PMC, welcome aboard Franz and keep up the great
+work!
+
+Christian
+
+ 
+
+ 

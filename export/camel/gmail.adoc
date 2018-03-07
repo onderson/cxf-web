@@ -1,0 +1,119 @@
+[[ConfluenceContent]]
+[[gmail-gmailComponent]]
+`gmail` Component
+~~~~~~~~~~~~~~~~~
+
+*Available as of Camel 2.1* +
+The `gmail` component contributes to the link:gae.html[Camel Components
+for Google App Engine] (GAE). It supports sending of emails via the GAE
+http://code.google.com/appengine/docs/java/mail/[mail service].
+Receiving mails is not supported yet but will be added later. Currently,
+only Google accounts that are application administrators can send
+emails.
+
+[[gmail-URIformat]]
+URI format
+^^^^^^^^^^
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+gmail://user@gmail.com[?options]
+gmail://user@googlemail.com[?options]
+----
+
+[[gmail-Options]]
+Options
+^^^^^^^
+
+[width="100%",cols="25%,25%,25%,25%",options="header",]
+|=======================================================================
+|Name |Default Value |Context |Description
+|`to` |`null` |Producer |To-receiver of the email. This can be a single
+receiver or a comma-separated list of receivers.
+
+|`cc` |`null` |Producer |Cc-receiver of the email. This can be a single
+receiver or a comma-separated list of receivers.
+
+|`bcc` |`null` |Producer |Bcc-receiver of the email. This can be a
+single receiver or a comma-separated list of receivers.
+
+|`subject` |`null` |Producer |Subject of the email.
+
+|`outboundBindingRef` |reference to `GMailBinding` |Producer |Reference
+to an `OutboundBinding<GMailEndpoint, MailService.Message, void>` in the
+link:registry.html[Registry] for customizing the binding of an
+`Exchange` to the mail service.
+|=======================================================================
+
+[[gmail-Messageheaders]]
+Message headers
+^^^^^^^^^^^^^^^
+
+[width="100%",cols="25%,25%,25%,25%",options="header",]
+|=======================================================================
+|Name |Type |Context |Description
+|`GMailBinding.GMAIL_SUBJECT` |`String` |Producer |Subject of the email.
+Overrides `subject` endpoint option.
+
+|`GMailBinding.GMAIL_SENDER` |`String` |Producer |Sender of the email.
+Overrides sender definition in endpoint URI.
+
+|`GMailBinding.GMAIL_TO` |`String` |Producer |To-receiver(s) of the
+email. Overrides `to` endpoint option.
+
+|`GMailBinding.GMAIL_CC` |`String` |Producer |Cc-receiver(s) of the
+email. Overrides `cc` endpoint option.
+
+|`GMailBinding.GMAIL_BCC` |`String` |Producer |Bcc-receiver(s) of the
+email. Overrides `bcc` endpoint option.
+|=======================================================================
+
+[[gmail-Messagebody]]
+Message body
+^^^^^^^^^^^^
+
+On the producer side the `in` message body is converted to a `String`.
+
+[[gmail-Usage]]
+Usage
+^^^^^
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+...
+.setHeader(GMailBinding.GMAIL_SUBJECT, constant("Hello"))
+.setHeader(GMailBinding.GMAIL_TO, constant("account2@somewhere.com"))
+.to("gmail://account1@gmail.com");
+----
+
+Sends an email with subject `Hello` from `account1@gmail.com` to
+`account2@somewhere.com`. The mail message body is taken from the `in`
+message body. Please note that `account1@gmail.com` must be an
+administrator account for the current GAE application.
+
+[[gmail-Dependencies]]
+Dependencies
+^^^^^^^^^^^^
+
+Maven users will need to add the following dependency to their
+`pom.xml`.
+
+*pom.xml*
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<dependency>
+    <groupId>org.apache.camel</groupId>
+    <artifactId>camel-gae</artifactId>
+    <version>x.x.x</version>
+</dependency>
+----
+
+[[gmail-SeeAlso]]
+See Also
+^^^^^^^^
+
+* link:configuring-camel.html[Configuring Camel]
+* link:component.html[Component]
+* link:endpoint.html[Endpoint]
+* link:getting-started.html[Getting Started]

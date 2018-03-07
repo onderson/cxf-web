@@ -1,0 +1,68 @@
+[[ConfluenceContent]]
+[[BatchConsumer-BatchConsumer]]
+Batch Consumer
+~~~~~~~~~~~~~~
+
+*Available as of Camel 2.0*
+
+Batch Consumer is basically a link:polling-consumer.html[Polling
+Consumer] that is capable of polling multiple
+link:exchange.html[Exchange]s in a pool. The interface
+*`org.apache.camel.BatchConsumer`* should be implemented by a consumer
+to indicate that it supports batching.
+
+The following components support the use of a
+link:batch-consumer.html[Batch Consumer]:
+
+* link:atom.html[Atom]
+* link:file2.html[File]
+* link:ftp2.html[FTP]
+* link:hbase.html[hbase]
+* link:ibatis.html[iBATIS]
+* link:jpa.html[JPA]
+* link:jclouds.html[jclouds]
+* link:mail.html[Mail]
+* link:mybatis.html[MyBatis]
+* link:snmp.html[SNMP]
+* link:sql-component.html[SQL]
+* link:aws-sqs.html[SQS]
+* link:aws-s3.html[S3]
+
+[[BatchConsumer-ConsumerOptions]]
+Consumer Options
+^^^^^^^^^^^^^^^^
+
+[width="100%",cols="50%,50%",options="header",]
+|=======================================================================
+|Option |Description
+|`maxMessagesPerPoll` |An integer to define a maximum messages to gather
+per poll. By default no maximum is set. Can be used to set a limit of
+e.g. *`1000`* to avoid when starting up the server that there are
+thousands of files. Set a value of *`0`* or negative to disable it.
+|=======================================================================
+
+[[BatchConsumer-ExchangeProperties]]
+Exchange Properties
+^^^^^^^^^^^^^^^^^^^
+
+The following properties is set on the link:exchange.html[Exchange] for
+each link:exchange.html[Exchange] polled in the same batch.
+
+[width="100%",cols="50%,50%",options="header",]
+|=======================================================================
+|Property |Description
+|`CamelBatchComplete` |A *`boolean`* indicating the last
+link:exchange.html[Exchange] in the batch. Is only *`true`* for the last
+entry.
+
+|`CamelBatchIndex` |The current index of the batch. Starts from *`0`*.
+
+|`CamelBatchSize` |The total number of link:exchange.html[Exchange]s
+that was polled in this batch.
+|=======================================================================
+
+[[BatchConsumer-SeeAlso]]
+See Also
+^^^^^^^^
+
+* link:polling-consumer.html[Polling Consumer]

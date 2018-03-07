@@ -1,0 +1,395 @@
+[[ConfluenceContent]]
+[[Camel2.7.0Release-Camel2.7.0release]]
+Camel 2.7.0 release
+-------------------
+
+image:http://camel.apache.org/download.data/camel-box-v1.0-150x200.png[image]
+
+[[Camel2.7.0Release-NewandNoteworthy]]
+New and Noteworthy
+~~~~~~~~~~~~~~~~~~
+
+Welcome to the 2.7.0 release which approx 169 issues resolved (new
+features, improvements and bug fixes such as...)
+
+[Info]
+====
+ **Dependency changes**
+
+The Camel 2.7.0 release has a number of major dependency changes:
+
+* JDK 1.6+ is now required
+* Spring 3.x+ is now required if using Spring
+* http://www.slf4j.org/[slf4j] is used as logger instead of commons
+logging
+
+In other words support for JDK 1.5 and Spring 2.x has been dropped.
+
+====
+
+* Switched to use http://www.slf4j.org/[slf4j] as the logger instead of
+commons logging.
+* Camel now checks state of `Service` during starting/stopping the
+link:lifecycle.html[Lifecycle] of the `Service`. This avoids double
+starting/stopping in case the service was already in the desired state.
+* Added support for link:mdc-logging.html[MDC logging] with Camel
+* link:jms.html[JMS] consumer now eager checks if Camel is shutting down
+and signals that to its `DefaultMessageListenerContainer` which avoids
+trying to re-connect/failover during shutdown.
+* Introduced option to automatic link:mock.html[Mock] endpoints during
+testing. This makes testing without having to add link:mock.html[Mock]
+endpoints in your routes a breeze. See more details at
+link:mock.html[Mock] component documentation.
+* Added `assertPeriod` option to link:mock.html[Mock] endpoint, which is
+a period im milliseconds, that the link:mock.html[Mock] will pause and
+then re-assert itself to ensure the assertion is still valid. This can
+be used as a threshold when testing with expectations that *exactly* a
+given number of messages should arrive on the link:mock.html[Mock]
+endpoint.
+* Added `arrives` DSL to link:mock.html[Mock] endpoint to allow you to
+setup expectations about timespan between messages arriving on the
+link:mock.html[Mock] endpoint. See more details at link:mock.html[Mock]
+component documentation.
+* link:http4.html[HTTP4] is upgraded to use Apache HttpClient 4.1
+* Fixed an issue with link:file2.html[File] consumer having absolute
+starting directory and using absolute paths in the `move` option as well
+* Fixed concurrent append to the same file in the link:file2.html[File]
+producer
+* Fixed issue with restarting link:quartz.html[Quartz] causing a failure
+due trigger name already exists issue for stateful jobs.
+* Its now possible to use multiple QuartzScheduler's when deploying
+multiple Camel applications in the same JVM classloader.
+* link:quartz.html[Quartz] update checker is now always disabled, see
+more
+http://forums.terracotta.org/forums/posts/list/3395.page#19058[details
+here]
+* Fixed potential issue installing `camel-ftp` feature in Apache
+ServiceMix
+* New `JdbcMessageIdRepository` for the idempotent consumer EIP in
+link:sql-component.html[SQL]
+* Relaxed how aggressive Camel was registering services as MBeans in
+JMX. Now Camel will by default only registeres MBeans when starting
+link:camelcontext.html[CamelContext] or starting new routes. This avoids
+registering too many MBeans if using dynamic link:eip.html[EIP] patterns
+such as link:recipient-list.html[Recipient List] using different
+endpoint urls, causing new endpoints and its associated services to be
+registered in JMX. This would keep growing over time and consume memory
+as well. You can use the `registerAlways` or `registerNewRoutes` options
+on `ManagementAgent` to control this behavior. See
+link:camel-jmx.html[Camel JMX] for more details.
+* Redelivery policy and OnException now supports
+link:using-propertyplaceholder.html[property placeholders] in both Java
+and XML DSLs.
+* Introduced link:redeliverypolicy.html[`<redeliveryPolicyProfile>`] to
+easily define common profiles for link:redeliverypolicy.html[redelivery
+policies], which you can refer to from `<errorHandler>` or
+`<onException>` using the `redeliveryPolicyRef` attribute. Also Spring
+Frameworks property placeholders works with `<redeliveryPolicyProfile>`.
+* Improved the XML based link:error-handler.html[Error Handler]s to
+validate configuration on startup, to fail if they have been
+misconfigured.
+* link:springintegration.html[Spring Integration] is upgraded to Spring
+Integration 2.0.
+* Added `endChoice()` to the Java DSL to be able to use any
+link:eip.html[EIP]s inside the link:content-based-router.html[Content
+Based Router]. See more
+link:why-can-i-not-use-when-or-otherwise-in-a-java-camel-route.html[details
+here]
+* link:using-propertyplaceholder.html[Property placeholders] can now be
+use for any kind of attributes/options in the link:eip.html[EIP]s in the
+Camel routes. For example in the Spring XML file you can now use
+placeholders for timeout attributes etc. This is possible using the
+specialized placeholder namespace. See more details at the
+link:using-propertyplaceholder.html[Using PropertyPlaceholder] wiki
+page. In the Java DSL there is a new `placeholder` option on each
+link:eip.html[EIP] you can leverage.
+* The `camel-jdbc-aggregator` component is merged into the `camel-sql`
+component.
+* Fix in link:mail.html[Mail] component for duplicate attachments, and
+when using starttls.
+* Maven 3 is now supported for building
+* Tidy up the XML DSL to not allow nesting tags where it doesn't make
+sense.
+* Internal cleanup in route preparation logic to be fully shared for all
+DSLs (before the XML DSLs and Java DSL was a bit different)
+* Fixed link:intercept.html[InterceptFrom] to work with from endpoints
+defined using ref's or instances (eg everything but uris)
+* Fixed link:http.html[HTTP] and link:http4.html[HTTP4] producers double
+encoding endpoint uri, when calling external service
+* Fixed link:jms.html[JMS] producer not working with OracleAQ throwing
+exception on accessing `JMSReplyTo`
+* Added support for using link:using-propertyplaceholder.html[OSGi
+Blueprint property placeholder] service with Camel routes. Camel uses
+convention over configuration so all you have to do is to define the
+OSGi blueprint placeholder and you can refer to those from the
+`<camelContext>`. Pay attention to the placeholder tokens using by Camel
+is \{\{ }}.
+* `<threadPoolProfile>` and `<threadPool>` is now easier to use with
+link:using-propertyplaceholder.html[property placeholders]
+* link:properties.html[Properties] component now supports JVM system
+properties and OS environment variables in the locations option. For
+example using `"file:${karaf.home}/etc/foo.properties"` to refer to the
+`foo.proeprties` file in the http://karaf.apache.org/[Apache Karaf]
+installation.
+* Fixed an issue with link:recipient-list.html[Recipient List] in
+parallel mode, not reusing background aggregator thread
+* Fixed an issue with dependency ordering when using Spring's
+`depends-on` attribute between multiple `<camelContext>`.
+* link:servlet.html[SERVLET] component doesn't hijack Spring to start
+the web application anymore. Spring and CamelServlet is now independent.
+See more at important changes to consider when upgrading.
+* Fixed all link:camel-maven-archetypes.html[Camel Maven Archetypes] to
+use new Maven format and ensured they all work out of the box.
+* link:web-console.html[Web Console] upgraded to Scalate 1.4.1, and the
+webpages is now precompiled
+* link:jt400.html[JT400] can now execute program calls on the AS/400
+* link:cache.html[Cache] now only mandates a message body for the add
+and update operations. This makes get operation possible for messages
+with no existing body.
+* Fixed issue when link:jetty.html[Jetty] continuation timeouts has been
+triggered before link:asynchronous-routing-engine.html[Asynchronous
+Routing Engine] has reply ready. This would cause Jetty to log WARN logs
+about illegal state.
+
+[[Camel2.7.0Release-New]]
+New link:enterprise-integration-patterns.html[Enterprise Integration
+Patterns]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* None
+
+[[Camel2.7.0Release-New.1]]
+New link:components.html[Components]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* link:context.html[Context]
+* link:hazelcast-component.html[Hazelcast]
+* link:dns.html[DNS]
+* link:mybatis.html[MyBatis]
+
+[[Camel2.7.0Release-NewDSL]]
+New DSL
+^^^^^^^
+
+* `<setFaultBody>` added to XML DSL
+* `endChoice` added to Java DSL
+* `placeholder` added to Java DSL
+
+[[Camel2.7.0Release-NewAnnotations]]
+New Annotations
+^^^^^^^^^^^^^^^
+
+* None
+
+[[Camel2.7.0Release-NewDataFormats]]
+New link:data-format.html[Data Formats]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* None
+
+[[Camel2.7.0Release-New.2]]
+New link:languages.html[Languages]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* link:spel.html[Spring Expression Language]
+
+[[Camel2.7.0Release-New.3]]
+New link:examples.html[Examples]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* `camel-example-osgi-rmi`
+* `camel-example-servlet-tomcat`
+
+[[Camel2.7.0Release-New.4]]
+New link:tutorials.html[Tutorials]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* None
+
+[[Camel2.7.0Release-NewArchetypes]]
+New link:camel-maven-archetypes.html[Archetypes]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* `camel-archetype-web` added to generate a project to deploy camel
+routes as a WAR
+
+[[Camel2.7.0Release-APIbreaking]]
+API breaking
+~~~~~~~~~~~~
+
+* `FATAL` has been removed from `org.apache.camel.LoggingLevel`. Use
+`ERROR` instead.
+* `org.apache.camel.processor.Logger` has been renamed to
+`org.apache.camel.processor.CamelLogger`, and it now uses
+http://www.slf4j.org/[slf4j] as the logger.
+* Removed `getLeftValue` and `getRightValue` methods on
+`BinaryPredicate`.
+* The `ref` attribute on `<redeliveryPolicy>` has been removed. Instead
+use `redeliveryPolicyRef` attribute on `<onException>` or
+`<errorHandler>` tags.
+* The `<batch-config>` and `<stream-config>` tags in XML DSL in the
+link:resequencer.html[Resequencer] EIP must now be configured in the
+top, and not in the bottom. So if you use those, then move them up just
+below the `<resequence>` link:eip.html[EIP] starts in the XML.
+* The `JdbcAggregationRepository` is moved from the
+`camel-jdbc-aggregator` component to the `camel-sql` component. The full
+qualified class name changed from
+`org.apache.camel.component.jdbc.aggregationRepository.JdbcAggregationRepository`
+to
+`org.apache.camel.processor.aggregate.jdbc.JdbcAggregationRepository`.
+* `sortBody` methods removed from Java DSL. You can use `sort(body())`
+instead.
+* The link:sort.html[Sort] EIP in XML DSL is now configured the
+expression directly. Which means you no longer need to use
+`<expression>` enclosing the expression. Instead you set the expression
+directly, just as the other link:eip.html[EIP]s does.
+* Method `parsePropertyValue` renamed to `parseProperty` and have
+additional parameters in the `PropertiesParser` interface.
+
+[[Camel2.7.0Release-KnownIssues]]
+Known Issues
+~~~~~~~~~~~~
+
+* The link:tracer.html[Tracer] may not output all details for some
+situations such as when using `onCompletion` or `intercept` etc.
+* Not all link:examples.html[Examples] have ANT build.xml files to run
+the example using ANT.
+* `camel-script` which uses `ScriptEngineManager` from the JDK, cannot
+load script engines from packages outside the JDK (i.e. when running in
+OSGi).
+* Stopping a route after using `adviceWith` maybe cause issues with
+error handlers, see
+https://issues.apache.org/jira/browse/CAMEL-3534[CAMEL-3534]
+* The project cannot fully build the site using Maven (eg running
+`"mvn site"`. There is no plan to make this work as the project do not
+use the maven site.
+* The link:cxf-tomcat-example.html[CXF Tomcat Example] does not work on
+Tomcat 7 due a bug in
+https://issues.apache.org/jira/browse/CXF-3362[Apache CXF 2.3.3] that
+camel-cxf uses by default. When CXF 2.3.4 is released you can upgrade
+and the example should work.
+* The `camel-spring-ws` feature does not work in Apache ServiceMix or
+Apache Karaf.
+* The `camel-cache` feature cannot load the `ehcache-failsafe.xml` file.
+* The default cacheLevel on link:jms.html[JMS] is always
+`CACHE_CONSUMER`. However this impacts performance when using
+transacted=true. The workaround is to set `cacheLevelName=CACHE_NONE` if
+you use transaction.
+* Stopping a route having a context scoped error handler, may cause the
+error handler to stop as well, causing it to not work if it was used by
+other routes, see
+https://issues.apache.org/jira/browse/CAMEL-3878[CAMEL-3878]
+
+[[Camel2.7.0Release-Importantchangestoconsiderwhenupgrading]]
+Important changes to consider when upgrading
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+* Java 1.6 or better is required
+* Spring 3.0.5 or better is required, when using Spring
+* Apache CXF 2.3.3 or better is required, when using CXF
+* Switched to use http://www.slf4j.org/[slf4j] as the logger instead of
+commons logging. That means you may have to included `slf4j-log4j12` as
+dependency if you are using log4j. +
+See documentation at http://www.slf4j.org/[slf4j] for more details.
+* If you have developed custom Camel link:component.html[Component]s and
+your `Endpoint` class extends `DefaultEndpoint` then its advised to use
+the `doStart` and `doStop` instead of `start` and `stop`.
+* You can not access the attachment by using Message.getAttachement(id)
+if the camel-cxf endpoint works in POJO data format, please access the
+attachment objects from the camel message body.
+* link:restlet.html[camel-restlet] has been upgraded from Restlet 1.1.x
+to 2.0.5
+* link:servlet.html[SERVLET] does not startup Spring XML file anymore.
+You should startup the XML file using 100% Spring style using the
+ContextLoaderListener in the web.xml. See the the
+link:servlet-tomcat-example.html[Servlet Tomcat Example] example for
+details.
+* link:camel-maven-archetypes.html[Camel Maven Archetypes] the archetype
+`camel-archetype-war` has been renamed to `camel-archetype-webconsole`.
+
+[[Camel2.7.0Release-GettingtheDistributions]]
+Getting the Distributions
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+[[Camel2.7.0Release-BinaryDistributions]]
+Binary Distributions
+^^^^^^^^^^^^^^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Description |Download Link |PGP Signature file of download
+|Windows Distribution
+|http://archive.apache.org/dist/camel/apache-camel/2.7.0/apache-camel-2.7.0.zip[apache-camel-2.7.0.zip]
+|http://archive.apache.org/dist/camel/apache-camel/2.7.0/apache-camel-2.7.0.zip.asc[apache-camel-2.7.0.zip.asc]
+
+|Unix/Linux/Cygwin Distribution
+|http://archive.apache.org/dist/camel/apache-camel/2.7.0/apache-camel-2.7.0.tar.gz[apache-camel-2.7.0.tar.gz]
+|http://archive.apache.org/dist/camel/apache-camel/2.7.0/apache-camel-2.7.0.tar.gz.asc[apache-camel-2.7.0.tar.gz.asc]
+|=======================================================================
+
+[Info]
+====
+ **The above URLs use redirection**
+
+The above URLs use the Apache Mirror system to redirect you to a
+suitable mirror for your download. Some users have experienced issues
+with some versions of browsers (e.g. some Safari browsers). If the
+download doesn't seem to work for you from the above URL then try using
+http://www.mozilla.com/en-US/firefox/[FireFox]
+
+====
+
+[[Camel2.7.0Release-SourceDistributions]]
+Source Distributions
+^^^^^^^^^^^^^^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Description |Download Link |PGP Signature file of download
+|Source for Windows
+|http://archive.apache.org/dist/camel/apache-camel/2.7.0/apache-camel-2.7.0-src.zip[apache-camel-2.7.0-src.zip]
+|http://archive.apache.org/dist/camel/apache-camel/2.7.0/apache-camel-2.7.0-src.zip.asc[apache-camel-2.7.0-src.zip.asc]
+|=======================================================================
+
+[width="100%",cols="34%,33%,33%",]
+|=======================================================================
+|Source for Unix/Linux/Cygwin
+|http://archive.apache.org/dist/camel/apache-camel/2.7.0/apache-camel-2.7.0-src.tar.gz[apache-camel-2.7.0-src.tar.gz]
+|http://archive.apache.org/dist/camel/apache-camel/2.7.0/apache-camel-2.7.0-src.tar.gz.asc[apache-camel-2.7.0-src.tar.gz.asc]
+|=======================================================================
+
+[[Camel2.7.0Release-GettingtheBinariesusingMaven2]]
+Getting the Binaries using Maven 2
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To use this release in your maven project, the proper dependency
+configuration that you should use in your
+http://maven.apache.org/guides/introduction/introduction-to-the-pom.html[Maven
+POM] is:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<dependency>
+  <groupId>org.apache.camel</groupId>
+  <artifactId>camel-core</artifactId>
+  <version>2.7.0</version>
+</dependency>
+----
+
+[[Camel2.7.0Release-SVNTagCheckout]]
+SVN Tag Checkout
+^^^^^^^^^^^^^^^^
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+svn co http://svn.apache.org/repos/asf/camel/tags/camel-2.7.0
+----
+
+[[Camel2.7.0Release-Changelog]]
+Changelog
+~~~~~~~~~
+
+For a more detailed view of new features and bug fixes, see the:
+
+* https://issues.apache.org/jira/secure/ReleaseNote.jspa?projectId=12311211&styleName=Html&version=12316021[release
+notes for 2.7.0]

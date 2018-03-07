@@ -1,0 +1,94 @@
+[[ConfluenceContent]]
+image:http://activemq.apache.org/camel/download.data/camel-box-v1.0-150x200.png[image]
+
+[[Camel1.0.0Release-NewandNoteworthy]]
+New and Noteworthy
+~~~~~~~~~~~~~~~~~~
+
+Welcome to the first 1.0.0 release packed with features,
+link:enterprise-integration-patterns.html[Enterprise Integration
+Patterns], great support for link:spring.html[Spring] and a whole host
+of link:components.html[Components]. Saddle up and take Camel for a
+ride!
+
+[[Camel1.0.0Release-GettingtheBinaryDistributions]]
+Getting the Binary Distributions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Description |Download Link |PGP Signature file of download
+|Windows Distribution
+|http://archive.apache.org/dist/activemq/apache-camel/1.0.0/apache-camel-1.0.0.zip[apache-camel-1.0.0.zip]
+|http://archive.apache.org/dist/activemq/apache-camel/1.0.0/apache-camel-1.0.0.zip.asc[apache-camel-1.0.0.zip.asc]
+
+|Unix/Linux/Cygwin Distribution
+|http://archive.apache.org/dist/activemq/apache-camel/1.0.0/apache-camel-1.0.0.tar.gz[apache-camel-1.0.0.tar.gz]
+|http://archive.apache.org/dist/activemq/apache-camel/1.0.0/apache-camel-1.0.0.tar.gz.asc[apache-camel-1.0.0.tar.gz.asc]
+|=======================================================================
+
+**The above URLs use redirection**
+
+The above URLs use the Apache Mirror system to redirect you to a
+suitable mirror for your download. Some users have experienced issues
+with some versions of browsers (e.g. some Safari browsers). If the
+download doesn't seem to work for you from the above URL then try using
+http://www.mozilla.com/en-US/firefox/[FireFox]
+
+[[Camel1.0.0Release-GettingtheBinariesusingMaven2]]
+Getting the Binaries using Maven 2
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To use this release in your maven project, the proper dependency
+configuration that you should use in your
+http://maven.apache.org/guides/introduction/introduction-to-the-pom.html[Maven
+POM] is:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<dependency>
+  <groupId>org.apache.camel</groupId>
+  <artifactId>camel-core</artifactId>
+  <version>1.0.0</version>
+</dependency>
+----
+
+[[Camel1.0.0Release-GettingtheSourceCode]]
+Getting the Source Code
+~~~~~~~~~~~~~~~~~~~~~~~
+
+[[Camel1.0.0Release-SourceDistributions]]
+Source Distributions
+^^^^^^^^^^^^^^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Description |Download Link |PGP Signature file of download
+|Source for Windows
+|http://archive.apache.org/dist/activemq/apache-camel/1.0.0/apache-camel-1.0.0-src.zip[apache-camel-1.0.0-src.zip]
+|http://archive.apache.org/dist/activemq/apache-camel/1.0.0/apache-camel-1.0.0-src.zip.asc[apache-camel-1.0.0-src.zip.asc]
+
+|Source for Unix/Linux/Cygwin
+|http://archive.apache.org/dist/activemq/apache-camel/1.0.0/apache-camel-1.0.0-src.tar.gz[apache-camel-1.0.0-src.tar.gz]
+|http://archive.apache.org/dist/activemq/apache-camel/1.0.0/apache-camel-1.0.0-src.tar.gz.asc[apache-camel-1.0.0-src.tar.gz.asc]
+|=======================================================================
+
+[[Camel1.0.0Release-SVNTagCheckout]]
+SVN Tag Checkout
+^^^^^^^^^^^^^^^^
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+svn co https://svn.apache.org/repos/asf/activemq/camel/tags/camel-1.0.0
+----
+
+[[Camel1.0.0Release-Changelog]]
+Changelog
+~~~~~~~~~
+
+For a more detailed view of new features and bug fixes, see:
+
+* http://issues.apache.org/jira/secure/ReleaseNote.jspa?version=12315670&styleName=Html&projectId=12311211[JIRA
+Release notes 1.0.0]
+
+This is the first official Camel release.

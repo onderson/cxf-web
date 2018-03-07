@@ -1,0 +1,303 @@
+[[ConfluenceContent]]
+[[ParameterBindingAnnotations-ParameterBindingAnnotations]]
+Parameter Binding Annotations
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+**camel-core**
+
+The annotations below are all part of *camel-core* and thus does not
+require *camel-spring* or link:spring.html[Spring]. These annotations
+can be used with the link:bean.html[Bean] component or when invoking
+beans in the link:dsl.html[DSL]
+
+Annotations can be used to define an link:expression.html[Expression] or
+to extract various headers, properties or payloads from a
+link:message.html[Message] when invoking a bean method (see
+link:bean-integration.html[Bean Integration] for more detail of how to
+invoke bean methods) together with being useful to help disambiguate
+which method to invoke.
+
+If no annotations are used then Camel assumes that a single parameter is
+the body of the message. Camel will then use the
+link:type-converter.html[Type Converter] mechanism to convert from the
+expression value to the actual type of the parameter.
+
+The core annotations are as follows
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Annotation |Meaning |Parameter
+|http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/Body.html[@Body]
+|To bind to an inbound message body | 
+
+|http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/ExchangeException.html[@ExchangeException]
+|To bind to an Exception set on the exchange | 
+
+|http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/Header.html[@Header]
+|To bind to an inbound message header |String name of the header
+
+|http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/Headers.html[@Headers]
+|To bind to the Map of the inbound message headers | 
+
+|http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/OutHeaders.html[@OutHeaders]
+|To bind to the Map of the outbound message headers | 
+
+|http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/Property.html[@Property]
+|To bind to a named property on the exchange |String name of the
+property
+
+|http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/Properties.html[@Properties]
+|To bind to the property map on the exchange | 
+
+|http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/Handler.html[@Handler]
+|Not part as a type parameter but stated in this table anyway to spread
+the good word that we have this annotation in Camel now. See more at
+link:bean-binding.html[Bean Binding]. | 
+|=======================================================================
+
+The follow annotations `@Headers`, `@OutHeaders` and `@Properties` binds
+to the backing `java.util.Map` so you can alter the content of these
+maps directly, for instance using the `put` method to add a new entry.
+See the OrderService class at link:exception-clause.html[Exception
+Clause] for such an example. You can use `@Header("myHeader")` and
+`@Property("myProperty")` to access the backing `java.util.Map`.
+
+[[ParameterBindingAnnotations-Example]]
+Example
+^^^^^^^
+
+In this example below we have a @Consume consumer (like message driven)
+that consumes JMS messages from the activemq queue. We use the @Header
+and @Body parameter binding annotations to bind from the JMSMessage to
+the method parameters.
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+public class Foo {
+    
+    @Consume(uri = "activemq:my.queue")
+    public void doSomething(@Header("JMSCorrelationID") String correlationID, @Body String body) {
+        // process the inbound message here
+    }
+
+}
+----
+
+In the above Camel will extract the value of
+Message.getJMSCorrelationID(), then using the
+link:type-converter.html[Type Converter] to adapt the value to the type
+of the parameter if required - it will inject the parameter value for
+the *correlationID* parameter. Then the payload of the message will be
+converted to a String and injected into the *body* parameter.
+
+You don't necessarily need to use the @Consume annotation if you don't
+want to as you could also make use of the Camel link:dsl.html[DSL] to
+route to the bean's method as well.
+
+[[ParameterBindingAnnotations-UsingtheDSLtoinvokethebeanmethod]]
+Using the DSL to invoke the bean method
++++++++++++++++++++++++++++++++++++++++
+
+Here is another example which does not use link:pojo-consuming.html[POJO
+Consuming] annotations but instead uses the link:dsl.html[DSL] to route
+messages to the bean method
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+public class Foo {
+    public void doSomething(@Header("JMSCorrelationID") String correlationID, @Body String body) {
+        // process the inbound message here
+    }
+
+}
+----
+
+The routing DSL then looks like this
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from("activemq:someQueue").
+  to("bean:myBean");
+----
+
+Here *myBean* would be looked up in the link:registry.html[Registry]
+(such as JNDI or the Spring ApplicationContext), then the body of the
+message would be used to try figure out what method to call.
+
+If you want to be explicit you can use
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from("activemq:someQueue").
+  to("bean:myBean?methodName=doSomething");
+----
+
+And here we have a nifty example for you to show some great power in
+Camel. You can mix and match the annotations with the normal parameters,
+so we can have this example with annotations and the Exchange also:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+    public void doSomething(@Header("user") String user, @Body String body, Exchange exchange) {
+        exchange.getIn().setBody(body + "MyBean");
+    }
+----
+
+[[ParameterBindingAnnotations-AnnotationBasedExpressionLanguage]]
+Annotation Based Expression Language
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+You can also use any of the link:languages.html[Languages] supported in
+Camel to bind expressions to method parameters when using
+link:bean-integration.html[Bean Integration]. For example you can use
+any of these annotations:
+
+[width="100%",cols="50%,50%",options="header",]
+|=======================================================================
+|Annotation |Description
+|http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/language/Bean.html[@Bean]
+|Inject a link:bean.html[Bean] expression
+
+|http://camel.apache.org/maven/current/camel-script/apidocs/org/apache/camel/builder/script/BeanShell.html[@BeanShell]
+|Inject a link:beanshell.html[BeanShell] expression
+
+|http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/language/Constant.html[@Constant]
+|Inject a link:constant.html[Constant] expression
+
+|http://camel.apache.org/maven/current/camel-juel/apidocs/org/apache/camel/language/juel/EL.html[@EL]
+|Inject an link:el.html[EL] expression
+
+|http://camel.apache.org/maven/current/camel-script/apidocs/org/apache/camel/builder/script/Groovy.html[@Groovy]
+|Inject a link:groovy.html[Groovy] expression
+
+|http://camel.apache.org/maven/current/maven/camel-core/apidocs/org/apache/camel/Header.html[@Header]
+|Inject a link:header.html[Header] expression
+
+|http://camel.apache.org/maven/current/camel-script/apidocs/org/apache/camel/builder/script/JavaScript.html[@JavaScript]
+|Inject a link:javascript.html[JavaScript] expression
+
+|http://camel.apache.org/maven/current/camel-mvel/apidocs/org/apache/camel/language/mvel/MVEL.html[@MVEL]
+|Inject a link:mvel.html[MVEL] expression
+
+|http://camel.apache.org/maven/current/camel-ognl/apidocs/org/apache/camel/language/ognl/OGNL.html[@OGNL]
+|Inject an link:ognl.html[OGNL] expression
+
+|http://camel.apache.org/maven/current/camel-script/apidocs/org/apache/camel/builder/script/PHP.html[@PHP]
+|Inject a link:php.html[PHP] expression
+
+|http://camel.apache.org/maven/current/camel-script/apidocs/org/apache/camel/builder/script/Python.html[@Python]
+|Inject a link:python.html[Python] expression
+
+|http://camel.apache.org/maven/current/camel-script/apidocs/org/apache/camel/builder/script/Ruby.html[@Ruby]
+|Inject a link:ruby.html[Ruby] expression
+
+|http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/language/Simple.html[@Simple]
+|Inject an link:simple.html[Simple] expression
+
+|http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/language/XPath.html[@XPath]
+|Inject an link:xpath.html[XPath] expression
+
+|http://camel.apache.org/maven/current/camel-saxon/apidocs/org/apache/camel/component/xquery/XQuery.html[@XQuery]
+|Inject an link:xquery.html[XQuery] expression
+|=======================================================================
+
+[[ParameterBindingAnnotations-Example:]]
+Example:
+++++++++
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+public class Foo {
+    
+    @MessageDriven(uri = "activemq:my.queue")
+    public void doSomething(@XPath("/foo/bar/text()") String correlationID, @Body String body) {
+        // process the inbound message here
+    }
+}
+----
+
+[[ParameterBindingAnnotations-Advancedexampleusing@Bean]]
+Advanced example using @Bean
+++++++++++++++++++++++++++++
+
+And an example of using the the
+http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/language/Bean.html[@Bean]
+binding annotation, where you can use a link:pojo.html[POJO] where you
+can do whatever java code you like:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+public class Foo {
+    
+    @MessageDriven(uri = "activemq:my.queue")
+    public void doSomething(@Bean("myCorrelationIdGenerator") String correlationID, @Body String body) {
+        // process the inbound message here
+    }
+}
+----
+
+And then we can have a spring bean with the id
+*myCorrelationIdGenerator* where we can compute the id.
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+public class MyIdGenerator {
+
+    private UserManager userManager;
+
+    public String generate(@Header(name = "user") String user, @Body String payload) throws Exception {
+       User user = userManager.lookupUser(user);
+       String userId = user.getPrimaryId();
+       String id = userId + generateHashCodeForPayload(payload);
+       return id;
+   }
+}
+----
+
+The link:pojo.html[POJO] MyIdGenerator has one public method that
+accepts two parameters. However we have also annotated this one with the
+@Header and @Body annotation to help Camel know what to bind here from
+the Message from the Exchange being processed.
+
+Of course this could be simplified a lot if you for instance just have a
+simple id generator. But we wanted to demonstrate that you can use the
+link:bean-binding.html[Bean Binding] annotations anywhere.
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+public class MySimpleIdGenerator {
+
+    public static int generate()  {
+       // generate a unique id
+       return 123;
+   }
+}
+----
+
+And finally we just need to remember to have our bean registered in the
+Spring link:registry.html[Registry]:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+   <bean id="myCorrelationIdGenerator" class="com.mycompany.MySimpleIdGenerator"/>
+----
+
+[[ParameterBindingAnnotations-Exampleusing]]
+Example using link:groovy.html[Groovy]
+++++++++++++++++++++++++++++++++++++++
+
+In this example we have an Exchange that has a User object stored in the
+in header. This User object has methods to get some user information. We
+want to use link:groovy.html[Groovy] to inject an expression that
+extracts and concats the fullname of the user into the fullName
+parameter.
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+    public void doSomething(@Groovy("$request.header['user'].firstName $request.header['user'].familyName) String fullName, @Body String body) {
+        // process the inbound message here
+    }
+----
+
+Groovy supports GStrings that is like a template where we can insert $
+placeholders that will be evaluated by Groovy.

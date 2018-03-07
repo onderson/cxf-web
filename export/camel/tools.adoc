@@ -1,0 +1,66 @@
+[[ConfluenceContent]]
+[[Tools-Tools]]
+Tools
+~~~~~
+
+This page gives a list of the various tools available for Camel
+
+[[Tools-CamelMavenTools]]
+Camel Maven Tools
+^^^^^^^^^^^^^^^^^
+
+* link:camel-maven-plugin.html[Camel Maven Plugin] for booting up Camel
+applications directly in maven to test it
+* http://camel.apache.org/camel-maven-archetypes.html[Camel Maven
+Archetypes] for using a maven archetype to create new Camel projects
+* link:creating-a-new-camel-component.html[Creating a new Camel
+Component] using a maven archetype. See also
+link:add-new-component-guide.html[this guide] about adding new
+components to the Apache Camel distribution.
+
+[[Tools-CamelCommandsforCLI]]
+Camel Commands for CLI
+^^^^^^^^^^^^^^^^^^^^^^
+
+* Core Commands is a set of Camel commands that SPI can reuse to
+integrate Camel commands in various tooling. The core commands is in
+the `camel-commands-core` JAR.
+* link:karaf.html[Karaf Commands] is the Camel core commands for using
+with Apache Karaf based containers.
+* commands-spring-boot is the Camel commands
+for link:spring-boot.html[Spring Boot]
+* commands-jolokia is the Camel commands integrated with Jolokia to
+allow remote management
+
+[[Tools-CamelCatalog]]
+Camel Catalog
+^^^^^^^^^^^^^
+
+* Is a standalone JAR `camel-catalog` that contains catalog information
+about the Apache Camel release. Such as information about each of the
+Camel components, with documentation in json schema format. This is
+intended for SPI to leverage for tooling, such as being able to
+implement Apache Camel component editors that can provide the set of
+options the component offers, with documentation included. 
+
+[[Tools-ExternalOpenSourceTools]]
+External Open Source Tools
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* http://hawt.io/[hawtio] is an open source HTML5 web application for
+visualizing, starting/stopping and tracing Apache Camel routes, browsing
+endpoints, sending messages to endpoints as well as browsing and sending
+to ActiveMQ destinations, viewing logs and metric charting etc.
+* http://tools.jboss.org/features/apachecamel.html[JBoss ]http://tools.jboss.org/features/apachecamel.html[Tools
+for Apache Camel]http://tools.jboss.org/features/apachecamel.html[is an
+open source set of eclipse plugins for creating Apache Camel projects,
+editing Camel routes using a graphical editor.]
+* http://fabric8.io/[fabric8] http://fabric8.io/guide/forge.html[Camel
+forge addon] is a set of both the Camel commands for remote management,
+and a set of Camel editing tools to edit Camel endpoints, components in
+both Java and XML routes.
+* http://fabric8.io/[fabric8]
+http://fabric8.io/guide/camelMavenPlugin.html[Camel Maven Plugin] is a
+maven plugin that is able to validate all your Camel endpoints from the
+source code, so you quickly can catch typo and other mistakes in your
+endpoints, and not have to wait for runtime to fail.

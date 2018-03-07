@@ -1,0 +1,8 @@
+[[ConfluenceContent]]
+[[EDI-EDIDataFormat]]
+EDI DataFormat
+~~~~~~~~~~~~~~
+
+We encourage end users to look at the
+http://milyn.codehaus.org/Home[Smooks] which supports EDI and Camel
+natively.

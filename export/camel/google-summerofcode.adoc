@@ -1,0 +1,32 @@
+[[ConfluenceContent]]
+Ideas for the http://wiki.apache.org/general/SummerOfCode2009[Apache
+Sponsored GSoC2009].
+
+[[GoogleSummerOfCode-2009]]
+2009
+----
+
+[[GoogleSummerOfCode-FullsupportoftheCamelDSLinRubyandPython]]
+Full support of the Camel DSL in Ruby and Python
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Camel provides an link:enterprise-integration-patterns.html[Enterprise
+Integration Patterns] link:dsl.html[Domain Specific Language] which can
+be used from many languges such as Java,
+link:xml-configuration.html[XML], Groovy, link:scala-dsl.html[Scala].
+There is support for Ruby and Python as well, but limited at the moment.
+The proposal is to bring the Ruby and Python support up to par with the
+current Camel features.
+
+[[GoogleSummerOfCode-ModifyingRoutesatruntime]]
+Modifying Routes at runtime
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+We can already modify XML at runtime; we could do with visualisations
+using Scala, Ruby, Groovy, Python so that folks can view & edit the
+routes in whatever language they want and hack them. For more see the
+link:web-console.html[Web Console] which supports updating the routes at
+runtime using the XML structure.
+
+To do this we'll need to be able to turn a RouteDefinition back into the
+DSLs - such as Groovy/Ruby/Scala/Python

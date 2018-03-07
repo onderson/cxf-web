@@ -1,0 +1,69 @@
+[[ConfluenceContent]]
+[[Camel3.0-Roadmap-Camel3.0Roadmap]]
+Camel 3.0 Roadmap
+~~~~~~~~~~~~~~~~~
+
+This page contains a summary of the link:camel-30-ideas.html[ideas]
+planned for the camel-3.0.0 release.
+
+[[Camel3.0-Roadmap-Tasksforcamel-2.x(prepare)]]
+Tasks for camel-2.x (prepare)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+[[Camel3.0-Roadmap-Improvethetestapifortestingcomponents(jwcarman)]]
+Improve the test api for testing components (jwcarman)
+++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+See https://issues.apache.org/jira/browse/CAMEL-6029[CAMEL-6029].
+
+No matter what choices and changes we make in the core, many tests in
+components will start failing. That is because virtually all unit tests
+in components test much more than the component itself, by setting up
+routes, etc. A simple thing would be do create something like
+xyzTestSupport (where xyz in \{"Component", "Configuration", "Endpoint",
+"Producer", "Consumer", "Language", etc... }), that test a respective
+area without setting up routes and possibly use a minimal CamelContext
+(w/o component discover and/or other features). Moving component unit
+tests to such a framework is not complicated, a bit tedious, but
+hopefully we'll benefit (yet again) from community contributions and
+gain new committers in the process. This is probably the first thing
+that should be done that will allow us to be more productive with the
+other improvements. It can also be done in 2.x and won't require any
+incompatible changes.
+
+[[Camel3.0-Roadmap-Tasksforcamel-3.0.0(execute)]]
+Tasks for camel-3.0.0 (execute)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+[[Camel3.0-Roadmap-RemovethexxxRefoptionsfromourURI(cmueller)]]
+Remove the xxxRef options from our URI (cmueller)
++++++++++++++++++++++++++++++++++++++++++++++++++
+
+See https://issues.apache.org/jira/browse/CAMEL-6076[CAMEL-6076]
+
+In favor of the xxx options in our URI, we should remove the duplicated
+xxxRef options from our components. This make our code and documentation
+more lean. We should deprecate it as soon as possible and remove it in
+Camel 3.0.
+
+[[Camel3.0-Roadmap-Unifyuri/refinourendpoints(cmueller)]]
+Unify uri/ref in our endpoints (cmueller)
++++++++++++++++++++++++++++++++++++++++++
+
+See https://issues.apache.org/jira/browse/CAMEL-6077[CAMEL-6077]
+
+Instead of having both uri and ref for endpoints, we should unify this
+and only use uri. If people want to use ref, then they can do that using
+"ref:xx" as an uri. This would simplify code as we don't have to check
+for either one.
+
+[[Camel3.0-Roadmap-PluggableMessageStorefortemporaryorpermanentstorageofexchanges(ohr)]]
+Pluggable Message Store for temporary or permanent storage of exchanges
+(ohr)
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+See link:camel-30-message-store.html[Camel 3.0 - Message Store].
+
+[[Camel3.0-Roadmap-Tasksforcamel-3.x(finalize)]]
+Tasks for camel-3.x (finalize)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

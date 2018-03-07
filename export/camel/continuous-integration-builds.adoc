@@ -1,0 +1,39 @@
+[[ConfluenceContent]]
+[[Continuousintegrationbuilds-CIbuildsusingJenkins]]
+CI builds using Jenkins
++++++++++++++++++++++++
+
+Continuous integration builds for Apache Camel have been set up at
+https://builds.apache.org/. More information about using Jenkins at
+Apache can be found at http://wiki.apache.org/general/Jenkins. +
+If you are a Camel PMC member and would like to have access to the
+Jenkins administration, you can find instructions for getting your own
+user id on the same wiki page.
+
+We have several jobs available for Apache Camel:
+
+* https://builds.apache.org/job/Camel.trunk.fulltest.java7/
+* https://builds.apache.org/job/Camel.trunk.fulltest.java8/
+* https://builds.apache.org/job/Camel.trunk.itest.karaf/
+* https://builds.apache.org/job/Camel.trunk.itest.osgi/
+
+[[Continuousintegrationbuilds-Codehealthreports]]
+Code health reports
++++++++++++++++++++
+
+Sonar leverages well-known tools such as Checkstyle, PMD, Findbugs,
+Cobertura, Clover and JavaNCSS to provide an integrated and easy to use
+quality management platform. The Sonar guys were kind enough to add
+Camel to their public server at Codehaus
+
+http://analysis.apache.org/dashboard/index/org.apache.camel:camel
+
+[[Continuousintegrationbuilds-Problems?Suggestions?]]
+Problems? Suggestions?
+++++++++++++++++++++++
+
+Access to Jenkins administration is currently being limited to PMC
+members by the Apache Infrastructure team, but several PMC members
+already have an account on these machines so you can just contact the
+link:mailing-lists.html[developer mailing list] for any problems or
+suggestions with the way the builds have been set up.

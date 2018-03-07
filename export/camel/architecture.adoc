@@ -1,0 +1,136 @@
+[[ConfluenceContent]]
+[[Architecture-Architecture]]
+Architecture
+~~~~~~~~~~~~
+
+Camel uses a Java based link:dsl.html[Routing Domain Specific Language
+(DSL)] or an link:xml-configuration.html[Xml Configuration] to configure
+link:routes.html[routing and mediation rules] which are added to a
+http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/CamelContext.html[CamelContext]
+to implement the various
+link:enterprise-integration-patterns.html[Enterprise Integration
+Patterns].
+
+At a high level Camel consists of a
+http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/CamelContext.html[CamelContext]
+which contains a collection of link:component.html[Component] instances.
+A link:component.html[Component] is essentially a factory of
+link:endpoint.html[Endpoint] instances. You can explicitly configure
+link:component.html[Component] instances in Java code or an IoC
+container like Spring or Guice, or they can be auto-discovered using
+link:uris.html[URIs].
+
+An link:endpoint.html[Endpoint] acts rather like a URI or URL in a web
+application or a Destination in a JMS system; you can communicate with
+an endpoint; either sending messages to it or consuming messages from
+it. You can then create a
+http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/Producer.html[Producer]
+or
+http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/Consumer.html[Consumer]
+on an link:endpoint.html[Endpoint] to exchange messages with it.
+
+The link:dsl.html[DSL] makes heavy use of pluggable
+link:languages.html[Languages] to create an
+link:expression.html[Expression] or link:predicate.html[Predicate] to
+make a truly powerful DSL which is extensible to the most suitable
+language depending on your needs. The following languages are supported
+
+* link:bean-language.html[Bean Language] for using Java for expressions
+* link:constant.html[Constant]
+* the unified link:el.html[EL] from JSP and JSF
+* link:header.html[Header]
+* link:jsonpath.html[JSonPath]
+* link:jxpath.html[JXPath]
+* link:mvel.html[Mvel]
+* link:ognl.html[OGNL]
+* link:ref-language.html[Ref Language]
+* link:exchangeproperty.html[ExchangeProperty]
+/ link:property.html[Property]
+* link:scripting-languages.html[Scripting Languages] such as
+** link:beanshell.html[BeanShell]
+** link:javascript.html[JavaScript]
+** link:groovy.html[Groovy]
+** link:python.html[Python]
+** link:php.html[PHP]
+** link:ruby.html[Ruby]
+* link:simple.html[Simple]
+** link:file-language.html[File Language]
+* link:spel.html[Spring Expression Language]
+* link:sql.html[SQL]
+* link:tokenizer.html[Tokenizer]
+* link:xpath.html[XPath]
+* link:xquery.html[XQuery]
+* link:vtd-xml.html[VTD-XML]
+
+Most of these languages is also supported used as
+link:annotation-based-expression-language.html[Annotation Based
+Expression Language].
+
+[[Architecture-Contents]]
+Contents
+~~~~~~~~
+
+The following links are to the individual parts of the Architecture.
+
+* link:aop.html[AOP]
+* link:async.html[Async]
+* link:asynchronous-routing-engine.html[Asynchronous Routing Engine]
+* link:backlogdebugger.html[BacklogDebugger]
+* link:backlogtracer.html[BacklogTracer]
+* link:bam.html[BAM]
+* link:batch-consumer.html[Batch Consumer]
+* link:binding.html[Binding]
+* link:browsableendpoint.html[BrowsableEndpoint]
+* link:camelcontext.html[CamelContext]
+* link:camel-core.html[Camel-Core]
+* link:cep.html[CEP]
+* link:clustering-and-loadbalancing.html[Clustering and loadbalancing]
+* link:component.html[Component]
+* link:componentconfiguration.html[ComponentConfiguration]
+* link:data-format.html[Data Format]
+* link:debugger.html[Debugger]
+* link:delay-interceptor.html[Delay Interceptor]
+* link:dependency-injection.html[Dependency Injection]
+* link:dozer-type-conversion.html[Dozer Type Conversion]
+* link:dsl.html[DSL]
+* link:endpoint.html[Endpoint]
+* link:endpoint-annotations.html[Endpoint Annotations]
+* link:endpointcompleter.html[EndpointCompleter]
+* link:error-handler.html[Error Handler]
+* link:exchange.html[Exchange]
+* link:exchange-pattern.html[Exchange Pattern]
+* link:expression.html[Expression]
+* link:http-session-handling.html[HTTP-Session Handling]
+* link:injector.html[Injector]
+* link:intercept.html[Intercept]
+* link:inversion-of-control-with-smart-defaults.html[Inversion Of
+Control With Smart Defaults]
+* link:languages.html[Languages]
+* link:lifecycle.html[Lifecycle]
+* link:oncompletion.html[OnCompletion]
+* link:pluggable-class-resolvers.html[Pluggable Class Resolvers]
+* link:predicate.html[Predicate]
+* link:processor.html[Processor]
+* link:processorfactory.html[ProcessorFactory]
+* link:registry.html[Registry]
+* link:routebuilder.html[RouteBuilder]
+* link:routepolicy.html[RoutePolicy]
+* link:routes.html[Routes]
+* link:rx.html[RX]
+* link:security.html[Security]
+* link:servicepool.html[ServicePool]
+* link:stream-caching.html[Stream caching]
+* link:threading-model.html[Threading Model]
+* link:toasync.html[ToAsync]
+* link:tracer.html[Tracer]
+* link:transport.html[Transport]
+* link:type-converter.html[Type Converter]
+* link:uris.html[URIs]
+* link:uuidgenerator.html[UuidGenerator]
+* link:xml-configuration.html[Xml Configuration]
+
+[[Architecture-Diagram]]
+Diagram
+~~~~~~~
+
+image:architecture.data/camel-components.png[image]

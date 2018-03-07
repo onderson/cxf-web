@@ -1,0 +1,232 @@
+[[ConfluenceContent]]
+[[ElasticSearch-ElasticSearchComponent]]
+ElasticSearch Component
+~~~~~~~~~~~~~~~~~~~~~~~
+
+*Available as of Camel 2.11*
+
+The ElasticSearch component allows you to interface with an
+http://elasticsearch.org[ElasticSearch] server. Maven users will need to
+add the following dependency to their *`pom.xml`* for this component:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<dependency>
+    <groupId>org.apache.camel</groupId>
+    <artifactId>camel-elasticsearch</artifactId>
+    <version>x.x.x</version>
+    <!-- use the same version as your Camel core version -->
+</dependency>
+----
+
+[[ElasticSearch-URIFormat]]
+URI Format
+^^^^^^^^^^
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+elasticsearch://clusterName[?options]
+----
+
+[Tip]
+====
+
+
+if you want to run against a local (in JVM/classloader) ElasticSearch
+server, just set the *`clusterName`* value in the URI to *`local`*. See
+the
+http://www.elasticsearch.org/guide/reference/java-api/client.html[client
+guide] for more details.
+
+====
+
+[[ElasticSearch-EndpointOptions]]
+Endpoint Options
+^^^^^^^^^^^^^^^^
+
+The following options may be configured on the ElasticSearch endpoint.
+All are required to be set as either an endpoint URI parameter or as a
+header (headers override endpoint properties)
+
+[width="100%",cols="50%,50%",options="header",]
+|=======================================================================
+|Name |Description
+|`operation` a|
+Required.
+
+The operation to perform.
+
+|`indexName` |The name of the index.
+
+|`indexType` |The type of the index.
+
+|`ip` |From **Camel 2.12. +
+**The *`TransportClient`* remote host IP address to use**.**
+
+|`port` |From **Camel 2.12. +
+**The *`TransportClient`* remote port to use (defaults to *`9300`*)*.*
+
+|`transportAddresses` a|
+From **Camel 2.16. +
+**Comma separated list with *`IP:PORT`* formatted remote transport
+addresses to use**.**
+
+Options *`IP`* and *`PORT`* must be left blank
+for *`transportAddresses`* to be considered instead.
+
+|`consistencyLevel` a|
+From **Camel 2.16. +
+**The write consistency level to use with *`INDEX`* and *`BULK`*
+operations.
+
+Can be one of:
+
+* *`ONE`*
+* *`QUORUM`*
+* *`ALL`*
+* *`DEFAULT`*
+
+|`replicationType` a|
+From **Camel 2.16. +
+**The replication type to use with *`INDEX`* and **`BULK`** operations.
+
+Can be one of:
+
+* *`SYNC`*
+* *`ASYNC`*
+* *`DEFAULT`*
+
+[Warning]
+====
+
+
+From *Camel 2.17* the option *`replicationType`* has been removed, as
+the *`async`* replication was removed in Elasticsearch 2.0.0.
+
+====
+
+|`parent` a|
+From *Camel 2.16.1 / 2.17.0*
+
+Optionally used with *`INDEX`* operations for Elasticsearch
+https://www.elastic.co/guide/en/elasticsearch/guide/current/parent-child.html[Parent-Child
+relationships] to specify the *`ID`* of the parent record**.**
+
+|`clientTransportSniff` + a|
+From *Camel 2.17*
+
+Define if the client is allowed to sniff the rest of the cluster.
+
+|`pathHome` + a|
+From *Camel 2.17.2 *
+
+Define the *`path.home`* property inside settings of ElasticSearch node.
+ 
+
+Default: *`/usr/share/elasticsearch`* +
+
+|=======================================================================
+
+[[ElasticSearch-MessageOperations]]
+Message Operations
+^^^^^^^^^^^^^^^^^^
+
+The following ElasticSearch operations are currently supported. Simply
+set an endpoint URI option or an exchange header with name *`operation`*
+and a value set to one of the following. Some operations also require
+other parameters or the message body to be set.
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Operation |Message body |Description
+|`INDEX` |*`Map`, `String`*, *`byte[]`* or *`XContentBuilder`* content
+to index. a|
+Adds content to an index and returns the content's *`indexId`* in the
+body.
+
+From *Camel 2.15*: you can set the *`indexId`* by setting the message
+header with the key "*`indexId`*".
+
+|`GET_BY_ID` |Index id of content to retrieve. |Retrieves the specified
+index and returns a *`GetResult`* object in the body.
+
+|`DELETE` |Index id of content to delete. |Deletes the
+specified *`indexId`* and returns a *`DeleteResult`* object in the body.
+
+|`BULK_INDEX` |A *`List`* or *`Collection`* of any type that is already
+accepted (*`Map`, `String`*, *`byte[]`* or *`XContentBuilder`*). |From
+*Camel 2.14*: Adds content to an index and return a *`List`* of the id's
+of the successfully indexed documents in the body.
+
+|`BULK` |A *`List`* or *`Collection`* of any type that is already
+accepted (*`Map`, `String`*, *`byte[]`* or *`XContentBuilder`*). |From
+*Camel 2.15:* Adds content to an index and returns the *`BulkResponse`*
+object in the body.
+
+|`SEARCH` |*`Map`* or *`SearchRequest`* object. |From **Camel 2.15:**
+Search the content with the *`Map`* or query string.
+
+|`MULTIGET` |*`List`* of *`MultigetRequest.Item`* object. |From **Camel
+2.17:** Retrieves the specified indexes type's specified
+in *`MultigetRequest`* and returns a *`MultigetResponse`* object in the
+body.
+
+|`MULTISEARCH` |*`List`* of *`SearchRequest`* object. |From **Camel
+2.17:** Search for parameters specified in *`MultiSearchRequest`* and
+returns a *`MultiSearchResponse`* object in the body.
+
+|`EXISTS` |Index name as a header. |From **Camel 2.17:** Returns
+a *`Boolean`* object in the body.
+
+|`UPDATE` |*`Map`, `String`*, *`byte[]`* or *`XContentBuilder`* content
+to update. |From *Camel 2.17:* Updates content to an index and returns
+the content's *`indexId`* in the body.
+|=======================================================================
+
+[[ElasticSearch-IndexExample]]
+Index Example
+^^^^^^^^^^^^^
+
+Below is a simple *`INDEX`* example:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from("direct:index")
+  .to("elasticsearch://local?operation=INDEX&indexName=twitter&indexType=tweet");
+----
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<route>
+    <from uri="direct:index"/>
+    <to uri="elasticsearch://local?operation=INDEX&indexName=twitter&indexType=tweet"/>
+</route>
+----
+
+A client would simply need to pass a body message containing a *`Map`*
+to the route. The result body contains the *`indexId`* created:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+Map<String, String> map = new HashMap<String, String>();
+map.put("content", "test");
+String indexId = template.requestBody("direct:index", map, String.class);
+----
+
+[[ElasticSearch-Formoreinformation,seetheseresources]]
+For more information, see these resources
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+http://elasticsearch.org[ElasticSearch Main Site]
+
+http://www.elasticsearch.org/guide/reference/java-api/[ElasticSearch
+Java API]
+
+[[ElasticSearch-SeeAlso]]
+See Also
+^^^^^^^^
+
+* link:configuring-camel.html[Configuring Camel]
+* link:component.html[Component]
+* link:endpoint.html[Endpoint]
+* link:getting-started.html[Getting Started]

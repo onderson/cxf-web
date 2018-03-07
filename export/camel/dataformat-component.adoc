@@ -1,0 +1,63 @@
+[[ConfluenceContent]]
+[[DataFormatComponent-DataFormatComponent]]
+Data Format Component
+~~~~~~~~~~~~~~~~~~~~~
+
+*Available as of Camel 2.12*
+
+The *dataformat:* component allows to use link:data-format.html[Data
+Format] as a Camel link:component.html[Component].
+
+[[DataFormatComponent-URIformat]]
+URI format
+^^^^^^^^^^
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+dataformat:name:(marshal|unmarshal)[?options]
+----
+
+Where *name* is the name of the link:data-format.html[Data Format]. And
+then followed by the operation which must either be `marshal` or
+`unmarshal`. +
+The options is used for configuring the link:data-format.html[Data
+Format] in use. See the link:data-format.html[Data Format] documentation
+for which options it support.
+
+[[DataFormatComponent-Samples]]
+Samples
+^^^^^^^
+
+For example to use the link:jaxb.html[JAXB] link:data-format.html[Data
+Format] we can do as follows:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from("activemq:My.Queue").
+  to("dataformat:jaxb:unmarshal?contextPath=com.acme.model").
+  to("mqseries:Another.Queue");
+----
+
+And in XML DSL you do:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<camelContext id="camel" xmlns="http://camel.apache.org/schema/spring">
+  <route>
+    <from uri="activemq:My.Queue"/>
+    <to uri="dataformat:jaxb:unmarshal?contextPath=com.acme.model"/>
+    <to uri="mqseries:Another.Queue"/>
+  </route>
+</camelContext>
+----
+
+[[DataFormatComponent-SeeAlso]]
+See Also
+^^^^^^^^
+
+* link:configuring-camel.html[Configuring Camel]
+* link:component.html[Component]
+* link:endpoint.html[Endpoint]
+* link:getting-started.html[Getting Started]
+
+* link:data-format.html[Data Format]

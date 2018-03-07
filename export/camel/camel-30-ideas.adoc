@@ -1,0 +1,732 @@
+[[ConfluenceContent]]
+[[Camel3.0-Ideas-Camel3.0Ideas]]
+Camel 3.0 Ideas
+~~~~~~~~~~~~~~~
+
+[Warning]
+====
+ **WIP**
+
+  ====
+
+Camel is now almost 6 years old and its second revision camel-2.x is
+more than 4.5 years old already. Camel is extremely mature, used in
+production by a large number of organizations from small to large and
+even governments. We feel like we really hit the initial target of
+simplifying integration. Camel's middleware abstraction api and the eip
+based routing brought a lot of positive feedback from users.
+
+There is however more that could be done to simplify the work of
+integration developers who need new components (not shipped with camel
+for licensing - copyleft of commercial - or other reasons) or new
+integration patterns or algorithms or even new tools. We learned a lot
+in the past years and benefited from a strong and continuously growing
+community. It's time to put what we learned to good use and re-engineer
+your favourite integration framework yet again.
+
+The middleware abstractions look pretty solid, and aside from some
+possible reshuffling we don't expect major changes. As a consequence,
+most of the components will retain the same general feel. The core will
+however be rearchitected to become even more pluggable and modular. We
+will however spare no effort to make a new Camel 3 be as backward
+compatible as possible and when not possible at least provide a painless
+migration path.
+
+This is a mindmap of ideas for improving Camel 3.0. Fell free to discuss
+this on the Camel link:mailing-lists.html[Mailing Lists] if you have
+other ideas or feedback.
+
+[[Camel3.0-Ideas-Tableofcontents]]
+Table of contents
+^^^^^^^^^^^^^^^^^
+
+* link:#Camel3.0-Ideas-Camel3.0Ideas[Camel 3.0 Ideas]
+** link:#Camel3.0-Ideas-Tableofcontents[Table of contents]
+** link:#Camel3.0-Ideas-JDKsupport[JDK support]
+** link:#Camel3.0-Ideas-JDK8JavaDSL[JDK8 Java DSL]
+** link:#Camel3.0-Ideas-RoutingCoreRe-engineering(raulk)[Routing Core
+Re-engineering (raulk)]
+*** link:#Camel3.0-Ideas-ConvertingsomeEIPsfrom%22performers%22tomere%22deciders%22[Converting
+some EIPs from "performers" to mere "deciders"]
+** link:#Camel3.0-Ideas-ClearerArchitectureofCamelCore[Clearer
+Architecture of Camel Core]
+*** link:#Camel3.0-Ideas-Splitcamel-coreintomultipleparts(hadrian)[Split
+camel-core into multiple parts (hadrian)]
+*** link:#Camel3.0-Ideas-Avoidshadinggoogleconcurrentlinkedmapincamel-core[Avoid
+shading google concurrent linked map in camel-core]
+*** link:#Camel3.0-Ideas-Definescopeandrulesforcamel-corepackages(champion?)[Define
+scope and rules for camel-core packages (champion?)]
+*** link:#Camel3.0-Ideas-Moreflexibleroutesatruntime(claus)[More
+flexible routes at runtime (claus)]
+*** link:#Camel3.0-Ideas-Fixrouteswithmultipleinputs(claus)[Fix routes
+with multiple inputs (claus)]
+*** link:#Camel3.0-Ideas-RouteinitializationlogicforJavaDSLandXMLDSLs(claus)[Route
+initialization logic for Java DSL and XML DSLs (claus)]
+*** link:#Camel3.0-Ideas-AddOnException,Interceptor,etc.toJAXBmodelforaCamelContextDefinition(claus)[Add
+OnException, Interceptor, etc. to JAXB model for a
+CamelContextDefinition (claus)]
+*** link:#Camel3.0-Ideas-Tightenuproutedefinitions(claus)[Tighten up
+route definitions (claus)]
+*** link:#Camel3.0-Ideas-MessageHistoryEIP/MessageStore(ChristianOhr)[Message
+History EIP/Message Store (Christian Ohr)]
+** link:#Camel3.0-Ideas-DependencyUpgrades[Dependency Upgrades]
+** link:#Camel3.0-Ideas-JMXnaming[JMX naming]
+** link:#Camel3.0-Ideas-Removenotusedcomponents[Remove not used
+components]
+** link:#Camel3.0-Ideas-Splitcamel-cxfintoWSandREST[Split camel-cxf into
+WS and REST]
+** link:#Camel3.0-Ideas-Oldideas[Old ideas]
+*** link:#Camel3.0-Ideas-Supportforasynchronoustransactions[Support for
+asynchronous transactions]
+*** link:#Camel3.0-Ideas-Streamcaching[Stream caching]
+*** link:#Camel3.0-Ideas-EIP[EIP]
+*** link:#Camel3.0-Ideas-ScheduleinDSL[Schedule in DSL]
+*** link:#Camel3.0-Ideas-AdvancedScalasupport[Advanced Scala support]
+*** link:#Camel3.0-Ideas-MoreEIPsas@annotations[More EIPs as
+@annotations]
+*** link:#Camel3.0-Ideas-Unifiedstatistics[Unified statistics]
+*** link:#Camel3.0-Ideas-SEDA/VMcomponentstoleverageasyncroutingengine[SEDA/VM
+components to leverage async routing engine]
+*** link:#Camel3.0-Ideas-camel-osgi-test[camel-osgi-test]
+*** link:#Camel3.0-Ideas-REST[REST]
+*** link:#Camel3.0-Ideas-Moreloadtests(cmueller,+1mattrpav)[More load
+tests (cmueller, +1 mattrpav)]
+*** link:#Camel3.0-Ideas-OSGienhancements[OSGi enhancements]
+*** link:#Camel3.0-Ideas-Easiercommit/rollbackforcomponentdevelopers[Easier
+commit/rollback for component developers]
+*** link:#Camel3.0-Ideas-RefactorUnitOfWork[Refactor UnitOfWork]
+*** link:#Camel3.0-Ideas-ImprovementstoThreadPoolProfileforthreadmanagement[Improvements
+to ThreadPoolProfile for thread management]
+*** link:#Camel3.0-Ideas-TightenuponException[Tighten up onException]
+*** link:#Camel3.0-Ideas-AddcompositeEIPtocomposeanumberofEIPsintoasingleEIP[Add
+composite EIP to compose a number of EIPs into a single EIP]
+*** link:#Camel3.0-Ideas-RemoveSpringtransactiondependencyfromJMScomponent(RemovedbecauseSJMSwillbenon-springversion)[Remove
+Spring transaction dependency from JMS component (Removed because SJMS
+will be non-spring version)]
+** link:#Camel3.0-Ideas-DefaulttouseTransactedmodebydefault[Default to
+use Transacted mode by default]
+** link:#Camel3.0-Ideas-AddtraceinformationtotheCamelexceptions[Add
+trace information to the Camel exceptions]
+** link:#Camel3.0-Ideas-AvoidthrowsExceptiononenduserAPI[Avoid throws
+Exception on end user API]
+
+[[Camel3.0-Ideas-JDKsupport]]
+JDK support
+^^^^^^^^^^^
+
+(+1: claus, cmueller, mattrpav) +
+(-1: hadrian)
+
+We should drop support for JDK6, and require JDK7 as minimim version. eg
+build and compile the release with JDK7. +
+We should aim to be compatible with JDK8. +
+(hz) Why? Isn't OpenJDK 6 still supported by RedHat and very much in
+use? Even Oracle's Java 6 is still in use. Maybe some bundles would
+require JDK7+, buy why not keep things like the api for instance still
+supported with Java 6? A strong argument may sway my opinion, but for
+now, I fail to see the reason.
+
+(mattrpav) Consider JDK8 as the base. By the time Camel 3 is stable and
+ready for wide-spread use, the transitive deps will have caught up. A
+number of suggestions below target JDK8 features, and all would require
+an "add-on" approach to maintain JDK7 backward compat. 
+
+[[Camel3.0-Ideas-JDK8JavaDSL]]
+JDK8 Java DSL
+^^^^^^^^^^^^^
+
+It would be good to have a camel-java8-dsl component that offers a JDK8
+DSL which uses all the nice new stuff from JDK8 with higher order
+functions, closures, et all. +
+Though this may comes later in Camel 3.x when JDK8 is GA. +
+At least stuff like Predicate, Expression, AggregationStrategy etc. are
+"functional interfaces" (containing only one method) and Java 8
+applications can implement them using lambdas. That's only a start, but
+it doesn't require a specific DSL.
+
+[[Camel3.0-Ideas-RoutingCoreRe-engineering(raulk)]]
+Routing Core Re-engineering (raulk)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The routing core of Camel 2.x is heavily based on a recursive call
+pattern, where Processors are responsible for calling the next one along
+the chain. This results in lengthy and meaningless stacktraces
+(difficult to make sense out of and debug for newcomers) and higher
+memory usage due to retention of local variables for a longer time than
+strictly needed.
+
+Moreover, Camel weaves a large number of "plumbing" processors along the
+way which should not really be processors because they form part of the
+very essence of the routing core, e.g. error handlers, stream caching
+interceptors, trace interceptors, async processor helpers, MDC, etc.
+
+The proposal is to shift towards an iterative model, by redesigning the
+logic of Camel routing. The suggested model is defined by these pillars:
+
+* A single class, or a limited set of them, contain the routing logic of
+Camel. Package name: `org.apache.camel.core.routing`. Central (abstract)
+class: `RoutingCore`. Concrete realisations could be:
+PipeliningRoutingCore, MulticastRoutingCore, depending on the
+fundamental routing pattern.
+* The RoutingCore iteratively calls the routing steps, one after
+another. The routing steps return their result to the `RoutingCore`, who
+is in charge of calling the next element subsequently. OUT and IN are
+bridged if necessary (PipeliningRoutingCore).
+* The Processor interface is crumbled up into its many specialisations,
+each of which represents a distinct concept of the Camel framework:
+RoutingDecider (EIPs should only take decisions about the routing, but
+*not* perform the routing itself, e.g. choice, filter, loop, throttle,
+etc.; see examples in subsection below.), Actions, ErrorHandler (already
+exists), Interceptor, etc.
+* The RoutingCore is responsible of all the "magic" now disseminated
+across a number of processors. Assisted by Helper classes.
+
+The goal of this idea isn't to zap off recursion altogether, just to
+consolidate the routing logic into a handful of cornerstone classes.
+
+Camel is no longer a baby and the framework concepts are well mature,
+thus they should be transferred to the API and avoid making everything a
+raw Processor.
+
+[[Camel3.0-Ideas-ConvertingsomeEIPsfrom"performers"tomere"deciders"]]
+Converting some EIPs from "performers" to mere "deciders"
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+* choice() => evaluates the predicates and returns the List of
+Processors or Endpoints to invoke.
+* filter() => same as choice(), but returning null if the filter doesn't
+match, to continue to the next routing step.
+* loop() => evaluates whether the looping control predicate still
+stands. If yes, it returns the processors to invoke, where the last is
+itself (to trigger the looping logic again); else, it returns null to
+continue to the next routing step.
+* throttle() => pauses accordingly and then returns the
+endpoint/processors to invoke.
+* ...
+
+[[Camel3.0-Ideas-ClearerArchitectureofCamelCore]]
+Clearer Architecture of Camel Core
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Goals:
+
+* The camel components should know as little as possible about camel
+core
+* The classes needed to setup camel should be separate from the things
+needed at run time
+* Camel Core should be tiny as possible and only contain what really is
+core
+
+So why should this be important? Currently components depend on
+camel-core as a whole and there are no further rules which classes the
+components should use and which classes should be private to core. Even
+classes from the impl package are needed. So this means that any
+refactoring we do in camel core could affect all components. As camel is
+growing steadily this can become quite problematic.
+
+[[Camel3.0-Ideas-Splitcamel-coreintomultipleparts(hadrian)]]
+Split camel-core into multiple parts (hadrian)
+++++++++++++++++++++++++++++++++++++++++++++++
+
+(+1: cmueller, hadrian, claus)
+
+Claus: Important to be 99+% backwards compatible with Camel 2.x.
+
+There are multiple benefits and less constraints. A separate api jar
+would allow the definition of a 'route container' which is currently one
+of the roles of the CamelContext. This allows primarily alternative
+implementations of camel for constrained environments (such as real time
+systems, for instance). Processors/Routes/Components written against the
+api could be deployed on any camel implementation (as long as all
+necessary features are supported).
+
+* api
+* dsl/builder
+* impl
+* ...
+
+These should be structured in a way that these big building blocks do
+not have cyclic dependencies. Any other cycles can be ignored in this
+step.
+
+Allowed depdencies ( "->" means may use, may depend on):
+
+* * -> api
+* end user config code -> builder
+* builder -> impl
+
+[[Camel3.0-Ideas-Avoidshadinggoogleconcurrentlinkedmapincamel-core]]
+Avoid shading google concurrent linked map in camel-core
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+The shaded Google concurrent map should IMHO be pluggable, so people can
+run without this as default. And then people can install that google JAR
+on their classpath and Camel can pickup and use that. This JAR only
+helps in SMX/Karaf installations when having concurrent startup of many
+Camel apps. For regular users this does not bring any benefits to the
+table. This can help slim down the size of the camel-core JAR.
+
+We can either auto detect the google class, as people did in the past
+with JDK1.3/1.4 and the apache commons collection. eg using commons
+collection on JDK1.3 and not in JDK1.4 as it had that out of the box.
+
+[[Camel3.0-Ideas-Definescopeandrulesforcamel-corepackages(champion?)]]
+Define scope and rules for camel-core packages (_champion_?)
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+In extension to the previous paragraph each camel package should have a
+clear scope that defines what to put in the package and what not. There
+should be rules that define what dependencies are allowed for classes in
+a package. The minimum goal is to guarantee that by following the rules
+dependency cycles can not happen. Additionally the rules should minimize
+dependencies between packages to achieve loose coupling between packages
+and high coherence inside a package.
+
+[[Camel3.0-Ideas-Moreflexibleroutesatruntime(claus)]]
+More flexible routes at runtime (claus)
++++++++++++++++++++++++++++++++++++++++
+
+(+1: hadrian)
+
+When routes is added in Camel 2.x architecture, global cross cutting
+concerns such as error handlers, interceptors, onCompletion etc. is
+applied when the route is added. We need to separate this and have those
+applied during routing. The `Channel` needs to do this and therefore it
+must be more dynamic than its currently is. And we need to enlist the
+various global cross cutting concerns by their xxxDefintions in the
+CamelContext, so we can access them at any time. This allows end users
+also much more easily to add/remove interceptors, error handlers and
+whatnot at runtime. And it makes it much easier to add routes generated
+from JAXB or other sources, as we don't need to prepare or anyhow _mold_
+the `RouteDefinition` given. See ticket
+https://issues.apache.org/activemq/browse/CAMEL-3024[CAMEL-3024] for
+some details.
+
+[[Camel3.0-Ideas-Fixrouteswithmultipleinputs(claus)]]
+Fix routes with multiple inputs (claus)
++++++++++++++++++++++++++++++++++++++++
+
+The current implementation of routes with multiple inputs is to clone
+the route, which means you essentially got 2+ routes if a route has
+multiple inputs. However routes with multiple inputs is seldom used. The
+actual solution will depend on the api refactoring.
+
+[[Camel3.0-Ideas-RouteinitializationlogicforJavaDSLandXMLDSLs(claus)]]
+Route initialization logic for Java DSL and XML DSLs (claus)
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+The Java DSL does its route initialization slightly a bit different than
+the XML DSLs, due the nature of it, and the fact the fluent builders can
+do additional logic, which the JAXB model of XML DSLs does not. We
+should align the initialization logic so Java DSL and XML DSLs does the
+same thing. They setup the pure model at first. So the configure method
+in the RouteBuilder should setup the model as the XML DSL would do. Then
+the prepare route logic which follows could be the same in all cases.
+This would also allow us to ensure when people use multiple RouteBuilder
+classes in Java DSL, then context scoped onException, interceptors is
+applied for all RouteBuilders.
+
+[[Camel3.0-Ideas-AddOnException,Interceptor,etc.toJAXBmodelforaCamelContextDefinition(claus)]]
+Add OnException, Interceptor, etc. to JAXB model for a
+CamelContextDefinition (claus)
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Configuring context scoped onException, interceptors etc. is woven into
+the RouteDefinition as part of the route initialization logic. When we
+have a dynamic routing engine (see above) that can at runtime support
+this without the need for woven into the routes. Then we should also
+ensure the context scoped onException, interceptors etc. is available in
+a CamelContextDefinition. This ensures the models is always 100% kept as
+it was provided, and we can fully export the model to XML and other
+languages (having a supported render).
+
+[[Camel3.0-Ideas-Tightenuproutedefinitions(claus)]]
+Tighten up route definitions (claus)
+++++++++++++++++++++++++++++++++++++
+
+Currently cross cutting concerns such as error handlers, interceptors,
+onCompletion etc. can be define anywhere in the route. We should tighten
+this up and only allow this to be configured in the start of the route.
+This also ensures when end users use code assistance in their route
+development, the IDE will not popup a big list which includes these
+cross cutting concerns. See also next note. (ProcessorDefinition will
+therefore be trimmed)
+
+[[Camel3.0-Ideas-MessageHistoryEIP/MessageStore(ChristianOhr)]]
+Message History EIP/Message Store (Christian Ohr)
++++++++++++++++++++++++++++++++++++++++++++++++++
+
+This has been moved to its own link:camel-30-message-store.html[Wiki
+page].
+
+[[Camel3.0-Ideas-DependencyUpgrades]]
+Dependency Upgrades
+^^^^^^^^^^^^^^^^^^^
+
+We should upgrade Jetty to 8.x as minimum. And if possible support Jetty
+9.x which is in the works. +
+Currently we are stuck on 7.x due CXF / Karaf etc uses that old version,
+and thus we have been good citizen to align and use same version. +
+AMQ is also using older Jetty, but that is easier to upgrade as well.
+
+[[Camel3.0-Ideas-JMXnaming]]
+JMX naming
+^^^^^^^^^^
+
+(+1: cgeer)
+
+We should avoid using the hostname in the JMX MBeans as its better to
+have a consistent naming that tooling and other parties can rely on.
+Having the hostname in there just add complexity to the mix. Also Camel
+may quote the MBean name for the CamelContextMBean and use " " in the
+mbean name, as the only mbean in there. (will need to double check
+exactly which mbean it was).
+
+We should consider improve on this.
+
+[[Camel3.0-Ideas-Removenotusedcomponents]]
+Remove not used components
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+We should consider removing
+
+* camel-bam
+* camel-msv
+* org.apache.camel.view from came-core
+
+* dot maven generator
+
+* ... (there could be other stuff to remove)
+
+The BAM has not changed in 5 years, and very seldom used by end users.
+And neither has the functionality you need. There is much better
+solutions outside ASF Camel for a BAM solution. +
+The DOT generator is not up to date and maintained. Also it requires
+binary generator to generate a route diagram; we never managed to find a
+good java library for that.
+
+The MSV component is never/rarely used, and is causing some issues for
+cutting releases, due some weird maven issues / download of JARs etc.
+And the codebase has basically been left unchanged for 5+ years now.
+
+[[Camel3.0-Ideas-Splitcamel-cxfintoWSandREST]]
+Split camel-cxf into WS and REST
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The camel-cxf component has grown too fat and has too many dependencies.
+People would like to use a light-weight RS. We have already talked on
+Camel @dev about splitting camel-cxf into a WS and RS modules. As well
+refactor the code-base as there is potential overlap with CXF itself and
+stuff to be removed/trimmed/optimized etc.
+
+We can have a camel-cfx-core where we can have shared logic if that
+makes sense.
+
+[[Camel3.0-Ideas-Oldideas]]
+Old ideas
+^^^^^^^^^
+
+_To be better defined and moved to the section above or removed_
+
+[[Camel3.0-Ideas-Supportforasynchronoustransactions]]
+Support for asynchronous transactions
++++++++++++++++++++++++++++++++++++++
+
+When using the asynchronous routing engine it would be desirable of
+transactional context could be propagated to the new threads. +
+This requires the TX manager supports suspend/resume on the TX. G.Nodet
+have worked a bit on this. See
+https://issues.apache.org/activemq/browse/CAMEL-2902[CAMEL-2902]. Also
+see https://issues.apache.org/activemq/browse/CAMEL-2729[CAMEL-2729].
+
+With the link:asynchronous-routing-engine.html[Asynchronous Routing
+Engine] it would be great if we could support asynchronous transaction
+as well. See
+https://issues.apache.org/activemq/browse/CAMEL-2729[CAMEL-2729] and
+https://issues.apache.org/activemq/browse/CAMEL-2902[CAMEL-2902]
+
+[[Camel3.0-Ideas-Streamcaching]]
+Stream caching
+++++++++++++++
+
+We could add support for using link:hawtdb.html[HawtDB] as the
+persistent store for streams which overflow to disk store. +
+This might be implemented with the message store when it is used for
+stream caching.
+
+[[Camel3.0-Ideas-EIP]]
+EIP
++++
+
+The link:resequencer.html[Resequencer] EIP currently doesn't support
+persistence, we could introduce this and let it leverage
+link:hawtdb.html[HawtDB] such as we did with the
+link:aggregator2.html[Aggregator2] EIP. +
+This might be implemented with the message store when it is used for
+temporarily saving exchanes until they are in order.
+
+[[Camel3.0-Ideas-ScheduleinDSL]]
+Schedule in DSL
++++++++++++++++
+
+We could consider adding DSL syntax sugar for scheduling routes. For
+example currently you have to use link:quartz.html[Quartz] or a
+`ScheduledPollingConsumer` which has the `delay` option. We could add
+DSL which has something like:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+schedule().every(5).minute().pollFrom("xxx").to("yyyy")
+----
+
+The hard part is to come up with a good DSL syntax. We can look at
+link:bam.html[BAM] and see what we got there as well.
+
+The DSL should support both cron and non cron based, eg
+link:quartz.html[Quartz], link:spring.html[Spring] (spring 3 has cron)
+and regular JDK timers.
+
+[[Camel3.0-Ideas-AdvancedScalasupport]]
+Advanced Scala support
+++++++++++++++++++++++
+
+-1: claus
+
+A proposal for advanced Scala support is
+https://github.com/krasserm/scalaz-camel/wiki[scalaz-camel] which is an
+alternative to Camel's existing Scala DSL.
+
+[[Camel3.0-Ideas-MoreEIPsas@annotations]]
+More EIPs as @annotations
++++++++++++++++++++++++++
+
+Currently its only the link:routing-slip.html[Routing Slip],
+link:recipient-list.html[Recipient List] and
+link:dynamic-router.html[Dynamic Router] which are avail as @annotation
+as well. We could add more link:eip.html[EIP]s as annotations such as
+link:splitter.html[Splitter]. +
+And also maybe annotations for `AggregationStrategy` to make this less
+Camel API dependent, so you can use a plain POJO for that.
+
+[[Camel3.0-Ideas-Unifiedstatistics]]
+Unified statistics
+++++++++++++++++++
+
+-1: claus, mattrpav. We keep the JMX API and ppl can use jolokia for
+REST over JMX etc.
+
+Currently the performance statistics is only avail when using JMX. We
+should allow those stats to be enabled regardless if JMX is enabled or
+not. Then we can use those stats from the web console. This also allows
+to expose those stats in the cloud where JMX is often not possible to be
+used.
+
+In the `camel-jpa` component we could offer JPA annotated entities with
+the performance status (just as we do for the tracer). Then end user can
+more easily use that if they want the stats to be persisted in a
+database using link:jpa.html[JPA].
+
+[[Camel3.0-Ideas-SEDA/VMcomponentstoleverageasyncroutingengine]]
+SEDA/VM components to leverage async routing engine
++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+This allows to use non blocking request-reply over link:seda.html[SEDA]
+and link:vm.html[VM]. The reason why we havent converted in 2.4 is it
+causes a bigger API breakage.
+
+[[Camel3.0-Ideas-camel-osgi-test]]
+camel-osgi-test
++++++++++++++++
+
+When testing your Camel apps with OSGi you may use PaxExam for that. We
+should create a test kit for osgi, like we have camel-test for regular
+junit testing. The test kit should make it easy for end users to have
+their apps tested with OSGi. We already have pieces in the
+`tests/camel-itest-osgi`. We just need to clean and shape it up so its
+ready for end users as well. And of course add documentation as well. +
+And then we should use it in `camel-itest-osgi` of course. See
+https://issues.apache.org/jira/browse/CAMEL-3777[CAMEL-3777].
+
+[[Camel3.0-Ideas-REST]]
+REST
+++++
+
+We already have REST support with link:cxfrs.html[CXFRS] and
+link:restlet.html[Restlet] but it can be better. We should make sure
+those components is dead easy to use and you can invoke REST services in
+one line of code etc. And we should make more examples and tidy up the
+link:cxfrs.html[CXFRS] documentation.
+
+[[Camel3.0-Ideas-Moreloadtests(cmueller,+1mattrpav)]]
+More load tests (cmueller, +1 mattrpav)
++++++++++++++++++++++++++++++++++++++++
+
+More load tests for frequently used Camel components (jetty, jms ...)
+and camel-core. If we have an defined runtime environment which is in
+general accessable/available for all users (like a public image on
+Amazon EC2) and a data store for the performance numbers, than we could
+easily collect and share the numbers.
+
+* Ensure correct behavior under load
+* Source for performance numbers (throughput etc).
+* Detection of memory leaks
+* Detection of performance decreases after refactorings
+* ...
+
+[[Camel3.0-Ideas-OSGienhancements]]
+OSGi enhancements
++++++++++++++++++
+
+* create a single type converter registry available as OSGi service to
+all bundles serving as a single registry to lookup converters or to
+add/remove converters from custom bundles.
+
+[[Camel3.0-Ideas-Easiercommit/rollbackforcomponentdevelopers]]
+Easier commit/rollback for component developers
++++++++++++++++++++++++++++++++++++++++++++++++
+
+Maybe expose some interface having commit / rollback methods to make it
+easier for component developers to implement custom logic. Currently
+they may not know about link:oncompletion.html[OnCompletion] and how to
+use `UnitOfWork` on Exchange to do this today.
+
+[[Camel3.0-Ideas-RefactorUnitOfWork]]
+Refactor UnitOfWork
++++++++++++++++++++
+
+The implementation of DefaultUnitOfWork seems to have transformed itself
+into a to broad concern where unit of work is doing a bit more work than
+the transactional aspect that ties to its name. +
+Maybe this implementation should be named ExchangeContext and we can
+introduce a simpler UnitOfWork concept. This would also allow us to
+refactor the SubUnitOfWork into a general parent/child unit of work
+concept. +
+However this requires API changes and thus is best kept for Camel 3.0
+
+This is also needed by the refactor of the Message History EIP.
+
+[[Camel3.0-Ideas-ImprovementstoThreadPoolProfileforthreadmanagement]]
+Improvements to ThreadPoolProfile for thread management
++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+We could move `ThreadPoolProfile` from `org.apache.camel.spi` to
+`org.apache.camel` and have it in the root package.
+
+[[Camel3.0-Ideas-TightenuponException]]
+Tighten up onException
+++++++++++++++++++++++
+
+We should consider tighten up the onException DSL a bit, for example to
+make it more clear that if you have processing steps in there, they only
+occur after the message has been exhausted. So maybe we need to have a
+onExhausted to make this clear
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+onException(IOException.class).maximumRedeliveries(3)
+  .onExhausted().handled(true).to("log:ignoreMe");
+----
+
+So in this example its only after the 3 failed redeliveries, then its
+exhausted, and then we handle the message and route it to a log where we
+ignore the message.
+
+Also currently you can do this:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+onException(IOException.class).maximumRedeliveries(3)
+  .handled(true);
+----
+
+Which will handle the message and after this let the error handler deal
+with the message. See
+https://issues.apache.org/jira/browse/CAMEL-5069[CAMEL-5059]. +
+We should in this case use a NoopProcessor so the message is handled,
+but the regular error handler does not react. Then its consistent. +
+However we have not changed this in Camel 2.x to keep backwards
+compatibility.
+
+Likewise there has been ideas to move onRedeliverRef to
+<redeliveryPolicy> as currently its to be configured outside the
+policy. +
+It may make more sense to move onRedeliverRef to the policy to keep it
+together.
+
+[[Camel3.0-Ideas-AddcompositeEIPtocomposeanumberofEIPsintoasingleEIP]]
+Add composite EIP to compose a number of EIPs into a single EIP
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+It would be nice if we have a DSL to compose a number of child EIPs into
+a single EIP itself. eg a bit like <pipeline>. This would allow people
+to make it easier to group together a number of EIPs into a single
+"unit". This allows for example the error handler to redeliver to the
+composite EIP instead of at the point of failure within the group. There
+are use-cases where people want to do that. And today the solution is to
+split this into a new route, which you then disable error handler by
+setting it to no error handler. And then call the route using the direct
+endpoint. So instead if you could do <composite> ... stuff goes here
+</composite> then that would be neater, as you dont have to split into
+multiple routes. I think there is an old JIRA ticket created about this
+a long time ago.
+
+[[Camel3.0-Ideas-RemoveSpringtransactiondependencyfromJMScomponent(RemovedbecauseSJMSwillbenon-springversion)]]
+Remove Spring transaction dependency from JMS component (Removed because
+SJMS will be non-spring version)
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+(+1: cgeer)
+
+Refactor the JMS component to remove the dependency on Spring
+PlatformTransactionManager and replace with JTA TransactionManager.
+
+[[Camel3.0-Ideas-DefaulttouseTransactedmodebydefault]]
+Default to use Transacted mode by default
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+One thing I regret about the design of Camel was defaulting to
+non-transacted mode by default and forcing users to explicitly enable
+transactional model with a Transaction Manager.
+
+It might be nice in Camel 3 to assume everything is transacted by
+default; and mimmick a form of transaction manager for non-transactional
+resource.
+
+e.g. its pretty common to work with messaging like JMS and databases as
+a common set of endpoints; the easiest thing that could possibly work
+for end users is for those to just be transacted by default without the
+user having to grok how to tinker with component configurations &
+Transaction Manager registration.
+
+Note I'm not advocating XA here; I think the default for camel should be
+for Idempotent Consumer and simple approach to middleware
+
+[[Camel3.0-Ideas-AddtraceinformationtotheCamelexceptions]]
+Add trace information to the Camel exceptions
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+If and exception occurs, it would be helpful if the exception contains
+trace information like the passed endpoints/processors and the current
+endpoint/processor. We may could also extend the error handler to log
+(or not) this information. +
+That make it much easier to dig into the problem when we encounter an
+exception.
+
+[[Camel3.0-Ideas-AvoidthrowsExceptiononenduserAPI]]
+Avoid throws Exception on end user API
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Important:* The `org.apache.camel.Processor` should stay as is. This
+API has been like this since the first commit, and we should let it be
+backwards compatible.
+
+But there is a number of end user APIs such as `Service`, eg when you
+call `start` on a CamelContext. It would be better to have that not
+throws Exception but use runtime exceptions if failed to start etc.
+
+An API which uses unchecked exceptions is the `ProducerTemplate` which
+end users uses. So its nice and easy to use. +
+Another example would be `Main` and `MainSupport` where the `run` method
+throws exception etc. +
+There is possible other end user APIs which we can make a bit more
+friendly.

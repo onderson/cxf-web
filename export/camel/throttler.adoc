@@ -1,0 +1,115 @@
+[[ConfluenceContent]]
+[[Throttler-Throttler]]
+Throttler
+^^^^^^^^^
+
+The Throttler Pattern allows you to ensure that a specific endpoint does
+not get overloaded, or that we don't exceed an agreed SLA with some
+external service.
+
+[[Throttler-Options]]
+Options
+^^^^^^^
+
+confluenceTableSmall
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Name |Default Value |Description
+|`maximumRequestsPerPeriod` |  |Maximum number of requests per period to
+throttle. This option must be provided as a positive number. Notice, in
+the XML DSL, from *Camel 2.8* onwards this option is configured using an
+link:expression.html[Expression] instead of an attribute.
+
+|`timePeriodMillis` |`1000` |The time period in milliseconds, in which
+the throttler will allow at most `maximumRequestsPerPeriod` number of
+messages.
+
+|`asyncDelayed` |`false` |*Camel 2.4:* If enabled then any messages
+which is delayed happens asynchronously using a scheduled thread pool.
+
+|`executorServiceRef` |  |*Camel 2.4:* Refers to a custom
+link:threading-model.html[Thread Pool] to be used if `asyncDelay` has
+been enabled.
+
+|`callerRunsWhenRejected` |`true` |*Camel 2.4:* Is used if
+`asyncDelayed` was enabled. This controls if the caller thread should
+execute the task if the thread pool rejected the task.
+
+|`rejectExecution` |`false` |*Camel 2.14:* If this option is true,
+throttler throws a ThrottlerRejectExecutionException when the request
+rate exceeds the limit.
+|=======================================================================
+
+[[Throttler-Examples]]
+Examples
+^^^^^^^^
+
+*Using the link:fluent-builders.html[Fluent Builders]*
+
+\{snippet:id=ex|lang=java|url=camel/trunk/camel-core/src/test/java/org/apache/camel/processor/ThrottlerTest.java}
+
+So the above example will throttle messages all messages received on
+*seda:a* before being sent to *mock:result* ensuring that a maximum of 3
+messages are sent in any 10 second window.
+
+Note that since `timePeriodMillis` defaults to 1000 milliseconds, just
+setting the `maximumRequestsPerPeriod` has the effect of setting the
+maximum number of requests per second. So to throttle requests at 100
+requests per second between two endpoints, it would look more like
+this...
+
+from("seda:a").throttle(100).to("seda:b");
+
+For further examples of this pattern in use you could look at the
+http://svn.apache.org/viewvc/camel/trunk/camel-core/src/test/java/org/apache/camel/processor/ThrottlerTest.java?view=markup[junit
+test case]
+
+*Using the link:spring-xml-extensions.html[Spring XML Extensions]*
+
+[[Throttler-Camel2.7.xorolder]]
+Camel 2.7.x or older
+++++++++++++++++++++
+
+\{snippet:id=example|lang=xml|url=camel/tags/camel-2.7.0/components/camel-spring/src/test/resources/org/apache/camel/spring/processor/throttler.xml}
+
+[[Throttler-Camel2.8onwards]]
+Camel 2.8 onwards
++++++++++++++++++
+
+In Camel 2.8 onwards you must set the maximum period as an
+link:expression.html[Expression] as shown below where we use a
+link:constant.html[Constant] expression:
+
+\{snippet:id=example|lang=xml|url=camel/trunk/components/camel-spring/src/test/resources/org/apache/camel/spring/processor/throttler.xml}
+
+[[Throttler-Dynamicallychangingmaximumrequestsperperiod]]
+Dynamically changing maximum requests per period
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available as of Camel 2.8* +
+Since we use an link:expression.html[Expression] you can adjust this
+value at runtime, for example you can provide a header with the value.
+At runtime Camel evaluates the expression and converts the result to a
+`java.lang.Long` type. In the example below we use a header from the
+message to determine the maximum requests per period. If the header is
+absent, then the link:throttler.html[Throttler] uses the old value. So
+that allows you to only provide a header if the value is to be changed:
+
+\{snippet:id=e2|lang=xml|url=camel/trunk/components/camel-spring/src/test/resources/org/apache/camel/spring/processor/throttler.xml}
+
+[[Throttler-Asynchronousdelaying]]
+Asynchronous delaying
+^^^^^^^^^^^^^^^^^^^^^
+
+*Available as of Camel 2.4*
+
+You can let the link:throttler.html[Throttler] use non blocking
+asynchronous delaying, which means Camel will use a scheduler to
+schedule a task to be executed in the future. The task will then
+continue routing. This allows the caller thread to not block and be able
+to service other messages, etc.
+
+from("seda:a").throttle(100).asyncDelayed().to("seda:b");
+
+link:using-this-pattern.html[Using This Pattern]

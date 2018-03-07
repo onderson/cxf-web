@@ -1,0 +1,76 @@
+[[ConfluenceContent]]
+[[Maven2snapshotrepositoryinpom-Camel]]
+Camel
++++++
+
+In your pom.xml file you can add the Maven 2 snapshot repository if you
+want to try out the xxx-SNAPSHOT versions:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+  <repository>
+      <id>apache.snapshots</id>
+      <name>Apache Development Snapshot Repository</name>
+      <url>https://repository.apache.org/content/repositories/snapshots/</url>
+      <releases>
+          <enabled>false</enabled>
+      </releases>
+      <snapshots>
+          <enabled>true</enabled>
+      </snapshots>
+  </repository>
+----
+
+Then you can use the SNAPSHOT version of camel in your `pom.xml`:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+    <dependency>
+        <groupId>org.apache.camel</groupId>
+        <artifactId>camel-core</artifactId>
+        <version>2.13-SNAPSHOT</version>
+    </dependency>
+----
+
+[width="100%",cols="50%,50%",]
+|=======================================================================
+|Apache Camel SNAPSHOTS
+|https://repository.apache.org/content/repositories/snapshots/
+|=======================================================================
+
+[[Maven2snapshotrepositoryinpom-CamelPlugins]]
+Camel Plugins
++++++++++++++
+
+And the same setting for the plugin repository if you want to try the
+latest Apache Camel maven tools also:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+  <pluginRepository>
+      <id>apache.snapshots</id>
+      <name>Apache Development Snapshot Repository</name>
+      <url>https://repository.apache.org/content/repositories/snapshots/</url>
+      <releases>
+          <enabled>false</enabled>
+      </releases>
+      <snapshots>
+          <enabled>true</enabled>
+      </snapshots>
+  </pluginRepository>
+----
+
+Then you can use the SNAPSHOT version of `mvn camel:run` with this in
+your `pom.xml`:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+  <plugins>
+      <!-- Allows the routes to be run via 'mvn camel:run' -->
+      <plugin>
+          <groupId>org.apache.camel</groupId>
+          <artifactId>camel-maven-plugin</artifactId>
+          <version>2.13-SNAPSHOT</version>
+      </plugin>
+  </plugins>
+----

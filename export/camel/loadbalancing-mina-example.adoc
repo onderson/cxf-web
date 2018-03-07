@@ -1,0 +1,71 @@
+[[ConfluenceContent]]
+[[LoadBalancingMinaExample-LoadbalancingusingMinaexample]]
+Load balancing using Mina example
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This example shows how you can easily use the Camel-MINA component to
+design a solution +
+allowing for distributing message workload onto several servers. +
+These servers are simple TCP/IP servers created by the Apache MINA
+framework and run in +
+separate JVMs. The load balancer pattern of Camel which is used on top
+of them allows for +
+sending in Round Robin mode the messages created from a Camel Bean
+component +
+alternatively between each server running on localhost:9991 and
+localhost:9992.
+
+Within this demo every ten seconds, a Report object is created from the
+Camel load balancer server. +
+This object is sent by the Camel load balancer to a MINA server where
+the object is then serialized. +
+One of the two MINA servers (localhost:9991 and localhost:9992) receives
+the object and enriches +
+the message by setting the field reply of the Report object. The reply
+is sent back by the MINA +
+server to the client, which then logs the reply on the console.
+
+[[LoadBalancingMinaExample-Descriptionoftheroutes]]
+Description of the routes
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Load balancer*
+
+*Mina Server 1*
+
+*Mina Server 2*
+
+[[LoadBalancingMinaExample-Howtoruntheexample]]
+How to run the example
+^^^^^^^^^^^^^^^^^^^^^^
+
+To compile and install the project in your maven repo, execute the
+following command on the root of the project:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+mvn clean install 
+----
+
+To run the example, then execute the following command in the respective
+folder:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+>mina1
+mvn exec:java -Pmina1
+----
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+>mina2
+mvn exec:java -Pmina2 
+----
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+>loadbalancing
+mvn exec:java -Ploadbalancer
+----
+
+and check the result in the console of load balancer.

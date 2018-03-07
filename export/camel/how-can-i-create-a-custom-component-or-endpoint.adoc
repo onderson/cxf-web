@@ -1,0 +1,17 @@
+[[ConfluenceContent]]
+[[HowcanIcreateacustomcomponentorendpoint-HowcanIcreateacustomcomponentorendpoint?]]
+How can I create a custom component or endpoint?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Please read link:writing-components.html[Writing Components] for a
+background in how to implement a new component or endpoint. Its really
+easy to do!
+image:https://cwiki.apache.org/confluence/s/en_GB/5997/6f42626d00e36f53fe51440403446ca61552e2a2.1/_/images/icons/emoticons/smile.png[(smile)]
+
+[[HowcanIcreateacustomcomponentorendpoint-SeeAlso]]
+See Also
+^^^^^^^^
+
+* link:writing-components.html[Writing Components]
+* link:how-do-i-add-a-component.html[How do I add a component]
+* link:how-do-i-configure-endpoints.html[How Do I Configure Endpoints?]

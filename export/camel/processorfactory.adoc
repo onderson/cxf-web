@@ -1,0 +1,61 @@
+[[ConfluenceContent]]
+[[ProcessorFactory-ProcessorFactory]]
+ProcessorFactory
+~~~~~~~~~~~~~~~~
+
+*Available as of Camel 2.4*
+
+There is a `org.apache.camel.spi.ProcessorFactory` which allows you to
+use a custom factory for creating link:processor.html[Processor] based
+on the Camel routes. +
+The factory can also be used for manipulating the definitions _before_
+the link:processor.html[Processor]s is created. For example you can use
+it to alter options, or even add new outputs to the routes, before the
+routes is actually created.
+
+[[ProcessorFactory-Example]]
+Example
+^^^^^^^
+
+Here is a custom factory which will alter the processor definitions.
+
+*MyFactory*
+
+The unit test and route is as follows:
+
+*Unit test and route*
+
+Now the idea is that the `setBody` processors has been changed by the
+factory to set a different body. +
+Also the link:splitter.html[Splitter] has one additional output where we
+send the splitted message to `mock:extra` endpoint.
+
+Notice we just return `null` which instructs Camel to use its default
+implementation to create the link:processor.html[Processor]. After all
+we just wanted to manipulate the definition. However if you do return a
+link:processor.html[Processor] then Camel use the returned processor.
+
+[[ProcessorFactory-JavaDSL]]
+Java DSL
+++++++++
+
+In Java DSL all you need to do is to configure the custom factory on the
+link:camelcontext.html[CamelContext] using the `setProcessorFactory`
+method:
+
+*Configuring ProcessorFactory in Java*
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+  CamelContext context ...
+  context.setProcessorFactory(new MyFactory());
+----
+
+[[ProcessorFactory-SpringXML]]
+Spring XML
+++++++++++
+
+In Spring XML all you have to do is just to declare a <bean> tag with
+the custom factory, and Camel will automatic lookup it up and use it.
+
+*Configuring ProcessorFactory in Spring*

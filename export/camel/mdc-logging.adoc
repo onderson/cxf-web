@@ -1,0 +1,192 @@
+[[ConfluenceContent]]
+[[MDClogging-MDClogging]]
+MDC logging
+~~~~~~~~~~~
+
+*Available as of Camel 2.7*
+
+From *Camel 2.7*: Camel uses the http://www.slf4j.org/[SLF4J] logging
+framework. This allows Camel to support
+http://www.slf4j.org/api/org/slf4j/MDC.html[MDC logging]. For more
+information about about MDC logging see the
+http://logback.qos.ch/manual/mdc.html[logback manual].
+
+The logging framework in use must support MDC. The following frameworks
+support MDC:
+
+* http://logging.apache.org/log4j/1.2/[log4j]
+* http://logback.qos.ch/[logback]
+* http://wiki.ops4j.org/display/paxlogging/Pax+Logging[pax logging]
+
+See the logging framework's documentation for how to configure it to use
+MDC.
+
+[[MDClogging-EnablingMDCLogginginCamel]]
+Enabling MDC Logging in Camel
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To enable MDC logging using Java:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+CamelContext context = ...
+context.setUseMDCLogging(true);
+...
+----
+
+To enable MDC logging using Spring XML set CamelContext's
+*`useMDCLogging`* attribute:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<camelContext xmlns="http://camel.apache.org/schema/spring" useMDCLogging="true">
+  ...
+</camelContext>
+----
+
+[[MDClogging-MDCInformation]]
+MDC Information
+^^^^^^^^^^^^^^^
+
+Camel provides the following context information available for MDC:
+
+[[MDClogging-BeforeCamel2.10:]]
+Before Camel 2.10:
+++++++++++++++++++
+
+ 
+
+[width="100%",cols="50%,50%",options="header",]
+|=======================================================================
+|Key |Description
+|`exchangeId` |The exchange id
+
+|`messageId` |*Camel 2.9.1:* The message id
+
+|`correlationId` |The correlation id of the exchange if it's correlated.
+For example a sub message from the link:splitter.html[Splitter] EIP
+
+|`transactionKey` |The id of the transaction for transacted exchanges.
+Note the id is not unique, but its the id of the transaction template
+that marks the transaction boundary for the given transaction. Hence we
+decided to name the key `transactionKey` and not `transactionID` to
+point out this fact.
+
+|`routeId` |The id of the route, in which the exchange is currently
+being routed
+
+|`breadcrumbId` |*Camel 2.8:* An unique id used for tracking messages
+across transports.
+
+|`camelContextId` |*Camel 2.8.3/2.9:* the camel context id used for
+tracking the message from different camel context.
+|=======================================================================
+
+[[MDClogging-FromCamel2.10:]]
+From Camel 2.10:
+++++++++++++++++
+
+ 
+
+[width="100%",cols="50%,50%",options="header",]
+|=======================================================================
+|Key |Description
+|`camel.exchangeId` |The exchange id
+
+|`camel.messageId` |The message id
+
+|`camel.correlationId` |The correlation id of the exchange if it's
+correlated. For example a sub message from the
+link:splitter.html[Splitter] EIP
+
+|`camel.transactionKey` |The id of the transaction for transacted
+exchanges. Note the id is not unique, but its the id of the transaction
+template that marks the transaction boundary for the given transaction.
+Hence we decided to name the key `transactionKey` and not
+`transactionID` to point out this fact.
+
+|`camel.routeId` |The id of the route, in which the exchange is
+currently being routed
+
+|`camel.breadcrumbId` |An unique id used for tracking messages across
+transports.
+
+|`camel.contextId` |The camel context id used for tracking the message
+from different camel context.
+|=======================================================================
+
+The keys are subject to change as we want to align and leverage MDC
+across other Apache products such as
+http://activemq.apache.org[ActiveMQ],
+http://servicemix.apache.org/[ServiceMix] and
+http://karaf.apache.org/[Karaf].
+
+[[MDClogging-ExampleUsingLOG4J]]
+Example Using LOG4J
+^^^^^^^^^^^^^^^^^^^
+
+If you use log4j you can configure MDC in the *`log4j.properties`* file
+as shown:
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+log4j.appender.out.layout.ConversionPattern=%d [%-15.15t] %-5p %-30.30c{1} - %-10.10X{camel.exchangeId} - %-10.10X{camel.routeId} - %m%n
+----
+
+Camel will log on startup if MDC is enabled or not
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+INFO  SpringCamelContext -            -            - MDC logging is enabled on CamelContext: camel-1
+----
+
+The follow snippet is from an unit test which shows MDC in use. Note
+that the exchange id and route id are displayed in their separate
+columns in the log file:
+
+[source,brush:,text;,gutter:,false;,theme:,Default]
+----
+INFO  SpringCamelContext -            -            - Apache Camel  (CamelContext: camel-1) started in 1.228 seconds
+INFO  foo                - 358739-0-2 - route-a    - Exchange[ExchangePattern:InOnly, BodyType:String, Body:Hello World]
+INFO  bar                - 358739-0-2 - route-b    - Exchange[ExchangePattern:InOnly, BodyType:String, Body:Hello World]
+INFO  MockEndpoint       -            -            - Asserting: Endpoint[mock://result] is satisfied
+----
+
+[[MDClogging-EnablingBreadcrumbSupport]]
+Enabling Breadcrumb Support
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*From Camel 2.8:* +
+The *`breadcrumbId`* key for MDC logging is only available if
+*`useBreadcrumb=true`* has been set on the
+link:camelcontext.html[CamelContext] (default is true). When enabled
+Camel will enrich the Camel link:message.html[Message] by adding a
+header to it with the key *`breadcrumbId`* containing the id. Camel will
+use the *`messageId`* if no existing *`breadcrumbId`* was found in the
+message.
+
+As the breadcrumb id is stored in a header it will persist across any
+transport that supports the use of headers, for example the
+link:http.html[HTTP] and link:jms.html[JMS] transports.
+
+[[MDClogging-DisablingBreadcrumbSupport]]
+Disabling Breadcrumb Support
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Java DSL:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+CamelContext context = ...
+context.setUseBreadcrumb(false);
+...
+----
+
+XML DSL:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<camelContext xmlns="http://camel.apache.org/schema/spring" useBreadcrumb="false">
+  ...
+</camelContext>
+----

@@ -1,0 +1,159 @@
+[[ConfluenceContent]]
+[[gtask-gtaskComponent]]
+`gtask` Component
+~~~~~~~~~~~~~~~~~
+
+*Available as of Camel 2.1* +
+The `gtask` component contributes to the link:gae.html[Camel Components
+for Google App Engine] (GAE). It supports asynchronous message
+processing on GAE by using the
+http://code.google.com/appengine/docs/java/taskqueue/[task queueing
+service] as message queue. For adding messages to a queue it uses the
+task queue API. For receiving messages from a queue it installs an HTTP
+callback handler. The handler is called by an HTTP POST callback (a
+http://www.webhooks.org/[web hook]) initiated by the task queueing
+service. Whenever a new task is added to a queue a callback will be
+sent. The `gtask` component abstracts from these details and supports
+endpoint URIs that make message queueing on GAE as easy as message
+queueing with link:jms.html[JMS] or link:seda.html[SEDA].
+
+[[gtask-URIformat]]
+URI format
+^^^^^^^^^^
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+gtask://queue-name[?options]
+----
+
+[[gtask-Options]]
+Options
+^^^^^^^
+
+[width="100%",cols="25%,25%,25%,25%",options="header",]
+|=======================================================================
+|Name |Default Value |Context |Description
+|`workerRoot` |`worker` |Producer |The servlet mapping for callback
+handlers. By default, this component requires a callback servlet mapping
+of `/worker/*`. If another servlet mapping is used e.g. `/myworker/*` it
+must be set as option on the producer side:
+`to("gtask:myqueue?workerRoot=myworker")`.
+
+|`inboundBindingRef` |reference to `GTaskBinding` |Consumer |Reference
+to an
+`InboundBinding<GTaskEndpoint, HttpServletRequest, HttpServletResponse>`
+in the link:registry.html[Registry] for customizing the binding of an
+`Exchange` to the Servlet API. The referenced binding is used as
+post-processor to `org.apache.camel.component.http.HttpBinding`.
+
+|`outboundBindingRef` |reference to `GTaskBinding` |Producer |Reference
+to an `OutboundBinding<GTaskEndpoint, TaskOptions, void>` in the
+link:registry.html[Registry] for customizing the binding of an
+`Exchange` to the task queueing service.
+|=======================================================================
+
+On the consumer-side, all options of the link:servlet.html[Servlet
+component] are supported.
+
+[[gtask-Messageheaders]]
+Message headers
+^^^^^^^^^^^^^^^
+
+On the consumer-side all headers of the link:servlet.html[Servlet
+component] component are supported plus the following.
+
+[width="100%",cols="25%,25%,25%,25%",options="header",]
+|=======================================================================
+|Name |Type |Context |Description
+|`GTaskBinding.GTASK_QUEUE_NAME` |`String` |Consumer |Name of the task
+queue.
+
+|`GTaskBinding.GTASK_TASK_NAME` |`String` |Consumer |Name of the task
+(generated value).
+
+|`GTaskBinding.GTASK_RETRY_COUNT` |`int` |Consumer |Number of callback
+retries.
+|=======================================================================
+
+[[gtask-Messagebody]]
+Message body
+^^^^^^^^^^^^
+
+On the producer side the `in` message body is converted to a `byte[]`
+and is POSTed to the callback handler as content-type
+`application/octet-stream`.
+
+[[gtask-Usage]]
+Usage
+^^^^^
+
+Setting up tasks queues is an administrative task on Google App Engine.
+Only one queue is pre-configured and can be referenced by name
+out-of-the-box: the `default` queue. This queue will be used in the
+following examples. Please note that when using task queues on the local
+development server, tasks must be executed manually from the
+http://code.google.com/appengine/docs/java/taskqueue/overview.html#Task_Queues_and_the_Development_Server[developer
+console].
+
+[[gtask-Defaultqueue]]
+Default queue
++++++++++++++
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+...
+.to(gtask:default) // add message to default queue
+
+from(gtask:default) // receive message from default queue (via a web hook)
+...
+----
+
+This example requires the following servlet mapping.
+
+*web.xml*
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+    ...
+    <servlet>
+        <servlet-name>CamelServlet</servlet-name>
+        <servlet-class>org.apache.camel.component.servlet.CamelHttpTransportServlet</servlet-class>
+        ...
+    </servlet>
+    ...
+    <servlet-mapping>
+        <servlet-name>CamelServlet</servlet-name>
+        <url-pattern>/worker/*</url-pattern>
+    </servlet-mapping>
+    ...
+----
+
+[[gtask-Dependencies]]
+Dependencies
+^^^^^^^^^^^^
+
+Maven users will need to add the following dependency to their
+`pom.xml`.
+
+*pom.xml*
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<dependency>
+    <groupId>org.apache.camel</groupId>
+    <artifactId>camel-gae</artifactId>
+    <version>x.x.x</version>
+</dependency>
+----
+
+[[gtask-SeeAlso]]
+See Also
+^^^^^^^^
+
+* link:configuring-camel.html[Configuring Camel]
+* link:component.html[Component]
+* link:endpoint.html[Endpoint]
+* link:getting-started.html[Getting Started]
+
+* link:http.html[Http component]
+* link:servlet.html[Servlet component]

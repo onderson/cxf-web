@@ -1,0 +1,28 @@
+[[ConfluenceContent]]
+[[LoadingroutesfromXMLfiles-LoadingroutesfromXMLfiles]]
+Loading routes from XML files
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+*Available as of Camel 2.6*
+
+This cookbook shows how to load and add routes from XML files into an
+existing link:camelcontext.html[CamelContext].
+
+When adding routes as shown on this page, the routes is isolated and
+cannot re-use any existing `onException`, `intercept` etc.
+
+You can define Camel routes in XML files using the `<routes>` tag with
+the namespace `"http://camel.apache.org/schema/spring"`. +
+Suppose we have the bar route as shown below in the `barRoute.xml` XML
+file.
+
+*barRoute.xml*
+
+We can then load this route and add to the existing
+link:camelcontext.html[CamelContext] using the following lines of code:
+
+*Java code*
+
+If you are using older versions of Camel, you can do this as well but it
+requires a bit more work. See this
+http://svn.apache.org/viewvc?view=revision&revision=1040085[commit log].

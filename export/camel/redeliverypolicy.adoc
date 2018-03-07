@@ -1,0 +1,59 @@
+[[ConfluenceContent]]
+[[RedeliveryPolicy-RedeliveryPolicy]]
+RedeliveryPolicy
+~~~~~~~~~~~~~~~~
+
+A redelivery policy defines rules when Camel
+link:error-handler.html[Error Handler] perform redelivery attempts. For
+example you can setup rules that state how many times to try redelivery,
+and the delay in between attempts, and so forth.
+
+You can use redelivery policies at two places in Camel:
+
+* link:error-handler.html[Error Handler]
+* link:exception-clause.html[onException]
+
+For example you can define a default error handler to redelivery at most
+3 times
+
+java errorHandler(defaultErrorHandler().maximumRedeliveries(3));
+
+And in XML
+
+xml <errorHandler id="defaultEH"> <redeliveryPolicy
+maximumRedeliveries="3"/> </errorHandler>
+
+See more details at link:error-handler.html[Error Handler].
+
+Extensive coverage
+
+The Camel link:error-handler.html[Error Handler] is covered in great
+details in the link:books.html[Camel in Action book] where the entire
+chapter 5 has been devoted.
+
+[[RedeliveryPolicy-UsingRedeliveryPolicyProfiles]]
+Using RedeliveryPolicyProfiles
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available as of Camel 2.7*
+
+In the XML snippet below we have defined a `<redeliveryPolicyProfile>`
+which we can refer to from the `<errorHandler>`.
+
+\{snippet:id=e1|lang=xml|url=camel/trunk/components/camel-spring/src/test/resources/org/apache/camel/spring/processor/SpringErrorHandlerRedeliveryPolicyProfileTest.xml}
+
+Camel's link:properties.html[Properties] placeholder is also supported
+which the following XML example shows:
+
+\{snippet:id=e1|lang=xml|url=camel/trunk/components/camel-spring/src/test/resources/org/apache/camel/component/properties/SpringPropertiesComponentOnExceptionRefTest.xml}
+
+And you can also use Spring Frameworks property placeholders as shown
+below:
+
+\{snippet:id=e1|lang=xml|url=camel/trunk/components/camel-spring/src/test/resources/org/apache/camel/component/properties/SpringPropertyPlaceholderOnExceptionRefTest.xml}
+
+[[RedeliveryPolicy-SeeAlso]]
+See Also
+^^^^^^^^
+
+* link:error-handler.html[Error Handler]

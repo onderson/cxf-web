@@ -1,0 +1,708 @@
+[[ConfluenceContent]]
+[[GoogleDrive-GoogleDriveComponent]]
+GoogleDrive Component
+~~~~~~~~~~~~~~~~~~~~~
+
+*Available as of Camel 2.14*
+
+The Google Drive component provides access to the
+http://drive.google.com[Google Drive file storage service] via the
+https://developers.google.com/drive/v2/reference[Google Drive Web APIs].
+
+Google Drive uses
+the https://developers.google.com/accounts/docs/OAuth2[OAuth 2.0
+protocol] for authenticating a Google account and authorizing access to
+user data. Before you can use this component, you will need to
+https://developers.google.com/drive/web/auth/web-server[create an
+account and generate OAuth credentials]. Credentials comprise of a
+clientId, clientSecret, and a refreshToken. A handy resource for
+generating a long-lived refreshToken is the
+https://developers.google.com/oauthplayground[OAuth playground].
+
+Maven users will need to add the following dependency to their pom.xml
+for this component:
+
+....
+    <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-google-drive</artifactId>
+            <version>2.14-SNAPSHOT</version>
+    </dependency>
+        
+....
+
+[[GoogleDrive-URIFormat]]
+URI Format
+^^^^^^^^^^
+
+'''''
+
+The GoogleDrive Component uses the following URI format:
+
+....
+        google-drive://endpoint-prefix/endpoint?[options]
+    
+....
+
+Endpoint prefix can be one of:
+
+* drive-about
+* drive-apps
+* drive-changes
+* drive-channels
+* drive-children
+* drive-comments
+* drive-files
+* drive-parents
+* drive-permissions
+* drive-properties
+* drive-realtime
+* drive-replies
+* drive-revisions
+
+[[GoogleDrive-GoogleDriveComponent.1]]
+GoogleDriveComponent
+^^^^^^^^^^^^^^^^^^^^
+
+'''''
+
+The GoogleDrive Component can be configured with the options below.
+These options can be provided using the component's bean property
+`configuration` of type
+`org.apache.camel.component.google.drive.GoogleDriveConfiguration`.
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Option |Type |Description
+|accessToken |String |OAuth 2 access token. This typically expires after
+an hour so refreshToken is recommended for long term usage.
+
+|applicationName |String |Google drive application name. Example would
+be "camel-google-drive/1.0"
+
+|clientId |String |Client ID of the drive application
+
+|clientSecret |String |Client secret of the drive application
+
+|refreshToken |String |OAuth 2 refresh token. Using this, the Google
+Drive component can obtain a new accessToken whenever the current one
+expires - a necessity if the application is long-lived.
+
+|scopes |List<String> |Specifies the level of permissions you want a
+drive application to have to a user account. See
+https://developers.google.com/drive/web/scopes for more info.
+|=======================================================================
+
+[[GoogleDrive-ProducerEndpoints]]
+Producer Endpoints
+^^^^^^^^^^^^^^^^^^
+
+'''''
+
+Producer endpoints can use endpoint prefixes followed by endpoint names
+and associated options described next. A shorthand alias can be used for
+some endpoints. The endpoint URI MUST contain a prefix.
+
+Endpoint options that are not mandatory are denoted by []. When there
+are no mandatory options for an endpoint, one of the set of [] options
+MUST be provided. Producer endpoints can also use a special option
+*`inBody`* that in turn should contain the name of the endpoint option
+whose value will be contained in the Camel Exchange In message.
+
+Any of the endpoint options can be provided in either the endpoint URI,
+or dynamically in a message header. The message header name must be of
+the format `CamelGoogleDrive.<option>`. Note that the `inBody` option
+overrides message header, i.e. the endpoint option `inBody=option` would
+override a `CamelGoogleDrive.option` header.
+
+For more information on the endpoints and options see API documentation
+at: https://developers.google.com/drive/v2/reference/
+
+ 
+
+[[GoogleDrive-1.EndpointPrefixdrive-about]]
+1. Endpoint Prefix _drive-about_
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+'''''
+
+The following endpoints can be invoked with the prefix `drive-about` as
+follows:
+
+....
+        google-drive://drive-about/endpoint?[options]
+    
+....
+
+[cols=",,,",options="header",]
+|====================================================
+|Endpoint |Shorthand Alias |Options |Result Body Type
+|get |  |  |com.google.api.services.drive.model.About
+|====================================================
+
+[[GoogleDrive-URIOptionsfordrive-about]]
+URI Options for _drive-about_
++++++++++++++++++++++++++++++
+
+'''''
+
+[cols=",",options="header",]
+|==========
+|Name |Type
+|==========
+
+[[GoogleDrive-2.EndpointPrefixdrive-apps]]
+2. Endpoint Prefix _drive-apps_
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+'''''
+
+The following endpoints can be invoked with the prefix `drive-apps` as
+follows:
+
+....
+        google-drive://drive-apps/endpoint?[options]
+    
+....
+
+[cols=",,,",options="header",]
+|=======================================================
+|Endpoint |Shorthand Alias |Options |Result Body Type
+|get |  |appId |com.google.api.services.drive.model.App
+|list |  |  |com.google.api.services.drive.model.AppList
+|=======================================================
+
+[[GoogleDrive-URIOptionsfordrive-apps]]
+URI Options for _drive-apps_
+++++++++++++++++++++++++++++
+
+'''''
+
+[cols=",",options="header",]
+|=============
+|Name |Type
+|appId |String
+|=============
+
+[[GoogleDrive-3.EndpointPrefixdrive-changes]]
+3. Endpoint Prefix _drive-changes_
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+'''''
+
+The following endpoints can be invoked with the prefix `drive-changes`
+as follows:
+
+....
+        google-drive://drive-changes/endpoint?[options]
+    
+....
+
+[cols=",,,",options="header",]
+|=====================================================================
+|Endpoint |Shorthand Alias |Options |Result Body Type
+|get |  |changeId |com.google.api.services.drive.model.Change
+|list |  |  |com.google.api.services.drive.model.ChangeList
+|watch |  |contentChannel |com.google.api.services.drive.model.Channel
+|=====================================================================
+
+ 
+
+[[GoogleDrive-URIOptionsfordrive-changes]]
+URI Options for _drive-changes_
++++++++++++++++++++++++++++++++
+
+'''''
+
+[cols=",",options="header",]
+|===========================================================
+|Name |Type
+|changeId |String
+|contentChannel |com.google.api.services.drive.model.Channel
+|===========================================================
+
+[[GoogleDrive-4.EndpointPrefixdrive-channels]]
+4. Endpoint Prefix _drive-channels_
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+'''''
+
+The following endpoints can be invoked with the prefix `drive-channels`
+as follows:
+
+....
+        google-drive://drive-channels/endpoint?[options]
+    
+....
+
+[cols=",,,",options="header",]
+|====================================================
+|Endpoint |Shorthand Alias |Options |Result Body Type
+|stop |  |contentChannel | 
+|====================================================
+
+[[GoogleDrive-URIOptionsfordrive-channels]]
+URI Options for _drive-channels_
+++++++++++++++++++++++++++++++++
+
+'''''
+
+[cols=",",options="header",]
+|===========================================================
+|Name |Type
+|contentChannel |com.google.api.services.drive.model.Channel
+|===========================================================
+
+[[GoogleDrive-5.EndpointPrefixdrive-children]]
+5. Endpoint Prefix _drive-children_
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+'''''
+
+The following endpoints can be invoked with the prefix `drive-children`
+as follows:
+
+....
+        google-drive://drive-children/endpoint?[options]
+    
+....
+
+[cols=",,,",options="header",]
+|=======================================================================
+|Endpoint |Shorthand Alias |Options |Result Body Type
+|delete |  |childId, folderId | 
+
+|get |  |childId, folderId
+|com.google.api.services.drive.model.ChildReference
+
+|insert |  |content, folderId
+|com.google.api.services.drive.model.ChildReference
+
+|list |  |folderId |com.google.api.services.drive.model.ChildList
+|=======================================================================
+
+[[GoogleDrive-URIOptionsfordrive-children]]
+URI Options for _drive-children_
+++++++++++++++++++++++++++++++++
+
+'''''
+
+[cols=",",options="header",]
+|===========================================================
+|Name |Type
+|childId |String
+|content |com.google.api.services.drive.model.ChildReference
+|folderId |String
+|===========================================================
+
+[[GoogleDrive-6.EndpointPrefixdrive-comments]]
+6. Endpoint Prefix _drive-comments_
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+'''''
+
+The following endpoints can be invoked with the prefix `drive-comments`
+as follows:
+
+....
+        google-drive://drive-comments/endpoint?[options]
+    
+....
+
+[cols=",,,",options="header",]
+|=======================================================================
+|Endpoint |Shorthand Alias |Options |Result Body Type
+|delete |  |commentId, fileId | 
+
+|get |  |commentId, fileId |com.google.api.services.drive.model.Comment
+
+|insert |  |content, fileId |com.google.api.services.drive.model.Comment
+
+|list |  |fileId |com.google.api.services.drive.model.CommentList
+
+|patch |  |commentId, content, fileId
+|com.google.api.services.drive.model.Comment
+
+|update |  |commentId, content, fileId
+|com.google.api.services.drive.model.Comment
+|=======================================================================
+
+[[GoogleDrive-URIOptionsfordrive-comments]]
+URI Options for _drive-comments_
+++++++++++++++++++++++++++++++++
+
+'''''
+
+[cols=",",options="header",]
+|====================================================
+|Name |Type
+|commentId |String
+|content |com.google.api.services.drive.model.Comment
+|fileId |String
+|====================================================
+
+[[GoogleDrive-7.EndpointPrefixdrive-files]]
+7. Endpoint Prefix _drive-files_
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+'''''
+
+The following endpoints can be invoked with the prefix `drive-files` as
+follows:
+
+....
+        google-drive://drive-files/endpoint?[options]
+    
+....
+
+[cols=",,,",options="header",]
+|=======================================================================
+|Endpoint |Shorthand Alias |Options |Result Body Type
+|copy |  |content, fileId |com.google.api.services.drive.model.File
+
+|delete |  |fileId | 
+
+|emptyTrash |  |  | 
+
+|get |  |fileId |com.google.api.services.drive.model.File
+
+|insert |  |[mediaContent], content
+|com.google.api.services.drive.model.File
+
+|list |  |  |com.google.api.services.drive.model.FileList
+
+|patch |  |content, fileId |com.google.api.services.drive.model.File
+
+|touch |  |fileId |com.google.api.services.drive.model.File
+
+|trash |  |fileId |com.google.api.services.drive.model.File
+
+|untrash |  |fileId |com.google.api.services.drive.model.File
+
+|update |  |[mediaContent], content, fileId
+|com.google.api.services.drive.model.File
+
+|watch |  |contentChannel, fileId
+|com.google.api.services.drive.model.Channel
+|=======================================================================
+
+[[GoogleDrive-URIOptionsfordrive-files]]
+URI Options for _drive-files_
++++++++++++++++++++++++++++++
+
+'''''
+
+[cols=",",options="header",]
+|===================================================================
+|Name |Type
+|content |com.google.api.services.drive.model.File
+|contentChannel |com.google.api.services.drive.model.Channel
+|fileId |String
+|mediaContent |com.google.api.client.http.AbstractInputStreamContent
+|===================================================================
+
+[[GoogleDrive-8.EndpointPrefixdrive-parents]]
+8. Endpoint Prefix _drive-parents_
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+'''''
+
+The following endpoints can be invoked with the prefix `drive-parents`
+as follows:
+
+....
+        google-drive://drive-parents/endpoint?[options]
+    
+....
+
+[cols=",,,",options="header",]
+|=======================================================================
+|Endpoint |Shorthand Alias |Options |Result Body Type
+|delete |  |fileId, parentId | 
+
+|get |  |fileId, parentId
+|com.google.api.services.drive.model.ParentReference
+
+|insert |  |content, fileId
+|com.google.api.services.drive.model.ParentReference
+
+|list |  |fileId |com.google.api.services.drive.model.ParentList
+|=======================================================================
+
+[[GoogleDrive-URIOptionsfordrive-parents]]
+URI Options for _drive-parents_
++++++++++++++++++++++++++++++++
+
+'''''
+
+[cols=",",options="header",]
+|============================================================
+|Name |Type
+|content |com.google.api.services.drive.model.ParentReference
+|fileId |String
+|parentId |String
+|============================================================
+
+[[GoogleDrive-9.EndpointPrefixdrive-permissions]]
+9. Endpoint Prefix _drive-permissions_
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+'''''
+
+The following endpoints can be invoked with the prefix
+`drive-permissions` as follows:
+
+....
+        google-drive://drive-permissions/endpoint?[options]
+    
+....
+
+[cols=",,,",options="header",]
+|=======================================================================
+|Endpoint |Shorthand Alias |Options |Result Body Type
+|delete |  |fileId, permissionId | 
+
+|get |  |fileId, permissionId
+|com.google.api.services.drive.model.Permission
+
+|getIdForEmail |  |email
+|com.google.api.services.drive.model.PermissionId
+
+|insert |  |content, fileId
+|com.google.api.services.drive.model.Permission
+
+|list |  |fileId |com.google.api.services.drive.model.PermissionList
+
+|patch |  |content, fileId, permissionId
+|com.google.api.services.drive.model.Permission
+
+|update |  |content, fileId, permissionId
+|com.google.api.services.drive.model.Permission
+|=======================================================================
+
+[[GoogleDrive-URIOptionsfordrive-permissions]]
+URI Options for _drive-permissions_
++++++++++++++++++++++++++++++++++++
+
+'''''
+
+[cols=",",options="header",]
+|=======================================================
+|Name |Type
+|content |com.google.api.services.drive.model.Permission
+|email |String
+|fileId |String
+|permissionId |String
+|=======================================================
+
+[[GoogleDrive-10.EndpointPrefixdrive-properties]]
+10. Endpoint Prefix _drive-properties_
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+'''''
+
+The following endpoints can be invoked with the prefix
+`drive-properties` as follows:
+
+....
+        google-drive://drive-properties/endpoint?[options]
+    
+....
+
+[cols=",,,",options="header",]
+|=======================================================================
+|Endpoint |Shorthand Alias |Options |Result Body Type
+|delete |  |fileId, propertyKey | 
+
+|get |  |fileId, propertyKey
+|com.google.api.services.drive.model.Property
+
+|insert |  |content, fileId
+|com.google.api.services.drive.model.Property
+
+|list |  |fileId |com.google.api.services.drive.model.PropertyList
+
+|patch |  |content, fileId, propertyKey
+|com.google.api.services.drive.model.Property
+
+|update |  |content, fileId, propertyKey
+|com.google.api.services.drive.model.Property
+|=======================================================================
+
+[[GoogleDrive-URIOptionsfordrive-properties]]
+URI Options for _drive-properties_
+++++++++++++++++++++++++++++++++++
+
+'''''
+
+[cols=",",options="header",]
+|=====================================================
+|Name |Type
+|content |com.google.api.services.drive.model.Property
+|fileId |String
+|propertyKey |String
+|=====================================================
+
+[[GoogleDrive-11.EndpointPrefixdrive-realtime]]
+11. Endpoint Prefix _drive-realtime_
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+'''''
+
+The following endpoints can be invoked with the prefix `drive-realtime`
+as follows:
+
+....
+        google-drive://drive-realtime/endpoint?[options]
+    
+....
+
+[cols=",,,",options="header",]
+|====================================================
+|Endpoint |Shorthand Alias |Options |Result Body Type
+|get |  |fileId | 
+|update |  |[mediaContent], fileId | 
+|====================================================
+
+[[GoogleDrive-URIOptionsfordrive-realtime]]
+URI Options for _drive-realtime_
+++++++++++++++++++++++++++++++++
+
+'''''
+
+[cols=",",options="header",]
+|===================================================================
+|Name |Type
+|fileId |String
+|mediaContent |com.google.api.client.http.AbstractInputStreamContent
+|===================================================================
+
+[[GoogleDrive-12.EndpointPrefixdrive-replies]]
+12. Endpoint Prefix _drive-replies_
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+'''''
+
+The following endpoints can be invoked with the prefix `drive-replies`
+as follows:
+
+....
+        google-drive://drive-replies/endpoint?[options]
+    
+....
+
+[cols=",,,",options="header",]
+|=======================================================================
+|Endpoint |Shorthand Alias |Options |Result Body Type
+|delete |  |commentId, fileId, replyId | 
+
+|get |  |commentId, fileId, replyId
+|com.google.api.services.drive.model.CommentReply
+
+|insert |  |commentId, content, fileId
+|com.google.api.services.drive.model.CommentReply
+
+|list |  |commentId, fileId
+|com.google.api.services.drive.model.CommentReplyList
+
+|patch |  |commentId, content, fileId, replyId
+|com.google.api.services.drive.model.CommentReply
+
+|update |  |commentId, content, fileId, replyId
+|com.google.api.services.drive.model.CommentReply
+|=======================================================================
+
+[[GoogleDrive-URIOptionsfordrive-replies]]
+URI Options for _drive-replies_
++++++++++++++++++++++++++++++++
+
+'''''
+
+[cols=",",options="header",]
+|=========================================================
+|Name |Type
+|commentId |String
+|content |com.google.api.services.drive.model.CommentReply
+|fileId |String
+|replyId |String
+|=========================================================
+
+[[GoogleDrive-13.EndpointPrefixdrive-revisions]]
+13. Endpoint Prefix _drive-revisions_
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+'''''
+
+The following endpoints can be invoked with the prefix `drive-revisions`
+as follows:
+
+....
+        google-drive://drive-revisions/endpoint?[options]
+    
+....
+
+[cols=",,,",options="header",]
+|=======================================================================
+|Endpoint |Shorthand Alias |Options |Result Body Type
+|delete |  |fileId, revisionId | 
+
+|get |  |fileId, revisionId
+|com.google.api.services.drive.model.Revision
+
+|list |  |fileId |com.google.api.services.drive.model.RevisionList
+
+|patch |  |content, fileId, revisionId
+|com.google.api.services.drive.model.Revision
+
+|update |  |content, fileId, revisionId
+|com.google.api.services.drive.model.Revision
+|=======================================================================
+
+[[GoogleDrive-URIOptionsfordrive-revisions]]
+URI Options for _drive-revisions_
++++++++++++++++++++++++++++++++++
+
+'''''
+
+[cols=",",options="header",]
+|=====================================================
+|Name |Type
+|content |com.google.api.services.drive.model.Revision
+|fileId |String
+|revisionId |String
+|=====================================================
+
+[[GoogleDrive-ConsumerEndpoints]]
+Consumer Endpoints
+^^^^^^^^^^^^^^^^^^
+
+'''''
+
+Any of the producer endpoints can be used as a consumer endpoint.
+Consumer endpoints can use
+http://camel.apache.org/polling-consumer.html#PollingConsumer-ScheduledPollConsumerOptions[Scheduled
+Poll Consumer Options] with a `consumer.` prefix to schedule endpoint
+invocation. Consumer endpoints that return an array or collection will
+generate one exchange per element, and their routes will be executed
+once for each exchange.
+
+[[GoogleDrive-MessageHeaders]]
+Message Headers
+^^^^^^^^^^^^^^^
+
+'''''
+
+Any URI option can be provided in a message header for producer
+endpoints with a `CamelGoogleDrive.` prefix.
+
+[[GoogleDrive-MessageBody]]
+Message Body
+^^^^^^^^^^^^
+
+'''''
+
+All result message bodies utilize objects provided by the underlying
+APIs used by the GoogleDriveComponent. Producer endpoints can specify
+the option name for incoming message body in the `inBody` endpoint URI
+parameter. For endpoints that return an array or collection, a consumer
+endpoint will map every element to distinct messages.     

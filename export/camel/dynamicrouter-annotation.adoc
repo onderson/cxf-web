@@ -1,0 +1,52 @@
+[[ConfluenceContent]]
+[[DynamicRouterAnnotation-@DynamicRouterAnnotation]]
+@DynamicRouter Annotation
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+As of Camel 2.5.0 we now support the use of @DynamicRouter on a bean
+method to easily create a link:dynamic-router.html[Dynamic Router] using
+a Java method.
+
+[[DynamicRouterAnnotation-SimpleExampleusing@Consumeand@DynamicRouter]]
+Simple Example using @Consume and @DynamicRouter
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+package com.acme.foo;
+
+public class RouterBean {
+
+    @Consume(uri = "activemq:foo")
+    @DynamicRouter
+    public String route(String body) {
+        // compute where we should go next and return the uri of the endpoint.
+        // return null to stop dynamic routing
+    }
+}
+----
+
+For example if the above bean is configured in link:spring.html[Spring]
+when using a *<camelContext>* element as follows
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+       http://activemq.apache.org/camel/schema/spring http://activemq.apache.org/camel/schema/spring/camel-spring.xsd
+    ">
+
+  <camelContext xmlns="http://activemq.apache.org/camel/schema/spring"/>
+
+  <bean id="myDynamicRouter" class="com.acme.foo.RouterBean"/>
+
+</beans>
+----
+
+then a route will be created consuming from the *foo* queue on the
+link:activemq.html[ActiveMQ] component which when a message is received
+the message will routed dynamic using the
+link:dynamic-router.html[Dynamic Router].

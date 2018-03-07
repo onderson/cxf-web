@@ -1,0 +1,80 @@
+[[ConfluenceContent]]
+[[WalkthroughanExample-WalkthroughanExampleCode]]
+Walk through an Example Code
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This mini-guide takes you through the source code of a
+https://svn.apache.org/repos/asf/camel/trunk/examples/camel-example-jms-file/src/main/java/org/apache/camel/example/jmstofile/CamelJmsToFileExample.java[simple
+example].
+
+Camel can be configured either by using link:spring.html[Spring] or
+directly in Java - which
+https://svn.apache.org/repos/asf/camel/trunk/examples/camel-example-jms-file/src/main/java/org/apache/camel/example/jmstofile/CamelJmsToFileExample.java[this
+example does].
+
+This example is available in the `examples\camel-example-jms-file`
+directory of the link:download.html[Camel distribution].
+
+We start with creating a link:camelcontext.html[CamelContext] - which is
+a container for link:components.html[Components],
+link:routes.html[Routes]
+etc:\{snippet:id=e1|lang=java|url=camel/trunk/examples/camel-example-jms-file/src/main/java/org/apache/camel/example/jmstofile/CamelJmsToFileExample.java}There
+is more than one way of adding a Component to the CamelContext. You can
+add components implicitly - when we set up the routing - as we do here
+for the
+link:file2.html[FileComponent]:\{snippet:id=e3|lang=java|url=camel/trunk/examples/camel-example-jms-file/src/main/java/org/apache/camel/example/jmstofile/CamelJmsToFileExample.java}or
+explicitly - as we do here when we add the JMS
+Component:\{snippet:id=e2|lang=java|url=camel/trunk/examples/camel-example-jms-file/src/main/java/org/apache/camel/example/jmstofile/CamelJmsToFileExample.java}The
+above works with any JMS provider. If we know we are using
+link:activemq.html[ActiveMQ] we can use an even simpler form using the
+http://activemq.apache.org/maven/5.5.0/activemq-camel/apidocs/org/apache/activemq/camel/component/ActiveMQComponent.html#activeMQComponent%28java.lang.String%29[`activeMQComponent()`
+method] while specifying the
+http://activemq.apache.org/configuring-transports.html[brokerURL] used
+to connect to ActiveMQ
+
+In normal use, an external system would be firing messages or events
+directly into Camel through one if its link:components.html[Components]
+but we are going to use the
+http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/ProducerTemplate.html[ProducerTemplate]
+which is a really easy way for testing your
+configuration:\{snippet:id=e4|lang=java|url=camel/trunk/examples/camel-example-jms-file/src/main/java/org/apache/camel/example/jmstofile/CamelJmsToFileExample.java}Next
+you *must* start the camel context. If you are using
+link:spring.html[Spring] to configure the camel context this is
+automatically done for you; though if you are using a pure Java approach
+then you just need to call the start() method
+
+camelContext.start();
+
+This will start all of the configured routing rules.
+
+So after starting the link:camelcontext.html[CamelContext], we can fire
+some objects into
+camel:\{snippet:id=e5|lang=java|url=camel/trunk/examples/camel-example-jms-file/src/main/java/org/apache/camel/example/jmstofile/CamelJmsToFileExample.java}
+
+[[WalkthroughanExample-Whathappens?]]
+What happens?
+~~~~~~~~~~~~~
+
+From the
+http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/ProducerTemplate.html[ProducerTemplate]
+- we send objects (in this case text) into the
+link:camelcontext.html[CamelContext] to the Component
+_test-jms:queue:test.queue_. These text objects will be
+link:type-converter.html[converted automatically] into JMS Messages and
+posted to a JMS Queue named _test.queue_. When we set up the
+link:routes.html[Route], we configured the
+link:file2.html[FileComponent] to listen off the _test.queue_.
+
+The File link:file2.html[FileComponent] will take messages off the
+Queue, and save them to a directory named _test_. Every message will be
+saved in a file that corresponds to its destination and message id.
+
+Finally, we configured our own listener in the link:routes.html[Route] -
+to take notifications from the link:file2.html[FileComponent] and print
+them out as text.
+
+*That's it!*
+
+If you have the time then use 5 more minutes to
+link:walk-through-another-example.html[Walk through another example]
+that demonstrates the Spring DSL (XML based) routing.

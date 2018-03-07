@@ -1,0 +1,31 @@
+[[ConfluenceContent]]
+We keep the documentation in the source code in the javadoc for the +
+setter methods on the component and endpoint classes. +
+ +
+We use this to generate and keep documentation up to date. Though this +
+is not yet complete and work in progress. But eventually the Camel +
+documentation on the website will be generated from this that ensures +
+the doc is always up to date with the actual source code. +
+ +
+So you may want to submit PRs to fix those docs in the source code as
+well. +
+ +
+You can see the generated docs in some of the components such as +
+https://github.com/apache/camel/blob/master/components/camel-ahc/src/main/docs/ahc-component.adoc +
+ +
+eg the components that have a ascii doc file. +
+ +
+So if you look in that adoc file you can see +
+ +
+// component options: START +
+// component options: END
+
+// endpoint options: START +
+// endpoint options: END
+
+  +
+then when building the source code, then the options within that +
+comment section is generated from the source code. So just change the +
+docs in the source and the adoc is updated. +
+ +
+ +

@@ -1,0 +1,4008 @@
+[[ConfluenceContent]]
+[[chapter-cook-book]][[Bookcookbook-CookBook]]
+CookBook
+--------
+
+This document describes various recipes for working with Camel
+
+* link:bean-integration.html[Bean Integration] describes how to work
+with beans and Camel in a loosely coupled way so that your beans do not
+have to depend on any Camel APIs
+** link:annotation-based-expression-language.html[Annotation Based
+Expression Language] binds expressions to method parameters
+** link:bean-binding.html[Bean Binding] defines which methods are
+invoked and how the Message is converted into the parameters of the
+method when it is invoked
+** link:bean-injection.html[Bean Injection] for injecting Camel related
+resources into your POJOs
+** link:parameter-binding-annotations.html[Parameter Binding
+Annotations] for extracting various headers, properties or payloads from
+a Message
+** link:pojo-consuming.html[POJO Consuming] for consuming and possibly
+routing messages from Camel
+** link:pojo-producing.html[POJO Producing] for producing camel messages
+from your POJOs
+** link:recipientlist-annotation.html[RecipientList Annotation] for
+creating a Recipient List from a POJO method
+** link:using-exchange-pattern-annotations.html[Using Exchange Pattern
+Annotations] describes how pattern annotations can be used to change the
+behaviour of method invocations
+* link:hiding-middleware.html[Hiding Middleware] describes how to avoid
+your business logic being coupled to any particular middleware APIs
+allowing you to easily switch from in JVM link:seda.html[SEDA] to
+link:jms.html[JMS], link:activemq.html[ActiveMQ],
+link:hibernate.html[Hibernate], link:jpa.html[JPA],
+link:jdbc.html[JDBC], link:ibatis.html[iBatis] or
+link:javaspace.html[JavaSpace] etc.
+* link:visualisation.html[Visualisation] describes how to visualise your
+link:enterprise-integration-patterns.html[Enterprise Integration
+Patterns] to help you understand your routing rules
+* link:bam.html[Business Activity Monitoring (BAM)] for monitoring
+business processes across systems
+* link:etl.html[Extract Transform Load (ETL)] to load data into systems
+or databases
+* link:testing.html[Testing] for testing distributed and asynchronous
+systems using a messaging approach
+** link:camel-test.html[Camel Test] for creating test cases using a
+single Java class for all your configuration and routing
+** link:spring-testing.html[Spring Testing] uses Spring Test together
+with either XML or Java Config to dependency inject your test classes
+** link:guice.html[Guice] uses Guice to dependency inject your test
+classes
+* link:templating.html[Templating] is a great way to create service
+stubs to be able to test your system without some back end system.
+* link:database.html[Database] for working with databases
+* link:parallel-processing-and-ordering.html[Parallel Processing and
+Ordering] on how using parallel processing and link:seda.html[SEDA] or
+link:jms.html[JMS] based load balancing can be achieved.
+* link:asynchronous-processing.html[Asynchronous Processing] in Camel
+Routes.
+* link:implementing-virtual-topics-on-other-jms-providers.html[Implementing
+Virtual Topics on other JMS providers] shows how to get the effect of
+Virtual Topics and avoid issues with JMS durable topics
+* link:camel-transport-for-cxf.html[Camel Transport for CXF] describes
+how to put the Camel context into the CXF transport layer.
+* link:fine-grained-control-over-a-channel.html[Fine Grained Control
+Over a Channel] describes how to deliver a sequence of messages over a
+single channel and then stopping any more messages being sent over that
+channel. Typically used for sending data over a socket and then closing
+the socket.
+* link:eventnotifier-to-log-details-about-all-sent-exchanges.html[EventNotifier
+to log details about all sent Exchanges] shows how to let Camels
+`EventNotifier` log all sent to endpoint events and how long time it
+took.
+* link:loading-routes-from-xml-files.html[Loading routes from XML files]
+into an existing link:camelcontext.html[CamelContext].
+* Using link:mdc-logging.html[MDC logging] with Camel
+* link:running-camel-standalone-and-have-it-keep-running.html[Running
+Camel standalone and have it keep running] shows how to keep Camel
+running when you run it standalone.
+* link:hazelcast-idempotent-repository-tutorial.html[Hazelcast
+Idempotent Repository Tutorial] shows how to avoid to consume duplicated
+messages in a clustered environment.
+* link:how-to-use-camel-as-a-http-proxy-between-a-client-and-server.html[How
+to use Camel as a HTTP proxy between a client and server] shows how to
+use Camel as a HTTP adapter/proxy between a client and HTTP service.
+
+[[Bookcookbook-BeanIntegration]]
+Bean Integration
+~~~~~~~~~~~~~~~~
+
+Camel supports the integration of beans and POJOs in a number of ways
+
+[[Bookcookbook-Annotations]]
+Annotations
+^^^^^^^^^^^
+
+If a bean is defined in link:spring.html[Spring] XML or scanned using
+the Spring component scanning mechanism and a *<camelContext>* is used
+or a `CamelBeanPostProcessor` then we process a number of Camel
+annotations to do various things such as injecting resources or
+producing, consuming or routing messages.
+
+The following annotations is supported and inject by Camel's
+`CamelBeanPostProcessor`
+
+[width="100%",cols="50%,50%",options="header",]
+|=======================================================================
+|Annotation |Description
+|`@EndpointInject` |To inject an endpoint, see more details at
+link:pojo-producing.html[POJO Producing].
+
+|`@BeanInject` |*Camel 2.13:* To inject a bean obtained from the
+link:registry.html[Registry]. See link:bean-injection.html[Bean
+Injection].
+
+|`@PropertyInject` |*Camel 2.12:* To inject a value using
+link:using-propertyplaceholder.html[property placeholder].
+
+|`@Produce` |To inject a producer to send message to an endpoint. See
+link:pojo-producing.html[POJO Producing].
+
+|`@Consume` |To inject a consumer on a method. See
+link:pojo-consuming.html[POJO Consuming].
+|=======================================================================
+
+See more details at:
+
+* link:pojo-consuming.html[POJO Consuming] to consume and possibly route
+messages from Camel
+* link:pojo-producing.html[POJO Producing] to make it easy to produce
+camel messages from your POJOs
+* link:dynamicrouter-annotation.html[DynamicRouter Annotation] for
+creating a link:dynamic-router.html[Dynamic Router] from a POJO method
+* link:recipientlist-annotation.html[RecipientList Annotation] for
+creating a link:recipient-list.html[Recipient List] from a POJO method
+* link:routingslip-annotation.html[RoutingSlip Annotation] for creating
+a link:routing-slip.html[Routing Slip] for a POJO method
+* link:bean-injection.html[Bean Injection] to inject Camel related
+resources into your POJOs
+* link:using-exchange-pattern-annotations.html[Using Exchange Pattern
+Annotations] describes how the pattern annotations can be used to change
+the behaviour of method invocations with
+link:spring-remoting.html[Spring Remoting] or
+link:pojo-producing.html[POJO Producing]
+
+**Example**
+
+See the link:pojo-messaging-example.html[POJO Messaging Example] for how
+to use the annotations for routing and messaging.
+
+[[Bookcookbook-BeanComponent]]
+Bean Component
+^^^^^^^^^^^^^^
+
+The link:bean.html[Bean] component allows one to invoke a particular
+method. Alternately the link:bean.html[Bean] component supports the
+creation of a proxy via
+http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/component/bean/ProxyHelper.html[ProxyHelper]
+to a Java interface; which the implementation just sends a message
+containing a
+http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/component/bean/BeanInvocation.html[BeanInvocation]
+to some Camel endpoint.
+
+[[Bookcookbook-SpringRemoting]]
+Spring Remoting
+^^^^^^^^^^^^^^^
+
+We support a link:spring-remoting.html[Spring Remoting] provider which
+uses Camel as the underlying transport mechanism. The nice thing about
+this approach is we can use any of the Camel transport
+link:components.html[Components] to communicate between beans. It also
+means we can use link:content-based-router.html[Content Based Router]
+and the other link:enterprise-integration-patterns.html[Enterprise
+Integration Patterns] in between the beans; in particular we can use
+link:message-translator.html[Message Translator] to be able to convert
+what the on-the-wire messages look like in addition to adding various
+headers and so forth.
+
+**Bean binding**
+
+Whenever Camel invokes a bean method via one of the above methods
+(link:bean.html[Bean] component, link:spring-remoting.html[Spring
+Remoting] or link:pojo-consuming.html[POJO Consuming]) then the
+*link:bean-binding.html[Bean Binding]* mechanism is used to figure out
+what method to use (if it is not explicit) and how to bind the
+link:message.html[Message] to the parameters possibly using the
+link:parameter-binding-annotations.html[Parameter Binding Annotations]
+or using a link:bean-binding.html[method name option].
+
+[[Bookcookbook-AnnotationBasedExpressionLanguage]]
+Annotation Based Expression Language
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+You can also use any of the link:languages.html[Languages] supported in
+Camel to bind expressions to method parameters when using
+link:bean-integration.html[Bean Integration]. For example you can use
+any of these annotations:
+
+[width="100%",cols="50%,50%",options="header",]
+|=======================================================================
+|Annotation |Description
+|http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/language/Bean.html[@Bean]
+|Inject a link:bean.html[Bean] expression
+
+|http://camel.apache.org/maven/current/camel-script/apidocs/org/apache/camel/builder/script/BeanShell.html[@BeanShell]
+|Inject a link:beanshell.html[BeanShell] expression
+
+|http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/language/Constant.html[@Constant]
+|Inject a link:constant.html[Constant] expression
+
+|http://camel.apache.org/maven/current/camel-juel/apidocs/org/apache/camel/language/juel/EL.html[@EL]
+|Inject an link:el.html[EL] expression
+
+|http://camel.apache.org/maven/current/camel-script/apidocs/org/apache/camel/builder/script/Groovy.html[@Groovy]
+|Inject a link:groovy.html[Groovy] expression
+
+|http://camel.apache.org/maven/current/maven/camel-core/apidocs/org/apache/camel/Header.html[@Header]
+|Inject a link:header.html[Header] expression
+
+|http://camel.apache.org/maven/current/camel-script/apidocs/org/apache/camel/builder/script/JavaScript.html[@JavaScript]
+|Inject a link:javascript.html[JavaScript] expression
+
+|http://camel.apache.org/maven/current/camel-mvel/apidocs/org/apache/camel/language/mvel/MVEL.html[@MVEL]
+|Inject a link:mvel.html[MVEL] expression
+
+|http://camel.apache.org/maven/current/camel-ognl/apidocs/org/apache/camel/language/ognl/OGNL.html[@OGNL]
+|Inject an link:ognl.html[OGNL] expression
+
+|http://camel.apache.org/maven/current/camel-script/apidocs/org/apache/camel/builder/script/PHP.html[@PHP]
+|Inject a link:php.html[PHP] expression
+
+|http://camel.apache.org/maven/current/camel-script/apidocs/org/apache/camel/builder/script/Python.html[@Python]
+|Inject a link:python.html[Python] expression
+
+|http://camel.apache.org/maven/current/camel-script/apidocs/org/apache/camel/builder/script/Ruby.html[@Ruby]
+|Inject a link:ruby.html[Ruby] expression
+
+|http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/language/Simple.html[@Simple]
+|Inject an link:simple.html[Simple] expression
+
+|http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/language/XPath.html[@XPath]
+|Inject an link:xpath.html[XPath] expression
+
+|http://camel.apache.org/maven/current/camel-saxon/apidocs/org/apache/camel/component/xquery/XQuery.html[@XQuery]
+|Inject an link:xquery.html[XQuery] expression
+|=======================================================================
+
+[[Bookcookbook-Example:]]
+Example:
+++++++++
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+public class Foo {
+    
+    @MessageDriven(uri = "activemq:my.queue")
+    public void doSomething(@XPath("/foo/bar/text()") String correlationID, @Body String body) {
+        // process the inbound message here
+    }
+}
+----
+
+[[Bookcookbook-Advancedexampleusing@Bean]]
+Advanced example using @Bean
+++++++++++++++++++++++++++++
+
+And an example of using the the
+http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/language/Bean.html[@Bean]
+binding annotation, where you can use a link:pojo.html[POJO] where you
+can do whatever java code you like:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+public class Foo {
+    
+    @MessageDriven(uri = "activemq:my.queue")
+    public void doSomething(@Bean("myCorrelationIdGenerator") String correlationID, @Body String body) {
+        // process the inbound message here
+    }
+}
+----
+
+And then we can have a spring bean with the id
+*myCorrelationIdGenerator* where we can compute the id.
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+public class MyIdGenerator {
+
+    private UserManager userManager;
+
+    public String generate(@Header(name = "user") String user, @Body String payload) throws Exception {
+       User user = userManager.lookupUser(user);
+       String userId = user.getPrimaryId();
+       String id = userId + generateHashCodeForPayload(payload);
+       return id;
+   }
+}
+----
+
+The link:pojo.html[POJO] MyIdGenerator has one public method that
+accepts two parameters. However we have also annotated this one with the
+@Header and @Body annotation to help Camel know what to bind here from
+the Message from the Exchange being processed.
+
+Of course this could be simplified a lot if you for instance just have a
+simple id generator. But we wanted to demonstrate that you can use the
+link:bean-binding.html[Bean Binding] annotations anywhere.
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+public class MySimpleIdGenerator {
+
+    public static int generate()  {
+       // generate a unique id
+       return 123;
+   }
+}
+----
+
+And finally we just need to remember to have our bean registered in the
+Spring link:registry.html[Registry]:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+   <bean id="myCorrelationIdGenerator" class="com.mycompany.MySimpleIdGenerator"/>
+----
+
+[[Bookcookbook-Exampleusing]]
+Example using link:groovy.html[Groovy]
+++++++++++++++++++++++++++++++++++++++
+
+In this example we have an Exchange that has a User object stored in the
+in header. This User object has methods to get some user information. We
+want to use link:groovy.html[Groovy] to inject an expression that
+extracts and concats the fullname of the user into the fullName
+parameter.
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+    public void doSomething(@Groovy("$request.header['user'].firstName $request.header['user'].familyName) String fullName, @Body String body) {
+        // process the inbound message here
+    }
+----
+
+Groovy supports GStrings that is like a template where we can insert $
+placeholders that will be evaluated by Groovy.
+
+[[Bookcookbook-BeanBinding]]
+Bean Binding
+~~~~~~~~~~~~
+
+Bean Binding in Camel defines both which methods are invoked and also
+how the link:message.html[Message] is converted into the parameters of
+the method when it is invoked.
+
+[[Bookcookbook-Choosingthemethodtoinvoke]]
+Choosing the method to invoke
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The binding of a Camel link:message.html[Message] to a bean method call
+can occur in different ways, in the following order of importance:
+
+* if the message contains the header *CamelBeanMethodName* then that
+method is invoked, converting the body to the type of the method's
+argument.
+** From *Camel 2.8* onwards you can qualify parameter types to select
+exactly which method to use among overloads with the same name (see
+below for more details).
+** From *Camel 2.9* onwards you can specify parameter values directly in
+the method option (see below for more details).
+* you can explicitly specify the method name in the link:dsl.html[DSL]
+or when using link:pojo-consuming.html[POJO Consuming] or
+link:pojo-producing.html[POJO Producing]
+* if the bean has a method marked with the `@Handler` annotation, then
+that method is selected
+* if the bean can be converted to a link:processor.html[Processor] using
+the link:type-converter.html[Type Converter] mechanism, then this is
+used to process the message. The link:activemq.html[ActiveMQ] component
+uses this mechanism to allow any JMS MessageListener to be invoked
+directly by Camel without having to write any integration glue code. You
+can use the same mechanism to integrate Camel into any other
+messaging/remoting frameworks.
+* if the body of the message can be converted to a
+http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/component/bean/BeanInvocation.html[BeanInvocation]
+(the default payload used by the
+http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/component/bean/ProxyHelper.html[ProxyHelper])
+component - then that is used to invoke the method and pass its
+arguments
+* otherwise the type of the body is used to find a matching method; an
+error is thrown if a single method cannot be chosen unambiguously.
+* you can also use Exchange as the parameter itself, but then the return
+type must be void.
+* if the bean class is private (or package-private), interface methods
+will be preferred (from *Camel 2.9* onwards) since Camel can't invoke
+class methods on such beans
+
+In cases where Camel cannot choose a method to invoke, an
+`AmbiguousMethodCallException` is thrown.
+
+By default the return value is set on the outbound message body. 
+
+[[Bookcookbook-Asynchronousprocessing]]
+Asynchronous processing
+^^^^^^^^^^^^^^^^^^^^^^^
+
+From *Camel 2.18* onwards you can return a CompletionStage
+implementation (e.g. a CompletableFuture) to implement asynchronous
+processing.
+
+Please be sure to properly complete the CompletionStage with the result
+or exception, including any timeout handling. Exchange processing would
+wait for completion and would not impose any timeouts automatically.
+It's extremely useful to
+monitor https://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/spi/InflightRepository.html[Inflight
+repository] for any hanging messages.
+
+Note that completing with "null" won't set outbody message body to null,
+but would keep message intact. This is useful to support methods that
+don't modify exchange and return CompletableFuture<Void>. To set body to
+null, just add Exchange method parameter and directly modify exchange
+messages.
+
+Examples:
+
+Simple asynchronous processor, modifying message body.
+
+javapublic CompletableFuture<String> doSomethingAsync(String body)
+
+Composite processor that do not modify exchange
+
+javapublic CompletableFuture<Void> doSomethingAsync(String body) \{
+return CompletableFuture.allOf(doA(body), doB(body), doC()); }
+
+[[Bookcookbook-Parameterbinding]]
+Parameter binding
+^^^^^^^^^^^^^^^^^
+
+When a method has been chosen for invocation, Camel will bind to the
+parameters of the method.
+
+The following Camel-specific types are automatically bound:
+
+* `org.apache.camel.Exchange`
+* `org.apache.camel.Message`
+* `org.apache.camel.CamelContext`
+* `org.apache.camel.TypeConverter`
+* `org.apache.camel.spi.Registry`
+* `java.lang.Exception`
+
+So, if you declare any of these types, they will be provided by Camel.
+*Note that `Exception` will bind to the caught exception of the
+link:exchange.html[Exchange]* - so it's often usable if you employ a
+link:pojo.html[Pojo] to handle, e.g., an `onException` route.
+
+What is most interesting is that Camel will also try to bind the body of
+the link:exchange.html[Exchange] to the first parameter of the method
+signature (albeit not of any of the types above). So if, for instance,
+we declare a parameter as `String body`, then Camel will bind the IN
+body to this type. Camel will also automatically convert to the type
+declared in the method signature.
+
+Let's review some examples:
+
+Below is a simple method with a body binding. Camel will bind the IN
+body to the `body` parameter and convert it to a `String`.
+
+public String doSomething(String body)
+
+In the following sample we got one of the automatically-bound types as
+well - for instance, a `Registry` that we can use to lookup beans.
+
+public String doSomething(String body, Registry registry)
+
+We can use link:exchange.html[Exchange] as well:
+
+public String doSomething(String body, Exchange exchange)
+
+You can also have multiple types:
+
+public String doSomething(String body, Exchange exchange, TypeConverter
+converter)
+
+And imagine you use a link:pojo.html[Pojo] to handle a given custom
+exception `InvalidOrderException` - we can then bind that as well:
+
+public String badOrder(String body, InvalidOrderException invalid)
+
+Notice that we can bind to it even if we use a sub type of
+`java.lang.Exception` as Camel still knows it's an exception and can
+bind the cause (if any exists).
+
+So what about headers and other stuff? Well now it gets a bit tricky -
+so we can use annotations to help us, or specify the binding in the
+method name option. +
+See the following sections for more detail.
+
+[[Bookcookbook-BindingAnnotations]]
+Binding Annotations
+^^^^^^^^^^^^^^^^^^^
+
+You can use the link:parameter-binding-annotations.html[Parameter
+Binding Annotations] to customize how parameter values are created from
+the link:message.html[Message]
+
+[[Bookcookbook-Examples]]
+Examples
+++++++++
+
+For example, a link:bean.html[Bean] such as:
+
+public class Bar \{ public String doSomething(String body) \{ // process
+the in body and return whatever you want return "Bye World"; }
+
+Or the Exchange example. Notice that the return type must be *void* when
+there is only a single parameter of the type
+`org.apache.camel.Exchange`:
+
+public class Bar \{ public void doSomething(Exchange exchange) \{ //
+process the exchange exchange.getIn().setBody("Bye World"); }
+
+[[Bookcookbook-@Handler]]
+@Handler
+++++++++
+
+You can mark a method in your bean with the @Handler annotation to
+indicate that this method should be used for link:bean-binding.html[Bean
+Binding]. +
+This has an advantage as you need not specify a method name in the Camel
+route, and therefore do not run into problems after renaming the method
+in an IDE that can't find all its references.
+
+javapublic class Bar \{ @Handler public String doSomething(String body)
+\{ // process the in body and return whatever you want return "Bye
+World"; }
+
+[[Bookcookbook-Parameterbindingusingmethodoption]]
+Parameter binding using method option
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available as of Camel 2.9*
+
+Camel uses the following rules to determine if it's a parameter value in
+the method option
+
+* The value is either `true` or `false` which denotes a boolean value
+* The value is a numeric value such as `123` or `7`
+* The value is a String enclosed with either single or double quotes
+* The value is null which denotes a `null` value
+* It can be evaluated using the link:simple.html[Simple] language, which
+means you can use, e.g., body, header.foo and other
+link:simple.html[Simple] tokens. Notice the tokens must be enclosed with
+$\{ }.
+
+Any other value is consider to be a type declaration instead - see the
+next section about specifying types for overloaded methods.
+
+When invoking a link:bean.html[Bean] you can instruct Camel to invoke a
+specific method by providing the method name:
+
+.bean(OrderService.class, "doSomething")
+
+Here we tell Camel to invoke the doSomething method - Camel handles the
+parameters' binding. Now suppose the method has 2 parameters, and the
+2nd parameter is a boolean where we want to pass in a true value:
+
+public void doSomething(String payload, boolean highPriority) \{ ... }
+
+This is now possible in *Camel 2.9* onwards:
+
+.bean(OrderService.class, "doSomething(*, true)")
+
+In the example above, we defined the first parameter using the wild card
+symbol *, which tells Camel to bind this parameter to any type, and let
+Camel figure this out. The 2nd parameter has a fixed value of `true`.
+Instead of the wildcard symbol we can instruct Camel to use the message
+body as shown:
+
+.bean(OrderService.class, "doSomething($\{body}, true)")
+
+The syntax of the parameters is using the link:simple.html[Simple]
+expression language so we have to use $\{ } placeholders in the body to
+refer to the message body.
+
+If you want to pass in a `null` value, then you can explicit define this
+in the method option as shown below:
+
+.to("bean:orderService?method=doSomething(null, true)")
+
+Specifying `null` as a parameter value instructs Camel to force passing
+a `null` value.
+
+Besides the message body, you can pass in the message headers as a
+`java.util.Map`:
+
+.bean(OrderService.class, "doSomethingWithHeaders($\{body},
+$\{headers})")
+
+You can also pass in other fixed values besides booleans. For example,
+you can pass in a String and an integer:
+
+.bean(MyBean.class, "echo('World', 5)")
+
+In the example above, we invoke the echo method with two parameters. The
+first has the content 'World' (without quotes), and the 2nd has the
+value of 5. +
+Camel will automatically convert these values to the parameters' types.
+
+Having the power of the link:simple.html[Simple] language allows us to
+bind to message headers and other values such as:
+
+.bean(OrderService.class, "doSomething($\{body}, $\{header.high})")
+
+You can also use the OGNL support of the link:simple.html[Simple]
+expression language. Now suppose the message body is an object which has
+a method named `asXml`. To invoke the `asXml` method we can do as
+follows:
+
+.bean(OrderService.class, "doSomething($\{body.asXml},
+$\{header.high})")
+
+Instead of using `.bean` as shown in the examples above, you may want to
+use `.to` instead as shown:
+
+.to("bean:orderService?method=doSomething($\{body.asXml},
+$\{header.high})")
+
+[[Bookcookbook-Usingtypequalifierstoselectamongoverloadedmethods]]
+Using type qualifiers to select among overloaded methods
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available as of Camel 2.8*
+
+If you have a link:bean.html[Bean] with overloaded methods, you can now
+specify parameter types in the method name so Camel can match the method
+you intend to use. +
+Given the following
+bean:\{snippet:id=e1|lang=java|title=MyBean|url=camel/trunk/camel-core/src/test/java/org/apache/camel/component/bean/BeanOverloadedMethodTest.java}Then
+the `MyBean` has 2 overloaded methods with the names `hello` and
+`times`. So if we want to use the method which has 2 parameters we can
+do as follows in the Camel route:\{snippet:id=e2|lang=java|title=Invoke
+2 parameter
+method|url=camel/trunk/camel-core/src/test/java/org/apache/camel/component/bean/BeanOverloadedMethodTest.java}We
+can also use a `*` as wildcard so we can just say we want to execute the
+method with 2 parameters we do\{snippet:id=e3|lang=java|title=Invoke 2
+parameter method using
+wildcard|url=camel/trunk/camel-core/src/test/java/org/apache/camel/component/bean/BeanOverloadedMethodTest.java}By
+default Camel will match the type name using the simple name, e.g. any
+leading package name will be disregarded. However if you want to match
+using the FQN, then specify the FQN type and Camel will leverage that.
+So if you have a `com.foo.MyOrder` and you want to match against the
+FQN, and *not* the simple name "MyOrder", then follow this example:
+
+.bean(OrderService.class, "doSomething(com.foo.MyOrder)")
+
+Camel currently only supports either specifying parameter binding or
+type per parameter in the method name option. You *cannot* specify both
+at the same time, such as
+
+doSomething(com.foo.MyOrder $\{body}, boolean $\{header.high})
+
+This may change in the future.
+
+[[Bookcookbook-BeanInjection]]
+Bean Injection
+^^^^^^^^^^^^^^
+
+We support the injection of various resources using @EndpointInject or
+@BeanInject. This can be used to inject
+
+* link:endpoint.html[Endpoint] instances which can be used for testing
+when used with link:mock.html[Mock] endpoints; see the
+link:spring-testing.html[Spring Testing] for an example.
+* link:producertemplate.html[ProducerTemplate] instances for
+link:pojo-producing.html[POJO Producing]
+* client side proxies for link:pojo-producing.html[POJO Producing] which
+is a simple approach to link:spring-remoting.html[Spring Remoting]
+
+[[Bookcookbook-Using@BeanInject]]
+Using @BeanInject
++++++++++++++++++
+
+From *Camel 2.13* onwards you can inject beans (obtained from the
+link:registry.html[Registry]) into your beans such as `RouteBuilder`
+classes.
+
+For example to inject a bean named foo, you can enlist the bean in the
+link:registry.html[Registry] such as in a Spring XML file:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<bean id="foo" class="com.foo.MyFooBean"/>
+----
+
+And then in a Java `RouteBuilder` class, you can inject the bean using
+`@BeanInject` as shown below:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+public class MyRouteBuilder extends RouteBuilder {
+
+   @BeanInject("foo")
+   MyFooBean foo;
+
+   public void configure() throws Exception {
+     ..
+   }
+}
+----
+
+If you omit the name, then Camel does a lookup by type, and injects the
+bean if there is exactly only one bean of that type enlisted in the
+link:registry.html[Registry].
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+   @BeanInject
+   MyFooBean foo;
+----
+
+[[Bookcookbook-ParameterBindingAnnotations]]
+Parameter Binding Annotations
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+**camel-core**
+
+The annotations below are all part of *camel-core* and thus does not
+require *camel-spring* or link:spring.html[Spring]. These annotations
+can be used with the link:bean.html[Bean] component or when invoking
+beans in the link:dsl.html[DSL]
+
+Annotations can be used to define an link:expression.html[Expression] or
+to extract various headers, properties or payloads from a
+link:message.html[Message] when invoking a bean method (see
+link:bean-integration.html[Bean Integration] for more detail of how to
+invoke bean methods) together with being useful to help disambiguate
+which method to invoke.
+
+If no annotations are used then Camel assumes that a single parameter is
+the body of the message. Camel will then use the
+link:type-converter.html[Type Converter] mechanism to convert from the
+expression value to the actual type of the parameter.
+
+The core annotations are as follows
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Annotation |Meaning |Parameter
+|http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/Body.html[@Body]
+|To bind to an inbound message body | 
+
+|http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/ExchangeException.html[@ExchangeException]
+|To bind to an Exception set on the exchange | 
+
+|http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/Header.html[@Header]
+|To bind to an inbound message header |String name of the header
+
+|http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/Headers.html[@Headers]
+|To bind to the Map of the inbound message headers | 
+
+|http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/OutHeaders.html[@OutHeaders]
+|To bind to the Map of the outbound message headers | 
+
+|http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/Property.html[@Property]
+|To bind to a named property on the exchange |String name of the
+property
+
+|http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/Properties.html[@Properties]
+|To bind to the property map on the exchange | 
+
+|http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/Handler.html[@Handler]
+|Not part as a type parameter but stated in this table anyway to spread
+the good word that we have this annotation in Camel now. See more at
+link:bean-binding.html[Bean Binding]. | 
+|=======================================================================
+
+The follow annotations `@Headers`, `@OutHeaders` and `@Properties` binds
+to the backing `java.util.Map` so you can alter the content of these
+maps directly, for instance using the `put` method to add a new entry.
+See the OrderService class at link:exception-clause.html[Exception
+Clause] for such an example. You can use `@Header("myHeader")` and
+`@Property("myProperty")` to access the backing `java.util.Map`.
+
+[[Bookcookbook-Example]]
+Example
+^^^^^^^
+
+In this example below we have a @Consume consumer (like message driven)
+that consumes JMS messages from the activemq queue. We use the @Header
+and @Body parameter binding annotations to bind from the JMSMessage to
+the method parameters.
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+public class Foo {
+    
+    @Consume(uri = "activemq:my.queue")
+    public void doSomething(@Header("JMSCorrelationID") String correlationID, @Body String body) {
+        // process the inbound message here
+    }
+
+}
+----
+
+In the above Camel will extract the value of
+Message.getJMSCorrelationID(), then using the
+link:type-converter.html[Type Converter] to adapt the value to the type
+of the parameter if required - it will inject the parameter value for
+the *correlationID* parameter. Then the payload of the message will be
+converted to a String and injected into the *body* parameter.
+
+You don't necessarily need to use the @Consume annotation if you don't
+want to as you could also make use of the Camel link:dsl.html[DSL] to
+route to the bean's method as well.
+
+[[Bookcookbook-UsingtheDSLtoinvokethebeanmethod]]
+Using the DSL to invoke the bean method
++++++++++++++++++++++++++++++++++++++++
+
+Here is another example which does not use link:pojo-consuming.html[POJO
+Consuming] annotations but instead uses the link:dsl.html[DSL] to route
+messages to the bean method
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+public class Foo {
+    public void doSomething(@Header("JMSCorrelationID") String correlationID, @Body String body) {
+        // process the inbound message here
+    }
+
+}
+----
+
+The routing DSL then looks like this
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from("activemq:someQueue").
+  to("bean:myBean");
+----
+
+Here *myBean* would be looked up in the link:registry.html[Registry]
+(such as JNDI or the Spring ApplicationContext), then the body of the
+message would be used to try figure out what method to call.
+
+If you want to be explicit you can use
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from("activemq:someQueue").
+  to("bean:myBean?methodName=doSomething");
+----
+
+And here we have a nifty example for you to show some great power in
+Camel. You can mix and match the annotations with the normal parameters,
+so we can have this example with annotations and the Exchange also:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+    public void doSomething(@Header("user") String user, @Body String body, Exchange exchange) {
+        exchange.getIn().setBody(body + "MyBean");
+    }
+----
+
+[[Bookcookbook-AnnotationBasedExpressionLanguage.1]]
+Annotation Based Expression Language
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+You can also use any of the link:languages.html[Languages] supported in
+Camel to bind expressions to method parameters when using
+link:bean-integration.html[Bean Integration]. For example you can use
+any of these annotations:
+
+[width="100%",cols="50%,50%",options="header",]
+|=======================================================================
+|Annotation |Description
+|http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/language/Bean.html[@Bean]
+|Inject a link:bean.html[Bean] expression
+
+|http://camel.apache.org/maven/current/camel-script/apidocs/org/apache/camel/builder/script/BeanShell.html[@BeanShell]
+|Inject a link:beanshell.html[BeanShell] expression
+
+|http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/language/Constant.html[@Constant]
+|Inject a link:constant.html[Constant] expression
+
+|http://camel.apache.org/maven/current/camel-juel/apidocs/org/apache/camel/language/juel/EL.html[@EL]
+|Inject an link:el.html[EL] expression
+
+|http://camel.apache.org/maven/current/camel-script/apidocs/org/apache/camel/builder/script/Groovy.html[@Groovy]
+|Inject a link:groovy.html[Groovy] expression
+
+|http://camel.apache.org/maven/current/maven/camel-core/apidocs/org/apache/camel/Header.html[@Header]
+|Inject a link:header.html[Header] expression
+
+|http://camel.apache.org/maven/current/camel-script/apidocs/org/apache/camel/builder/script/JavaScript.html[@JavaScript]
+|Inject a link:javascript.html[JavaScript] expression
+
+|http://camel.apache.org/maven/current/camel-mvel/apidocs/org/apache/camel/language/mvel/MVEL.html[@MVEL]
+|Inject a link:mvel.html[MVEL] expression
+
+|http://camel.apache.org/maven/current/camel-ognl/apidocs/org/apache/camel/language/ognl/OGNL.html[@OGNL]
+|Inject an link:ognl.html[OGNL] expression
+
+|http://camel.apache.org/maven/current/camel-script/apidocs/org/apache/camel/builder/script/PHP.html[@PHP]
+|Inject a link:php.html[PHP] expression
+
+|http://camel.apache.org/maven/current/camel-script/apidocs/org/apache/camel/builder/script/Python.html[@Python]
+|Inject a link:python.html[Python] expression
+
+|http://camel.apache.org/maven/current/camel-script/apidocs/org/apache/camel/builder/script/Ruby.html[@Ruby]
+|Inject a link:ruby.html[Ruby] expression
+
+|http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/language/Simple.html[@Simple]
+|Inject an link:simple.html[Simple] expression
+
+|http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/language/XPath.html[@XPath]
+|Inject an link:xpath.html[XPath] expression
+
+|http://camel.apache.org/maven/current/camel-saxon/apidocs/org/apache/camel/component/xquery/XQuery.html[@XQuery]
+|Inject an link:xquery.html[XQuery] expression
+|=======================================================================
+
+[[Bookcookbook-Example:.1]]
+Example:
+++++++++
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+public class Foo {
+    
+    @MessageDriven(uri = "activemq:my.queue")
+    public void doSomething(@XPath("/foo/bar/text()") String correlationID, @Body String body) {
+        // process the inbound message here
+    }
+}
+----
+
+[[Bookcookbook-Advancedexampleusing@Bean.1]]
+Advanced example using @Bean
+++++++++++++++++++++++++++++
+
+And an example of using the the
+http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/language/Bean.html[@Bean]
+binding annotation, where you can use a link:pojo.html[POJO] where you
+can do whatever java code you like:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+public class Foo {
+    
+    @MessageDriven(uri = "activemq:my.queue")
+    public void doSomething(@Bean("myCorrelationIdGenerator") String correlationID, @Body String body) {
+        // process the inbound message here
+    }
+}
+----
+
+And then we can have a spring bean with the id
+*myCorrelationIdGenerator* where we can compute the id.
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+public class MyIdGenerator {
+
+    private UserManager userManager;
+
+    public String generate(@Header(name = "user") String user, @Body String payload) throws Exception {
+       User user = userManager.lookupUser(user);
+       String userId = user.getPrimaryId();
+       String id = userId + generateHashCodeForPayload(payload);
+       return id;
+   }
+}
+----
+
+The link:pojo.html[POJO] MyIdGenerator has one public method that
+accepts two parameters. However we have also annotated this one with the
+@Header and @Body annotation to help Camel know what to bind here from
+the Message from the Exchange being processed.
+
+Of course this could be simplified a lot if you for instance just have a
+simple id generator. But we wanted to demonstrate that you can use the
+link:bean-binding.html[Bean Binding] annotations anywhere.
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+public class MySimpleIdGenerator {
+
+    public static int generate()  {
+       // generate a unique id
+       return 123;
+   }
+}
+----
+
+And finally we just need to remember to have our bean registered in the
+Spring link:registry.html[Registry]:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+   <bean id="myCorrelationIdGenerator" class="com.mycompany.MySimpleIdGenerator"/>
+----
+
+[[Bookcookbook-Exampleusing.1]]
+Example using link:groovy.html[Groovy]
+++++++++++++++++++++++++++++++++++++++
+
+In this example we have an Exchange that has a User object stored in the
+in header. This User object has methods to get some user information. We
+want to use link:groovy.html[Groovy] to inject an expression that
+extracts and concats the fullname of the user into the fullName
+parameter.
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+    public void doSomething(@Groovy("$request.header['user'].firstName $request.header['user'].familyName) String fullName, @Body String body) {
+        // process the inbound message here
+    }
+----
+
+Groovy supports GStrings that is like a template where we can insert $
+placeholders that will be evaluated by Groovy.
+
+[[Bookcookbook-@Consume]]
+@Consume
+++++++++
+
+To consume a message you use the
+http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/Consume.html[@Consume]
+annotation to mark a particular method of a bean as being a consumer
+method. The uri of the annotation defines the Camel
+link:endpoint.html[Endpoint] to consume from.
+
+e.g. lets invoke the `onCheese()` method with the String body of the
+inbound JMS message from link:activemq.html[ActiveMQ] on the cheese
+queue; this will use the link:type-converter.html[Type Converter] to
+convert the JMS ObjectMessage or BytesMessage to a String - or just use
+a TextMessage from JMS
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+public class Foo {
+
+  @Consume(uri="activemq:cheese")
+  public void onCheese(String name) {
+    ...
+  }
+}
+----
+
+The link:bean-binding.html[Bean Binding] is then used to convert the
+inbound link:message.html[Message] to the parameter list used to invoke
+the method .
+
+What this does is basically create a route that looks kinda like this
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from(uri).bean(theBean, "methodName");
+----
+
+**When using more than one CamelContext**
+
+When you use more than 1 link:camelcontext.html[CamelContext] you might
+end up with each of them creating a link:pojo-consuming.html[POJO
+Consuming]; therefore use the option `context` on *@Consume* that allows
+you to specify which link:camelcontext.html[CamelContext] id/name you
+want it to apply for.
+
+[[Bookcookbook-UsingcontextoptiontoapplyonlyacertainCamelContext]]
+Using context option to apply only a certain CamelContext
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+See the warning above.
+
+You can use the `context` option to specify which
+link:camelcontext.html[CamelContext] the consumer should only apply for.
+For example:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+  @Consume(uri="activemq:cheese", context="camel-1")
+  public void onCheese(String name) {
+----
+
+The consumer above will only be created for the
+link:camelcontext.html[CamelContext] that have the context id =
+`camel-1`. You set this id in the XML tag:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<camelContext id="camel-1" ...>
+----
+
+[[Bookcookbook-Usinganexplicitroute]]
+Using an explicit route
++++++++++++++++++++++++
+
+If you want to invoke a bean method from many different endpoints or
+within different complex routes in different circumstances you can just
+use the normal routing link:dsl.html[DSL] or the
+link:spring.html[Spring] XML configuration file.
+
+For example
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from(uri).beanRef("myBean", "methodName");
+----
+
+which will then look up in the link:registry.html[Registry] and find the
+bean and invoke the given bean name. (You can omit the method name and
+have Camel figure out the right method based on the method annotations
+and body type).
+
+[[Bookcookbook-UsetheBeanendpoint]]
+Use the Bean endpoint
++++++++++++++++++++++
+
+You can always use the bean endpoint
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from(uri).to("bean:myBean?method=methodName");
+----
+
+[[Bookcookbook-Usingapropertytodefinetheendpoint]]
+Using a property to define the endpoint
++++++++++++++++++++++++++++++++++++++++
+
+*Available as of Camel 2.11*
+
+The following annotations @Consume, @Produce, @EndpointInject, now
+offers a `property` attribute you can use to define the endpoint as a
+property on the bean. Then Camel will use the getter method to access
+the property.
+
+**This applies for them all**
+
+The explanation below applies for all the three annotations, eg
+@Consume, @Produce, and @EndpointInject
+
+For example
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+public class MyService {
+  private String serviceEndpoint;
+  
+  public void setServiceEndpoint(String uri) {
+     this.serviceEndpoint = uri;
+  }
+
+  public String getServiceEndpoint() {
+     return serviceEndpoint
+  }
+
+  @Consume(property = "serviceEndpoint")
+  public void onService(String input) {
+     ...
+  }
+}
+----
+
+The bean `MyService` has a property named `serviceEndpoint` which has
+getter/setter for the property. Now we want to use the bean for
+link:pojo-consuming.html[POJO Consuming], and hence why we use @Consume
+in the onService method. Notice how we use the
+`property = "serviceEndpoint` to configure the property that has the
+endpoint url.
+
+If you define the bean in Spring XML or Blueprint, then you can
+configure the property as follows:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<bean id="myService" class="com.foo.MyService">
+  <property name="serviceEndpoint" value="activemq:queue:foo"/>
+</bean>
+----
+
+This allows you to configure the bean using any standard IoC style.
+
+Camel offers a naming convention which allows you to not have to
+explicit name the property. +
+Camel uses this algorithm to find the getter method. The method must be
+a getXXX method.
+
+\1. Use the property name if explicit given +
+2. If no property name was configured, then use the method name +
+3. Try to get the property with name*Endpoint* (eg with Endpoint as
+postfix) +
+4. Try to get the property with the name as is (eg no postfix or
+postfix) +
+5. If the property name starts with *on* then omit that, and try step 3
+and 4 again.
+
+So in the example above, we could have defined the @Consume annotation
+as
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+  @Consume(property = "service")
+  public void onService(String input) {
+----
+
+Now the property is named 'service' which then would match step 3 from
+the algorithm, and have Camel invoke the getServiceEndpoint method.
+
+We could also have omitted the property attribute, to make it implicit
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+  @Consume
+  public void onService(String input) {
+----
+
+Now Camel matches step 5, and loses the prefix *on* in the name, and
+looks for 'service' as the property. And because there is a
+getServiceEndpoint method, Camel will use that.
+
+[[Bookcookbook-Whichapproachtouse?]]
+Which approach to use?
+++++++++++++++++++++++
+
+Using the @Consume annotations are simpler when you are creating a
+simple route with a single well defined input URI.
+
+However if you require more complex routes or the same bean method needs
+to be invoked from many places then please use the routing
+link:dsl.html[DSL] as shown above.
+
+There are two different ways to send messages to any Camel
+link:endpoint.html[Endpoint] from a POJO
+
+[[Bookcookbook-@EndpointInject]]
+`@EndpointInject`
++++++++++++++++++
+
+To allow sending of messages from POJOs you can use the
+http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/EndpointInject.html[@EndpointInject]
+annotation. This will inject a
+http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/ProducerTemplate.html[ProducerTemplate]
+so that the bean can participate in message exchanges.
+
+Example: send a message to the *`foo.bar`* ActiveMQ queue:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+public class Foo {
+  @EndpointInject(uri="activemq:foo.bar")
+  ProducerTemplate producer;
+
+  public void doSomething() {
+    if (whatever) {
+      producer.sendBody("<hello>world!</hello>");
+    }
+  }
+}
+----
+
+The downside of this is that your code is now dependent on a Camel API,
+the *`ProducerTemplate`*. The next section describes how to remove this
+dependency.
+
+[Tip]
+====
+
+
+See link:pojo-consuming.html[POJO Consuming] for how to use a property
+on the bean as endpoint configuration, e.g., using the *`property`*
+attribute on *`@Produce`*, *`@EndpointInject`*.
+
+====
+
+[[Bookcookbook-HidingtheCamelAPIsFromYourCodeUsing@Produce]]
+Hiding the Camel APIs From Your Code Using `@Produce`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+We recommend link:hiding-middleware.html[Hiding Middleware] APIs from
+your application code so the next option might be more suitable. You can
+add the *`@Produce`* annotation to an injection point (a field or
+property setter) using a *`ProducerTemplate`* *or* using some interface
+you use in your business logic. Example:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+public interface MyListener {
+    String sayHello(String name);
+}
+
+public class MyBean {
+    @Produce(uri = "activemq:foo")
+    protected MyListener producer;
+
+    public void doSomething() {
+        // lets send a message
+        String response = producer.sayHello("James");
+    }
+}
+----
+
+Here Camel will automatically inject a smart client side proxy at
+the *`@Produce`* annotation - an instance of the *`MyListener`*
+instance. When we invoke methods on this interface the method call is
+turned into an object and using the Camel
+link:spring-remoting.html[Spring Remoting] mechanism it is sent to the
+endpoint - in this case the link:activemq.html[ActiveMQ] endpoint to
+queue *`foo`*; then the caller blocks for a response.
+
+If you want to make asynchronous message sends then use
+link:using-exchange-pattern-annotations.html[an @InOnly annotation on
+the injection point].
+
+[[Bookcookbook-@RecipientListAnnotation]]
+@RecipientList Annotation
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+We support the use of @RecipientList on a bean method to easily create a
+dynamic link:recipient-list.html[Recipient List] using a Java method.
+
+[[Bookcookbook-SimpleExampleusing@Consumeand@RecipientList]]
+Simple Example using @Consume and @RecipientList
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+package com.acme.foo;
+
+public class RouterBean {
+
+    @Consume(uri = "activemq:foo")
+    @RecipientList
+    public String[] route(String body) {
+        return new String[]{"activemq:bar", "activemq:whatnot"};
+    }
+}
+----
+
+For example if the above bean is configured in link:spring.html[Spring]
+when using a *<camelContext>* element as follows
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
+    ">
+
+  <camelContext xmlns="http://activemq.apache.org/camel/schema/spring"/>
+
+  <bean id="myRecipientList" class="com.acme.foo.RouterBean"/>
+
+</beans>
+----
+
+then a route will be created consuming from the *foo* queue on the
+link:activemq.html[ActiveMQ] component which when a message is received
+the message will be forwarded to the endpoints defined by the result of
+this method call - namely the *bar* and *whatnot* queues.
+
+[[Bookcookbook-Howitworks]]
+How it works
+^^^^^^^^^^^^
+
+The return value of the @RecipientList method is converted to either a
+java.util.Collection / java.util.Iterator or array of objects where each
+element is converted to an link:endpoint.html[Endpoint] or a String, or
+if you are only going to route to a single endpoint then just return
+either an Endpoint object or an object that can be converted to a
+String. So the following methods are all valid
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+@RecipientList 
+public String[] route(String body) { ... }
+
+@RecipientList 
+public List<String> route(String body) { ... }
+
+@RecipientList 
+public Endpoint route(String body) { ... }
+
+@RecipientList 
+public Endpoint[] route(String body) { ... }
+
+@RecipientList 
+public Collection<Endpoint> route(String body) { ... }
+
+@RecipientList 
+public URI route(String body) { ... }
+
+@RecipientList 
+public URI[] route(String body) { ... }
+----
+
+Then for each endpoint or URI the message is forwarded a separate copy
+to that endpoint.
+
+You can then use whatever Java code you wish to figure out what
+endpoints to route to; for example you can use the
+link:bean-binding.html[Bean Binding] annotations to inject parts of the
+message body or headers or use link:expression.html[Expression] values
+on the message.
+
+[[Bookcookbook-MoreComplexExampleUsingDSL]]
+More Complex Example Using DSL
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In this example we will use more complex link:bean-binding.html[Bean
+Binding], plus we will use a separate route to invoke the
+link:recipient-list.html[Recipient List]
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+public class RouterBean2 {
+
+    @RecipientList
+    public String route(@Header("customerID") String custID String body) {
+        if (custID == null)  return null;
+        return "activemq:Customers.Orders." + custID;
+    }
+}
+
+public class MyRouteBuilder extends RouteBuilder {
+    protected void configure() {
+        from("activemq:Orders.Incoming").recipientList(bean("myRouterBean", "route"));
+    }
+}
+----
+
+Notice how we are injecting some headers or expressions and using them
+to determine the recipients using link:recipient-list.html[Recipient
+List] EIP. +
+See the link:bean-integration.html[Bean Integration] for more details.
+
+[[Bookcookbook-UsingExchangePatternAnnotations]]
+Using Exchange Pattern Annotations
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+When working with link:pojo-producing.html[POJO Producing] or
+link:spring-remoting.html[Spring Remoting] you invoke methods which
+typically by default are InOut for link:request-reply.html[Request
+Reply]. That is there is an In message and an Out for the result.
+Typically invoking this operation will be synchronous, the caller will
+block until the server returns a result.
+
+Camel has flexible link:exchange-pattern.html[Exchange Pattern] support
+- so you can also support the link:event-message.html[Event Message]
+pattern to use InOnly for asynchronous or one way operations. These are
+often called 'fire and forget' like sending a JMS message but not
+waiting for any response.
+
+From 1.5 onwards Camel supports annotations for specifying the message
+exchange pattern on regular Java methods, classes or interfaces.
+
+[[Bookcookbook-SpecifyingInOnlymethods]]
+Specifying InOnly methods
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Typically the default InOut is what most folks want but you can
+customize to use InOnly using an annotation.
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+public interface Foo {
+  Object someInOutMethod(String input);
+  String anotherInOutMethod(Cheese input);
+  
+  @InOnly
+  void someInOnlyMethod(Document input);
+}
+----
+
+The above code shows three methods on an interface; the first two use
+the default InOut mechanism but the *someInOnlyMethod* uses the InOnly
+annotation to specify it as being a oneway method call.
+
+[[Bookcookbook-Classlevelannotations]]
+Class level annotations
+^^^^^^^^^^^^^^^^^^^^^^^
+
+You can also use class level annotations to default all methods in an
+interface to some pattern such as
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+@InOnly
+public interface Foo {
+  void someInOnlyMethod(Document input);
+  void anotherInOnlyMethod(String input);
+}
+----
+
+Annotations will also be detected on base classes or interfaces. So for
+example if you created a client side proxy for
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+public class MyFoo implements Foo {
+  ...
+}
+----
+
+Then the methods inherited from Foo would be InOnly.
+
+[[Bookcookbook-Overloadingaclasslevelannotation]]
+Overloading a class level annotation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+You can overload a class level annotation on specific methods. A common
+use case for this is if you have a class or interface with many InOnly
+methods but you want to just annote one or two methods as InOut
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+@InOnly
+public interface Foo {
+  void someInOnlyMethod(Document input);
+  void anotherInOnlyMethod(String input);
+  
+  @InOut
+  String someInOutMethod(String input); 
+}
+----
+
+In the above Foo interface the *someInOutMethod* will be InOut
+
+[[Bookcookbook-Usingyourownannotations]]
+Using your own annotations
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+You might want to create your own annotations to represent a group of
+different bits of metadata; such as combining synchrony, concurrency and
+transaction behaviour.
+
+So you could annotate your annotation with the @Pattern annotation to
+default the exchange pattern you wish to use.
+
+For example lets say we want to create our own annotation called
+@MyAsyncService
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE, ElementType.METHOD})
+
+// lets add the message exchange pattern to it
+@Pattern(ExchangePattern.InOnly)
+
+// lets add some other annotations - maybe transaction behaviour?
+
+public @interface MyAsyncService {
+}
+----
+
+Now we can use this annotation and Camel will figure out the correct
+exchange pattern...
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+public interface Foo {
+  void someInOnlyMethod(Document input);
+  void anotherInOnlyMethod(String input);
+  
+  @MyAsyncService
+  String someInOutMethod(String input); 
+}
+----
+
+When writing software these days, its important to try and decouple as
+much middleware code from your business logic as possible.
+
+This provides a number of benefits...
+
+* you can choose the right middleware solution for your deployment and
+switch at any time
+* you don't have to spend a large amount of time learning the specifics
+of any particular technology, whether its link:jms.html[JMS] or
+link:javaspace.html[JavaSpace] or link:hibernate.html[Hibernate] or
+link:jpa.html[JPA] or link:ibatis.html[iBatis] whatever
+
+For example if you want to implement some kind of message passing,
+remoting, reliable load balancing or asynchronous processing in your
+application we recommend you use Camel annotations to bind your services
+and business logic to Camel link:components.html[Components] which means
+you can then easily switch between things like
+
+* in JVM messaging with link:seda.html[SEDA]
+* using JMS via link:activemq.html[ActiveMQ] or other link:jms.html[JMS]
+providers for reliable load balancing, grid or publish and subscribe
+* for low volume, but easier administration since you're probably
+already using a database you could use
+** link:hibernate.html[Hibernate] or link:jpa.html[JPA] to use an entity
+bean / table as a queue
+** link:ibatis.html[iBatis] to work with SQL
+** link:jdbc.html[JDBC] for raw SQL access
+* use link:javaspace.html[JavaSpace]
+
+[[Bookcookbook-HowtodecouplefrommiddlewareAPIs]]
+How to decouple from middleware APIs
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The best approach when using remoting is to use
+link:spring-remoting.html[Spring Remoting] which can then use any
+messaging or remoting technology under the covers. When using Camel's
+implementation you can then use any of the Camel
+link:components.html[Components] along with any of the
+link:enterprise-integration-patterns.html[Enterprise Integration
+Patterns].
+
+Another approach is to bind Java beans to Camel endpoints via the
+link:bean-integration.html[Bean Integration]. For example using
+link:pojo-consuming.html[POJO Consuming] and
+link:pojo-producing.html[POJO Producing] you can avoid using any Camel
+APIs to decouple your code both from middleware APIs _and_ Camel APIs!
+image:https://cwiki.apache.org/confluence/s/en_GB/5997/6f42626d00e36f53fe51440403446ca61552e2a2.1/_/images/icons/emoticons/smile.png[(smile)]
+
+[[Bookcookbook-Visualisation]]
+Visualisation
+~~~~~~~~~~~~~
+
+[Warning]
+====
+
+
+This functionality is deprecated and to be removed in future Camel
+releases.
+
+====
+
+ 
+
+Camel supports the visualisation of your
+link:enterprise-integration-patterns.html[Enterprise Integration
+Patterns] using the http://graphviz.org[GraphViz] DOT files which can
+either be rendered directly via a suitable GraphViz tool or turned into
+HTML, PNG or SVG files via the link:camel-maven-plugin.html[Camel Maven
+Plugin].
+
+Here is a
+http://activemq.apache.org/camel/maven/camel-spring/cameldoc/index.html[typical
+example] of the kind of thing we can generate
+
+image:book-cookbook.data/org.apache.camel.example.docs.ContentBasedRouteRoute.png[image]
+
+If you click on
+http://activemq.apache.org/camel/maven/examples/camel-example-docs/cameldoc/main/routes.html[the
+actual generated html]you will see that you can navigate from an EIP
+node to its pattern page, along with getting hover-over tool tips ec.
+
+[[Bookcookbook-Howtogenerate]]
+How to generate
+^^^^^^^^^^^^^^^
+
+See link:camel-dot-maven-goal.html[Camel Dot Maven Goal] or the other
+maven goals link:camel-maven-plugin.html[Camel Maven Plugin]
+
+[[Bookcookbook-ForOSXusers]]
+For OS X users
+^^^^^^^^^^^^^^
+
+If you are using OS X then you can open the DOT file using
+http://www.pixelglow.com/graphviz/[graphviz] which will then
+automatically re-render if it changes, so you end up with a real time
+graphical representation of the topic and queue hierarchies!
+
+Also if you want to edit the layout a little before adding it to a wiki
+to distribute to your team, open the DOT file with
+http://www.omnigroup.com/applications/omnigraffle/[OmniGraffle] then
+just edit away
+image:https://cwiki.apache.org/confluence/s/en_GB/5997/6f42626d00e36f53fe51440403446ca61552e2a2.1/_/images/icons/emoticons/smile.png[(smile)]
+
+[[Bookcookbook-BusinessActivityMonitoring]]
+Business Activity Monitoring
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The *Camel BAM* module provides a Business Activity Monitoring (BAM)
+framework for testing business processes across multiple message
+exchanges on different link:endpoint.html[Endpoint] instances.
+
+Consider, for example, a simple system in which you submit Purchase
+Orders into system A and then receive Invoices from system B. You might
+want to test that, for a given Purchase Order, you receive a matching
+Invoice from system B within a specific time period.
+
+[[Bookcookbook-HowCamelBAMWorks]]
+How Camel BAM Works
+^^^^^^^^^^^^^^^^^^^
+
+Camel BAM uses a link:correlation-identifier.html[Correlation
+Identifier] on an input message to determine the _Process Instance_ to
+which it belongs. The process instance is an entity bean which can
+maintain state for each _Activity_ (where an activity typically maps to
+a single endpoint - such as the submission of Purchase Orders or the
+receipt of Invoices).
+
+You can then add rules to be triggered when a message is received on any
+activity - such as to set time expectations or perform real time
+reconciliation of values across activities.
+
+[[Bookcookbook-SimpleExample]]
+Simple Example
+^^^^^^^^^^^^^^
+
+The following example shows how to perform some time based rules on a
+simple business process of 2 activities - A and B - which correspond
+with Purchase Orders and Invoices in the example above. If you would
+like to experiment with this scenario, you may edit this
+http://svn.apache.org/repos/asf/camel/trunk/components/camel-bam/src/test/java/org/apache/camel/bam/BamRouteTest.java[Test
+Case], which defines the activities and rules, and then tests that they
+work.
+
+\{snippet:id=example|lang=java|url=camel/trunk/components/camel-bam/src/test/java/org/apache/camel/bam/BamRouteTest.java}
+
+As you can see in the above example, we first define two activities, and
+then rules to specify when we expect them to complete for a process
+instance and when an error condition should be raised.p. The
+ProcessBuilder is a link:routebuilder.html[RouteBuilder] and can be
+added to any link:camelcontext.html[CamelContext].
+
+[[Bookcookbook-CompleteExample]]
+Complete Example
+^^^^^^^^^^^^^^^^
+
+For a complete example please see the link:bam-example.html[BAM
+Example], which is part of the standard Camel
+link:examples.html[Examples]
+
+[[Bookcookbook-UseCases]]
+Use Cases
+^^^^^^^^^
+
+In the world of finance, a common requirement is tracking trades. Often
+a trader will submit a Front Office Trade which then flows through the
+Middle Office and Back Office through various systems to settle the
+trade so that money is exchanged. You may wish to test that the front
+and back office trades match up within a certain time period; if they
+don't match or a back office trade does not arrive within a required
+amount of time, you might signal an alarm.
+
+[[Bookcookbook-ExtractTransformLoad(ETL)]]
+Extract Transform Load (ETL)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The http://en.wikipedia.org/wiki/Extract,_transform,_load[ETL] (Extract,
+Transform, Load) is a mechanism for loading data into systems or
+databases using some kind of link:data-format.html[Data Format] from a
+variety of sources; often files then using
+link:pipes-and-filters.html[Pipes and Filters],
+link:message-translator.html[Message Translator] and possible other
+link:enterprise-integration-patterns.html[Enterprise Integration
+Patterns].
+
+So you could query data from various Camel
+link:components.html[Components] such as link:file2.html[File],
+link:http.html[HTTP] or link:jpa.html[JPA], perform multiple patterns
+such as link:splitter.html[Splitter] or
+link:message-translator.html[Message Translator] then send the messages
+to some other link:component.html[Component].
+
+To show how this all fits together, try the link:etl-example.html[ETL
+Example]
+
+[[Bookcookbook-MockComponent]]
+Mock Component
+~~~~~~~~~~~~~~
+
+link:testing-summary-include.html[Testing Summary Include]
+
+The Mock component provides a powerful declarative testing mechanism,
+which is similar to http://www.jmock.org[jMock]http://jmock.org[] in
+that it allows declarative expectations to be created on any Mock
+endpoint before a test begins. Then the test is run, which typically
+fires messages to one or more endpoints, and finally the expectations
+can be asserted in a test case to ensure the system worked as expected.
+
+This allows you to test various things like:
+
+* The correct number of messages are received on each endpoint,
+* The correct payloads are received, in the right order,
+* Messages arrive on an endpoint in order, using some
+link:expression.html[Expression] to create an order testing function,
+* Messages arrive match some kind of link:predicate.html[Predicate] such
+as that specific headers have certain values, or that parts of the
+messages match some predicate, such as by evaluating an
+link:xpath.html[XPath] or link:xquery.html[XQuery]
+link:expression.html[Expression].
+
+*Note* that there is also the link:test.html[Test endpoint] which is a
+Mock endpoint, but which uses a second endpoint to provide the list of
+expected message bodies and automatically sets up the Mock endpoint
+assertions. In other words, it's a Mock endpoint that automatically sets
+up its assertions from some sample messages in a link:file2.html[File]
+or link:jpa.html[database], for example.
+
+Mock endpoints keep received Exchanges in memory indefinitely
+
+Remember that Mock is designed for testing. When you add Mock endpoints
+to a route, each link:exchange.html[Exchange] sent to the endpoint will
+be stored (to allow for later validation) in memory until explicitly
+reset or the JVM is restarted. If you are sending high volume and/or
+large messages, this may cause excessive memory use. If your goal is to
+test deployable routes inline, consider using
+link:notifybuilder.html[NotifyBuilder] or
+link:advicewith.html[AdviceWith] in your tests instead of adding Mock
+endpoints to routes directly.
+
+From Camel 2.10 onwards there are two new options `retainFirst`, and
+`retainLast` that can be used to limit the number of messages the Mock
+endpoints keep in memory.
+
+[[Bookcookbook-URIformat]]
+URI format
+^^^^^^^^^^
+
+mock:someName[?options]
+
+Where *someName* can be any string that uniquely identifies the
+endpoint.
+
+You can append query options to the URI in the following format,
+`?option=value&option=value&...`
+
+[[Bookcookbook-Options]]
+Options
+^^^^^^^
+
+confluenceTableSmall
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Option |Default |Description
+|`reportGroup` |`null` |A size to use a link:log.html[throughput logger]
+for reporting
+
+|`retainFirst` |  |*Camel 2.10:* To only keep first X number of messages
+in memory.
+
+|`retainLast` |  |*Camel 2.10:* To only keep last X number of messages
+in memory.
+|=======================================================================
+
+[[Bookcookbook-SimpleExample.1]]
+Simple Example
+^^^^^^^^^^^^^^
+
+Here's a simple example of Mock endpoint in use. First, the endpoint is
+resolved on the context. Then we set an expectation, and then, after the
+test has run, we assert that our expectations have been met.
+
+MockEndpoint resultEndpoint = context.resolveEndpoint("mock:foo",
+MockEndpoint.class); resultEndpoint.expectedMessageCount(2); // send
+some messages ... // now lets assert that the mock:foo endpoint received
+2 messages resultEndpoint.assertIsSatisfied();
+
+You typically always call the
+http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/component/mock/MockEndpoint.html#assertIsSatisfied()[assertIsSatisfied()
+method] to test that the expectations were met after running a test.
+
+Camel will by default wait 10 seconds when the `assertIsSatisfied()` is
+invoked. This can be configured by setting the
+`setResultWaitTime(millis)` method.
+
+[[Bookcookbook-UsingassertPeriod]]
+Using assertPeriod
+++++++++++++++++++
+
+*Available as of Camel 2.7* +
+When the assertion is satisfied then Camel will stop waiting and
+continue from the `assertIsSatisfied` method. That means if a new
+message arrives on the mock endpoint, just a bit later, that arrival
+will not affect the outcome of the assertion. Suppose you do want to
+test that no new messages arrives after a period thereafter, then you
+can do that by setting the `setAssertPeriod` method, for example:
+
+MockEndpoint resultEndpoint = context.resolveEndpoint("mock:foo",
+MockEndpoint.class); resultEndpoint.setAssertPeriod(5000);
+resultEndpoint.expectedMessageCount(2); // send some messages ... // now
+lets assert that the mock:foo endpoint received 2 messages
+resultEndpoint.assertIsSatisfied();
+
+[[Bookcookbook-Settingexpectations]]
+Setting expectations
+^^^^^^^^^^^^^^^^^^^^
+
+You can see from the javadoc of
+httphttp://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/component/mock/MockEndpoint.html[MockEndpoint]
+the various helper methods you can use to set expectations. The main
+methods are as follows:
+
+confluenceTableSmall
+
+[width="100%",cols="50%,50%",options="header",]
+|=======================================================================
+|Method |Description
+|http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/component/mock/MockEndpoint.html#expectedMessageCount(int)[expectedMessageCount(int)]
+|To define the expected message count on the endpoint.
+
+|http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/component/mock/MockEndpoint.html#expectedMinimumMessageCount(int)[expectedMinimumMessageCount(int)]
+|To define the minimum number of expected messages on the endpoint.
+
+|http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/component/mock/MockEndpoint.html#expectedBodiesReceived(java.lang.Object...)[expectedBodiesReceived(...)]
+|To define the expected bodies that should be received (in order).
+
+|http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/component/mock/MockEndpoint.html#expectedHeaderReceived(java.lang.String,%20java.lang.String)[expectedHeaderReceived(...)]
+|To define the expected header that should be received
+
+|http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/component/mock/MockEndpoint.html#expectsAscending(org.apache.camel.Expression)[expectsAscending(Expression)]
+|To add an expectation that messages are received in order, using the
+given link:expression.html[Expression] to compare messages.
+
+|http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/component/mock/MockEndpoint.html#expectsDescending(org.apache.camel.Expression)[expectsDescending(Expression)]
+|To add an expectation that messages are received in order, using the
+given link:expression.html[Expression] to compare messages.
+
+|http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/component/mock/MockEndpoint.html#expectsNoDuplicates(org.apache.camel.Expression)[expectsNoDuplicates(Expression)]
+|To add an expectation that no duplicate messages are received; using an
+link:expression.html[Expression] to calculate a unique identifier for
+each message. This could be something like the `JMSMessageID` if using
+JMS, or some unique reference number within the message.
+|=======================================================================
+
+Here's another example:
+
+resultEndpoint.expectedBodiesReceived("firstMessageBody",
+"secondMessageBody", "thirdMessageBody");
+
+[[Bookcookbook-Addingexpectationstospecificmessages]]
+Adding expectations to specific messages
+++++++++++++++++++++++++++++++++++++++++
+
+In addition, you can use the
+http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/component/mock/MockEndpoint.html#message(int)[message(int
+messageIndex)] method to add assertions about a specific message that is
+received.
+
+For example, to add expectations of the headers or body of the first
+message (using zero-based indexing like `java.util.List`), you can use
+the following code:
+
+resultEndpoint.message(0).header("foo").isEqualTo("bar");
+
+There are some examples of the Mock endpoint in use in the
+http://svn.apache.org/viewvc/camel/trunk/camel-core/src/test/java/org/apache/camel/processor/[camel-core
+processor tests].
+
+[[Bookcookbook-Mockingexistingendpoints]]
+Mocking existing endpoints
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available as of Camel 2.7*
+
+Camel now allows you to automatically mock existing endpoints in your
+Camel routes.
+
+How it works
+
+*Important:* The endpoints are still in action. What happens differently
+is that a link:mock.html[Mock] endpoint is injected and receives the
+message first and then delegates the message to the target endpoint. You
+can view this as a kind of intercept and delegate or endpoint listener.
+
+Suppose you have the given route below:
+
+\{snippet:id=route|title=Route|lang=java|url=camel/trunk/camel-core/src/test/java/org/apache/camel/processor/interceptor/AdviceWithMockEndpointsTest.java}
+
+You can then use the `adviceWith` feature in Camel to mock all the
+endpoints in a given route from your unit test, as shown below:
+
+\{snippet:id=e1|title=adviceWith mocking all
+endpoints|lang=java|url=camel/trunk/camel-core/src/test/java/org/apache/camel/processor/interceptor/AdviceWithMockEndpointsTest.java}
+
+Notice that the mock endpoints is given the uri `mock:<endpoint>`, for
+example `mock:direct:foo`. Camel logs at `INFO` level the endpoints
+being mocked:
+
+INFO Adviced endpoint [direct://foo] with mock endpoint
+[mock:direct:foo] Mocked endpoints are without parameters
+
+Endpoints which are mocked will have their parameters stripped off. For
+example the endpoint "log:foo?showAll=true" will be mocked to the
+following endpoint "mock:log:foo". Notice the parameters have been
+removed.
+
+Its also possible to only mock certain endpoints using a pattern. For
+example to mock all `log` endpoints you do as shown:
+
+\{snippet:id=e2|lang=java|title=adviceWith mocking only log endpoints
+using a
+pattern|url=camel/trunk/camel-core/src/test/java/org/apache/camel/processor/interceptor/AdviceWithMockEndpointsTest.java}
+
+The pattern supported can be a wildcard or a regular expression. See
+more details about this at link:intercept.html[Intercept] as its the
+same matching function used by Camel.
+
+Mind that mocking endpoints causes the messages to be copied when they
+arrive on the mock. +
+That means Camel will use more memory. This may not be suitable when you
+send in a lot of messages.
+
+[[Bookcookbook-Mockingexistingendpointsusingthecamel-testcomponent]]
+Mocking existing endpoints using the `camel-test` component
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Instead of using the `adviceWith` to instruct Camel to mock endpoints,
+you can easily enable this behavior when using the `camel-test` Test
+Kit. +
+The same route can be tested as follows. Notice that we return `"*"`
+from the `isMockEndpoints` method, which tells Camel to mock all
+endpoints. +
+If you only want to mock all `log` endpoints you can return `"log*"`
+instead.
+
+\{snippet:id=e1|lang=java|title=isMockEndpoints using camel-test
+kit|url=camel/trunk/components/camel-test/src/test/java/org/apache/camel/test/patterns/IsMockEndpointsJUnit4Test.java}
+
+[[Bookcookbook-MockingexistingendpointswithXMLDSL]]
+Mocking existing endpoints with XML DSL
++++++++++++++++++++++++++++++++++++++++
+
+If you do not use the `camel-test` component for unit testing (as shown
+above) you can use a different approach when using XML files for
+routes. +
+The solution is to create a new XML file used by the unit test and then
+include the intended XML file which has the route you want to test.
+
+Suppose we have the route in the `camel-route.xml` file:
+
+\{snippet:id=e1|lang=xml|title=camel-route.xml|url=camel/trunk/components/camel-spring/src/test/resources/org/apache/camel/spring/mock/camel-route.xml}
+
+Then we create a new XML file as follows, where we include the
+`camel-route.xml` file and define a spring bean with the class
+`org.apache.camel.impl.InterceptSendToMockEndpointStrategy` which tells
+Camel to mock all endpoints:
+
+\{snippet:id=e1|lang=xml|title=test-camel-route.xml|url=camel/trunk/components/camel-spring/src/test/resources/org/apache/camel/spring/mock/InterceptSendToMockEndpointStrategyTest.xml}
+
+Then in your unit test you load the new XML file
+(`test-camel-route.xml`) instead of `camel-route.xml`.
+
+To only mock all link:log.html[Log] endpoints you can define the pattern
+in the constructor for the bean:
+
+xml<bean id="mockAllEndpoints"
+class="org.apache.camel.impl.InterceptSendToMockEndpointStrategy">
+<constructor-arg index="0" value="log*"/> </bean>
+
+[[Bookcookbook-Mockingendpointsandskipsendingtooriginalendpoint]]
+Mocking endpoints and skip sending to original endpoint
++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+*Available as of Camel 2.10*
+
+Sometimes you want to easily mock and skip sending to a certain
+endpoints. So the message is detoured and send to the mock endpoint
+only. From Camel 2.10 onwards you can now use the `mockEndpointsAndSkip`
+method using link:advicewith.html[AdviceWith] or the
+https://cwiki.apache.org/confluence/pages/createpage.action?spaceKey=CAMEL&title=Test+Kit&linkCreation=true&fromPageId=52081[Test
+Kit]. The example below will skip sending to the two endpoints
+`"direct:foo"`, and `"direct:bar"`.
+
+\{snippet:id=e1|lang=java|title=adviceWith mock and skip sending to
+endpoints|url=camel/trunk/camel-core/src/test/java/org/apache/camel/processor/interceptor/AdviceWithMockMultipleEndpointsWithSkipTest.java}
+
+The same example using the link:testing.html[Test Kit]
+
+\{snippet:id=e1|lang=java|title=isMockEndpointsAndSkip using camel-test
+kit|url=camel/trunk/components/camel-test/src/test/java/org/apache/camel/test/patterns/IsMockEndpointsAndSkipJUnit4Test.java}
+
+[[Bookcookbook-Limitingthenumberofmessagestokeep]]
+Limiting the number of messages to keep
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available as of Camel 2.10*
+
+The link:mock.html[Mock] endpoints will by default keep a copy of every
+link:exchange.html[Exchange] that it received. So if you test with a lot
+of messages, then it will consume memory. +
+From Camel 2.10 onwards we have introduced two options `retainFirst` and
+`retainLast` that can be used to specify to only keep N'th of the first
+and/or last link:exchange.html[Exchange]s.
+
+For example in the code below, we only want to retain a copy of the
+first 5 and last 5 link:exchange.html[Exchange]s the mock receives.
+
+MockEndpoint mock = getMockEndpoint("mock:data");
+mock.setRetainFirst(5); mock.setRetainLast(5);
+mock.expectedMessageCount(2000); ... mock.assertIsSatisfied();
+
+Using this has some limitations. The `getExchanges()` and
+`getReceivedExchanges()` methods on the `MockEndpoint` will return only
+the retained copies of the link:exchange.html[Exchange]s. So in the
+example above, the list will contain 10 link:exchange.html[Exchange]s;
+the first five, and the last five. +
+The `retainFirst` and `retainLast` options also have limitations on
+which expectation methods you can use. For example the expectedXXX
+methods that work on message bodies, headers, etc. will only operate on
+the retained messages. In the example above they can test only the
+expectations on the 10 retained messages.
+
+[[Bookcookbook-Testingwitharrivaltimes]]
+Testing with arrival times
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available as of Camel 2.7*
+
+The link:mock.html[Mock] endpoint stores the arrival time of the message
+as a property on the link:exchange.html[Exchange].
+
+Date time = exchange.getProperty(Exchange.RECEIVED_TIMESTAMP,
+Date.class);
+
+You can use this information to know when the message arrived on the
+mock. But it also provides foundation to know the time interval between
+the previous and next message arrived on the mock. You can use this to
+set expectations using the `arrives` DSL on the link:mock.html[Mock]
+endpoint.
+
+For example to say that the first message should arrive between 0-2
+seconds before the next you can do:
+
+mock.message(0).arrives().noLaterThan(2).seconds().beforeNext();
+
+You can also define this as that 2nd message (0 index based) should
+arrive no later than 0-2 seconds after the previous:
+
+mock.message(1).arrives().noLaterThan(2).seconds().afterPrevious();
+
+You can also use between to set a lower bound. For example suppose that
+it should be between 1-4 seconds:
+
+mock.message(1).arrives().between(1, 4).seconds().afterPrevious();
+
+You can also set the expectation on all messages, for example to say
+that the gap between them should be at most 1 second:
+
+mock.allMessages().arrives().noLaterThan(1).seconds().beforeNext(); time
+units
+
+In the example above we use `seconds` as the time unit, but Camel offers
+`milliseconds`, and `minutes` as well.
+
+link:endpoint-see-also.html[Endpoint See Also]
+
+* link:spring-testing.html[Spring Testing]
+* link:testing.html[Testing]
+
+[[Bookcookbook-Testing]]
+Testing
+~~~~~~~
+
+Testing is a crucial activity in any piece of software development or
+integration. Typically Camel Riders use various different
+link:components.html[technologies] wired together in a variety of
+link:enterprise-integration-patterns.html[patterns] with different
+link:languages.html[expression languages] together with different forms
+of link:bean-integration.html[Bean Integration] and
+link:dependency-injection.html[Dependency Injection] so its very easy
+for things to go wrong!
+image:https://cwiki.apache.org/confluence/s/en_GB/5997/6f42626d00e36f53fe51440403446ca61552e2a2.1/_/images/icons/emoticons/smile.png[(smile)]
+. Testing is the crucial weapon to ensure that things work as you would
+expect.
+
+Camel is a Java library so you can easily wire up tests in whatever unit
+testing framework you use (JUnit 3.x (deprecated), 4.x, or TestNG).
+However the Camel project has tried to make the testing of Camel as easy
+and powerful as possible so we have introduced the following features.
+
+[[Bookcookbook-TestingMechanisms]]
+Testing Mechanisms
+^^^^^^^^^^^^^^^^^^
+
+The following mechanisms are supported:
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Name |Component |Description
+|link:camel-test.html[Camel Test] |`camel-test` |Is a standalone Java
+library letting you easily create Camel test cases using a single Java
+class for all your configuration and routing without using
+link:cdi.html[CDI], link:spring.html[Spring] or link:guice.html[Guice]
+for link:dependency-injection.html[Dependency Injection] which does not
+require an in-depth knowledge of Spring + Spring Test or Guice.
+ Supports JUnit 3.x (deprecated) and JUnit 4.x based tests.
+
+|link:cdi-testing.html[CDI Testing] |`camel-test-cdi` |Provides a JUnit
+4 runner that bootstraps a test environment using CDI so that you don't
+have to be familiar with any CDI testing frameworks and can concentrate
+on the testing logic of your Camel CDI applications. Testing frameworks
+like http://arquillian.org/[Arquillian] or https://ops4j1.jira.com/wiki/display/PAXEXAM4[PAX
+Exam], can be used for more advanced test cases, where you need to
+configure your system under test in a very fine-grained way or target
+specific CDI containers.
+
+|link:spring-testing.html[Spring Testing] |`camel-test-spring` a|
+Supports JUnit 3.x (deprecated) or JUnit 4.x based tests that bootstrap
+a test environment using Spring without needing to be familiar with
+Spring Test. The plain JUnit 3.x/4.x based tests work very similar to
+the test support classes in *`camel-test`*.
+
+Also supports Spring Test based tests that use the declarative style of
+test configuration and injection common in Spring Test. The Spring Test
+based tests provide feature parity with the plain JUnit 3.x/4.x based
+testing approach.
+
+*Note*: *`camel-test-spring`* is a new component from *Camel 2.10*. For
+older Camel release use *`camel-test`* which has built-in
+link:spring-testing.html[Spring Testing].
+
+|link:blueprint-testing.html[Blueprint Testing] |`camel-test-blueprint`
+|*Camel 2.10:* Provides the ability to do unit testing on blueprint
+configurations
+
+|link:guice.html[Guice] |`camel-guice` a|
+*Deprecated*
+
+Uses link:guice.html[Guice] to dependency inject your test classes
+
+|Camel TestNG |`camel-testng` a|
+*Deprecated*
+
+Supports plain TestNG based tests with or without
+link:cdi.html[CDI], link:spring.html[Spring] or link:guice.html[Guice] for link:dependency-injection.html[Dependency
+Injection] which does not require an in-depth knowledge of CDI, Spring +
+Spring Test or Guice.  
+
+From *Camel 2.10*: this component supports Spring Test based tests that
+use the declarative style of test configuration and injection common in
+Spring Test and described in more detail under
+link:spring-testing.html[Spring Testing].
+
+|=======================================================================
+
+In all approaches the test classes look pretty much the same in that
+they all reuse the link:bean-integration.html[Camel binding and
+injection annotations].
+
+[[Bookcookbook-CamelTestExample]]
+Camel Test Example
+++++++++++++++++++
+
+Here is the link:camel-test.html[Camel Test]
+http://svn.apache.org/repos/asf/camel/trunk/components/camel-test/src/test/java/org/apache/camel/test/patterns/FilterTest.java[example]:\{snippet:lang=java|id=example|url=camel/trunk/components/camel-test/src/test/java/org/apache/camel/test/patterns/FilterTest.java}Notice
+how it derives from the Camel helper class *`CamelTestSupport`* but has
+no CDI, Spring or Guice dependency injection configuration but instead
+overrides the *`createRouteBuilder()`* method.
+
+[[Bookcookbook-CDITestExample]]
+CDI Test Example
+++++++++++++++++
+
+Here is the link:cdi-testing.html[CDI Testing]
+http://svn.apache.org/repos/asf/camel/trunk/components/camel-test-cdi/src/test/java/org/apache/camel/test/cdi/FilterTest.java[example]:\{snippet:lang=java|id=example|url=camel/trunk/components/camel-test-cdi/src/test/java/org/apache/camel/test/cdi/FilterTest.java}You
+can find more testing patterns illustrated in the
+*`camel-example-cdi-test`* example and the test classes that come with
+it.
+
+[[Bookcookbook-SpringTestwithXMLConfigExample]]
+Spring Test with XML Config Example
++++++++++++++++++++++++++++++++++++
+
+Here is the link:spring-testing.html[Spring Testing]
+http://svn.apache.org/repos/asf/camel/trunk/components/camel-spring/src/test/java/org/apache/camel/spring/patterns/FilterTest.java[example
+using XML
+Config]:\{snippet:lang=java|id=example|url=camel/trunk/components/camel-spring/src/test/java/org/apache/camel/spring/patterns/FilterTest.java}Notice
+that we use *`@DirtiesContext`* on the test methods to force
+link:spring-testing.html[Spring Testing] to automatically reload the
+`CamelContext` after each test method - this ensures that the tests
+don't clash with each other, e.g., one test method sending to an
+endpoint that is then reused in another test method.
+
+Also note the use of *`@ContextConfiguration`* to indicate that by
+default we should look for the
+http://svn.apache.org/repos/asf/camel/trunk/components/camel-spring/src/test/resources/org/apache/camel/spring/patterns/FilterTest-context.xml[`FilterTest-context.xml`
+on the classpath] to configure the test case which looks like
+this:\{snippet:lang=xml|id=example|url=camel/trunk/components/camel-spring/src/test/resources/org/apache/camel/spring/patterns/FilterTest-context.xml}
+
+[[Bookcookbook-SpringTestwithJavaConfigExample]]
+Spring Test with Java Config Example
+++++++++++++++++++++++++++++++++++++
+
+Here is the link:spring-testing.html[Spring Testing]
+http://svn.apache.org/repos/asf/camel/trunk/components/camel-spring-javaconfig/src/test/java/org/apache/camel/spring/javaconfig/patterns/FilterTest.java[example
+using Java Config].
+
+For more information see link:spring-java-config.html[Spring Java
+Config].\{snippet:lang=java|id=example|url=camel/trunk/components/camel-spring-javaconfig/src/test/java/org/apache/camel/spring/javaconfig/patterns/FilterTest.java}This
+is similar to the XML Config example above except that there is no XML
+file and instead the nested *`ContextConfig`* class does all of the
+configuration; so your entire test case is contained in a single Java
+class. We currently have to reference by class name this class in the
+*`@ContextConfiguration`* which is a bit ugly. Please vote for
+http://jira.springframework.org/browse/SJC-238[SJC-238] to address this
+and make Spring Test work more cleanly with Spring JavaConfig.
+
+Its totally optional but for the *`ContextConfig`* implementation we
+derive from *`SingleRouteCamelConfiguration`* which is a helper Spring
+Java Config class which will configure the *`CamelContext`* for us and
+then register the *`RouteBuilder`* we create.
+
+Since *Camel 2.11.0* you can use the *`CamelSpringJUnit4ClassRunner`*
+with *`CamelSpringDelegatingTestContextLoader`* like
+http://svn.apache.org/repos/asf/camel/trunk/components/camel-spring-javaconfig/src/test/java/org/apache/camel/spring/javaconfig/test/CamelSpringDelegatingTestContextLoaderTest.java[example
+using Java Config with
+`CamelSpringJUnit4ClassRunner`]:\{snippet:lang=java|id=example|url=camel/trunk/components/camel-spring-javaconfig/src/test/java/org/apache/camel/spring/javaconfig/test/CamelSpringDelegatingTestContextLoaderTest.java}
+
+[[Bookcookbook-SpringTestwithXMLConfigandDeclarativeConfigurationExample]]
+Spring Test with XML Config and Declarative Configuration Example
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Here is a Camel test support enhanced link:spring-testing.html[Spring
+Testing] https://svn.apache.org/repos/asf/camel/trunk/components/camel-test-spring/src/test/java/org/apache/camel/test/spring/CamelSpringJUnit4ClassRunnerPlainTest.java[example
+using XML Config and pure Spring Test based configuration of the Camel
+Context]:\{snippet:lang=java|id=e1|url=camel/trunk/components/camel-test-spring/src/test/java/org/apache/camel/test/spring/CamelSpringJUnit4ClassRunnerPlainTest.java}Notice
+how a custom test runner is used with the *`@RunWith`* annotation to
+support the features of *`CamelTestSupport`* through annotations on the
+test class. See link:spring-testing.html[Spring Testing] for a list of
+annotations you can use in your tests.
+
+[[Bookcookbook-BlueprintTest]]
+Blueprint Test
+++++++++++++++
+
+Here is the link:blueprint-testing.html[Blueprint Testing]
+http://svn.apache.org/repos/asf/camel/trunk/components/camel-test-blueprint/src/test/java/org/apache/camel/test/blueprint/DebugBlueprintTest.java[example
+using XML
+Config]:\{snippet:lang=java|id=example|url=camel/trunk/components/camel-test-blueprint/src/test/java/org/apache/camel/test/blueprint/DebugBlueprintTest.java}Also
+notice the use of *`getBlueprintDescriptors`* to indicate that by
+default we should look for the
+http://svn.apache.org/repos/asf/camel/trunk/components/camel-test-blueprint/src/test/resources/org/apache/camel/test/blueprint/camelContext.xml[`camelContext.xml`
+in the package] to configure the test case which looks like
+this:\{snippet:lang=xml|id=example|url=camel/trunk/components/camel-test-blueprint/src/test/resources/org/apache/camel/test/blueprint/camelContext.xml}
+
+[[Bookcookbook-TestingEndpoints]]
+Testing Endpoints
+^^^^^^^^^^^^^^^^^
+
+Camel provides a number of endpoints which can make testing easier.
+
+[width="100%",cols="50%,50%",options="header",]
+|=======================================================================
+|Name |Description
+|link:dataset.html[DataSet] |For load & soak testing this endpoint
+provides a way to create huge numbers of messages for sending to
+link:components.html[Components] and asserting that they are consumed
+correctly
+
+|link:mock.html[Mock] |For testing routes and mediation rules using
+mocks and allowing assertions to be added to an endpoint
+
+|link:test.html[Test] |Creates a link:mock.html[Mock] endpoint which
+expects to receive all the message bodies that could be polled from the
+given underlying endpoint
+|=======================================================================
+
+The main endpoint is the link:mock.html[Mock] endpoint which allows
+expectations to be added to different endpoints; you can then run your
+tests and assert that your expectations are met at the end.
+
+[[Bookcookbook-Stubbingoutphysicaltransporttechnologies]]
+Stubbing out physical transport technologies
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+If you wish to test out a route but want to avoid actually using a real
+physical transport (for example to unit test a transformation route
+rather than performing a full integration test) then the following
+endpoints can be useful.
+
+[width="100%",cols="50%,50%",options="header",]
+|=======================================================================
+|Name |Description
+|link:direct.html[Direct] |Direct invocation of the consumer from the
+producer so that single threaded (non-SEDA) in VM invocation is
+performed which can be useful to mock out physical transports
+
+|link:seda.html[SEDA] |Delivers messages asynchronously to consumers via
+a
+http://java.sun.com/j2se/1.5.0/docs/api/java/util/concurrent/BlockingQueue.html[java.util.concurrent.BlockingQueue]
+which is good for testing asynchronous transports
+
+|link:stub.html[Stub] |Works like link:seda.html[SEDA] but does not
+validate the endpoint URI, which makes stubbing much easier.
+|=======================================================================
+
+[[Bookcookbook-Testingexistingroutes]]
+Testing existing routes
+^^^^^^^^^^^^^^^^^^^^^^^
+
+Camel provides some features to aid during testing of existing routes
+where you cannot or will not use link:mock.html[Mock] etc. For example
+you may have a production ready route which you want to test with some
+3rd party API which sends messages into this route.
+
+[width="100%",cols="50%,50%",options="header",]
+|=======================================================================
+|Name |Description
+|link:notifybuilder.html[NotifyBuilder] |Allows you to be notified when
+a certain condition has occurred. For example when the route has
+completed five messages. You can build complex expressions to match your
+criteria when to be notified.
+
+|link:advicewith.html[AdviceWith] |Allows you to *advice* or *enhance*
+an existing route using a link:routebuilder.html[RouteBuilder] style.
+For example you can add interceptors to intercept sending outgoing
+messages to assert those messages are as expected.
+|=======================================================================
+
+[[Bookcookbook-CamelTest]]
+Camel Test
+~~~~~~~~~~
+
+As a simple alternative to using link:cdi-testing.html[CDI
+Testing], link:spring-testing.html[Spring Testing] or
+link:guice.html[Guice] the *camel-test* module was introduced so you can
+perform powerful link:testing.html[Testing] of your
+link:enterprise-integration-patterns.html[Enterprise Integration
+Patterns] easily.
+
+JUnit or TestNG
+
+The *`camel-test`* JAR is using JUnit. There is an alternative
+*`camel-testng`* JAR (from *Camel 2.8*) using the
+http://testng.org/doc/index.html[TestNG] test framework.
+
+[[Bookcookbook-Addingtoyourpom.xml]]
+Adding to your `pom.xml`
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+To get started using Camel Test you will need to add an entry to your
+*`pom.xml`*:
+
+[[Bookcookbook-JUnit]]
+JUnit
++++++
+
+xml<dependency> <groupId>org.apache.camel</groupId>
+<artifactId>camel-test</artifactId> <version>$\{camel-version}</version>
+<scope>test</scope> </dependency>
+
+[[Bookcookbook-TestNG]]
+TestNG
+++++++
+
+*Available as of Camel 2.8*
+
+xml<dependency> <groupId>org.apache.camel</groupId>
+<artifactId>camel-testng</artifactId>
+<version>$\{camel-version}</version> <scope>test</scope> </dependency>
+
+You might also want to add *`slf4j`* and *`log4j`* to ensure nice
+logging messages (and maybe adding a
+http://svn.apache.org/repos/asf/camel/trunk/components/camel-test/src/test/resources/log4j.properties[log4j.properties]
+file into your *`src/test/resources`* directory).
+
+xml<dependency> <groupId>org.slf4j</groupId>
+<artifactId>slf4j-log4j12</artifactId> <scope>test</scope> </dependency>
+<dependency> <groupId>log4j</groupId> <artifactId>log4j</artifactId>
+<scope>test</scope> </dependency>
+
+[[Bookcookbook-Writingyourtest]]
+Writing your test
+^^^^^^^^^^^^^^^^^
+
+You firstly need to derive from the
+class *`CamelTestSupport`* *(`org.apache.camel.test.CamelTestSupport`,
+`org.apache.camel.test.junit4.CamelTestSupport`*,
+or *`org.apache.camel.testng.CamelTestSupport`* for JUnit 3.x, JUnit
+4.x, and TestNG, respectively) and typically you will need to override
+the **`createRouteBuilder()`* or *`createRouteBuilders()`** method to
+create routes to be tested.
+
+Here is an
+http://svn.apache.org/repos/asf/camel/trunk/components/camel-test/src/test/java/org/apache/camel/test/patterns/FilterTest.java[example].\{snippet:lang=java|id=example|url=camel/trunk/components/camel-test/src/test/java/org/apache/camel/test/patterns/FilterTest.java}*Note*:
+how you can use the various link:bean-integration.html[Camel binding and
+injection annotations] to inject individual link:endpoint.html[Endpoint]
+objects - particularly the link:mock.html[Mock endpoints] which are very
+useful for link:testing.html[Testing]. Also you can inject
+link:pojo-producing.html[producer objects such as ProducerTemplate or
+some application code interface] for sending messages or invoking
+services.
+
+[[Bookcookbook-FeaturesProvidedbyCamelTestSupport]]
+Features Provided by `CamelTestSupport`
++++++++++++++++++++++++++++++++++++++++
+
+The various *`CamelTestSupport`* classes provide a standard set of
+behaviors relating to the *`CamelContext`* used to host the route(s)
+under test.  The classes provide a number of methods that allow a test
+to alter the configuration of the *`CamelContext`* used.  The following
+table describes the available customization methods and the default
+behavior of tests that are built from a *`CamelTestSupport`* class.
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Method Name |Description |Default Behavior
+|`boolean isUseRouteBuilder()` |If the route builders returned from
+either *`createRouteBuilder()`* or *`createRouteBuilders()`* should be
+added to the *`CamelContext`* for the test to be started. a|
+Returns *`true`*. 
+
+**`createRouteBuilder()`* or *`createRouteBuilders()`** are invoked and
+the *`CamelContext`* is started automatically.
+
+|`boolean isUseAdviceWith()` a|
+If the *`CamelContext`* use in the test should be automatically started
+before test methods are invoked.
+
+ +
+Override when using link:advicewith.html[advice with] and return
+*`true`*.  This helps in knowing the *`adviceWith()`* is to be used, and
+the *`CamelContext`* will not be started before the advice with takes
+place. This delay helps by ensuring the advice with has been property
+setup before the *`CamelContext`* is started.
+
+Its important to start the *`CamelContext`* manually from the unit test
+after you are done doing all the advice with.
+
+ a|
+Returns *`false`*. 
+
+The *`CamelContext`* is started automatically before test methods are
+invoked.
+
+|`boolean isCreateCamelContextPerClass()`
+|See link:camel-test.html[Setup CamelContext once per class, or per
+every test method]. |The *`CamelContext`* and routes are recreated for
+each test method.
+
+|`String isMockEndpoints()` a|
+Triggers the auto-mocking of endpoints whose URIs match the provided
+filter.  The default filter is *`null`* which disables this feature.  
+
+Return *`"*"`*  to match all endpoints.  
+
+See *`org.apache.camel.impl.InterceptSendToMockEndpointStrategy`*
+for more details on the registration of the mock endpoints.
+
+ |Disabled
+
+|`boolean isUseDebugger()` a|
+If this method returns *`true`*, the methods:
+
+* *`debugBefore(Exchange exchange, Processor processor, ProcessorDefinition<?> definition, String id, String label)`*
+* *`debugAfter(Exchange exchange, Processor processor, ProcessorDefinition<?> definition, String id, String label, long timeTaken)`*
+
+are invoked for each processor in the registered routes.
+
+ a|
+Disabled
+
+The methods are not invoked during the test.
+
+|`int getShutdownTimeout()` a|
+Returns the number of seconds that Camel should wait for graceful
+shutdown.  
+
+Useful for decreasing test times when a message is still in flight at
+the end of the test.
+
+ |10 seconds
+
+|`boolean useJmx()` |If JMX should be disabled on the *`CamelContext`*
+used in the test. |JMX is disabled
+
+|`JndiRegistry createRegistry()` |Provides a hook for adding objects
+into the registry.  Override this method to bind objects to the registry
+before test methods are invoked. |An empty registry is initialized
+
+|`useOverridePropertiesWithPropertiesComponent` |*Camel 2.10:* Allows to
+add/override properties when link:using-propertyplaceholder.html[Using
+PropertyPlaceholder] in Camel. |*`null`*
+
+|`ignoreMissingLocationWithPropertiesComponent` |*Camel 2.10:* Allows to
+control if Camel should ignore missing locations for properties.
+|*`null`*
+
+|`boolean isDumpRouteCoverage` |*Camel 2.16:* If enabled, then Camel
+will dump all route coverage statistics into XML files in the
+target/camel-route-coverage directory. These XML files contains
+information about "route coverage" of all the routes that was used
+during the unit test. This allows tooling to inspect these XML files and
+generate nice route coverage reports. |Disabled
+|=======================================================================
+
+[[Bookcookbook-JNDI]]
+JNDI
+^^^^
+
+Camel uses a link:registry.html[Registry] to allow you to configure
+link:component.html[Component] or link:endpoint.html[Endpoint] instances
+or link:bean-integration.html[Beans used in your routes]. If you are not
+using link:spring.html[Spring] or
+https://cwiki.apache.org/confluence/pages/createpage.action?spaceKey=CAMEL&title=OSGi&linkCreation=true&fromPageId=104074[OSGi]
+then link:jndi.html[JNDI] is used as the default registry
+implementation.
+
+So you will also need to create a *`jndi.properties`* file in
+your *`src/test/resources`* directory so that there is a default
+registry available to initialize the
+link:camelcontext.html[CamelContext].
+
+Here is
+http://svn.apache.org/repos/asf/camel/trunk/components/camel-test/src/test/resources/jndi.properties[an
+example jndi.properties file]
+
+java.naming.factory.initial =
+org.apache.camel.util.jndi.CamelInitialContextFactory
+
+[[Bookcookbook-DynamicallyAssigningPorts]]
+Dynamically Assigning Ports
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available as of Camel 2.7*
+
+Tests that use port numbers will fail if that port is already on use.
+*`AvailablePortFinder`* provides methods for finding unused port numbers
+at run time.
+
+java// Get the next available port number starting from the default
+starting port of 1024 int port1 =
+AvailablePortFinder.getNextAvailable(); /* * Get another port. Note that
+just getting a port number does not reserve it so * we look starting one
+past the last port number we got. */ int port2 =
+AvailablePortFinder.getNextAvailable(port1 + 1);
+
+[[Bookcookbook-SetupCamelContextonceperclass,orpereverytestmethod]]
+Setup CamelContext once per class, or per every test method
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available as of Camel 2.8*
+
+The link:camel-test.html[Camel Test] kit will by default setup and
+shutdown link:camelcontext.html[CamelContext] per every test method in
+your test class. So for example if you have 3 test methods, then
+link:camelcontext.html[CamelContext] is started and shutdown after each
+test, that is 3 times.
+
+TestNG
+
+This feature is also supported in *`camel-testng`*
+
+Beware
+
+When using this the link:camelcontext.html[CamelContext] will keep state
+between tests, so have that in mind. So if your unit tests start to fail
+for no apparent reason, it could be due this fact. So use this feature
+with a bit of care.
+
+You may want to do this once, to share the
+link:camelcontext.html[CamelContext] between test methods, to speedup
+unit testing. This requires the use of JUnit 4! In your unit test method
+you have to extend the *`org.apache.camel.test.junit4.CamelTestSupport`*
+or the *`org.apache.camel.test.junit4.CamelSpringTestSupport`* test
+class and override the *`isCreateCamelContextPerClass`* method and
+return `true` as shown in the following
+example:\{snippet:id=example|lang=java|title=Setup CamelContext once per
+class|url=camel/trunk/components/camel-test/src/test/java/org/apache/camel/test/patterns/FilterCreateCamelContextPerClassTest.java}
+
+[[Bookcookbook-SeeAlso]]
+See Also
+^^^^^^^^
+
+* link:testing.html[Testing]
+* link:mock.html[Mock]
+* link:test.html[Test]
+
+ 
+
+[[Bookcookbook-SpringTesting]]
+Spring Testing
+~~~~~~~~~~~~~~
+
+link:testing.html[Testing] is a crucial part of any development or
+integration work. The Spring Framework offers a number of features that
+makes it easy to test while using Spring for Inversion of Control which
+works with JUnit 3.x, JUnit 4.x, and http://testng.org[TestNG].
+
+We can use Spring for IoC and the Camel link:mock.html[Mock] and
+link:test.html[Test] endpoints to create sophisticated integration/unit
+tests that are easy to run and debug inside your IDE.  There are three
+supported approaches for testing with Spring in Camel.
+
+[width="100%",cols="25%,25%,25%,25%",options="header",]
+|=======================================================================
+|Name |Testing Frameworks Supported |Description |Required Camel Test
+Dependencies
+|*`CamelSpringTestSupport`* a|
+* JUnit 3.x (deprecated)
+* JUnit 4.x
+* TestNG - *Camel 2.8*
+
+ a|
+Provided by:
+
+* *`org.apache.camel.test.CamelSpringTestSupport`*
+* *`org.apache.camel.test.junit4.CamelSpringTestSupport`*
+* *`org.apache.camel.testng.CamelSpringTestSupport`*
+
+These base classes provide link:camel-test.html[feature parity] with the
+simple *`CamelTestSupport`* classes from link:camel-test.html[Camel
+Test] but do not support Spring annotations on the test class such as
+*`@Autowired`*, *`@DirtiesContext`*, and *`@ContextConfiguration`*.
+
+ a|
+* JUnit 3.x (deprecated) - `camel-test-spring`
+* JUnit 4.x - `camel-test-spring`
+* TestNG - `camel-test-ng`
+
+|Plain Spring Test a|
+* JUnit 3.x
+* JUnit 4.x
+* TestNG
+
+ a|
+Either extend the abstract base classes:
+
+* *`org.springframework.test.context.junit38.AbstractJUnit38SpringContextTests`*
+* *`org.springframework.test.context.junit38.AbstractJUnit4SpringContextTests`*
+* etc.
+
+provided in Spring Test or use the Spring Test JUnit4 runner.  
+
+These approaches support both the Camel annotations and Spring
+annotations. However, they do NOT have link:camel-test.html[feature
+parity] with:
+
+* *`org.apache.camel.test.CamelTestSupport`*
+* *`org.apache.camel.test.junit4.CamelTestSupport`*
+* *`org.apache.camel.testng.CamelSpringTestSupport`*
+
+ a|
+* JUnit 3.x (deprecated) - None
+* JUnit 4.x - None
+* TestNG - None
+
+|Camel Enhanced Spring Test a|
+* JUnit 4.x - *Camel 2.10*
+* TestNG - *Camel 2.10*
+
+ a|
+Either:
+
+* use the *`org.apache.camel.test.junit4.CamelSpringJUnit4ClassRunner`*
+runner with the *`@RunWith`* annotation,
+* or
+extend *`org.apache.camel.testng.AbstractCamelTestNGSpringContextTests`*
+to enable link:camel-test.html[feature parity]
+with *`org.apache.camel.test.CamelTestSupport`*
+and *`org.apache.camel.test.junit4.CamelTestSupport`*. These classes
+support the full suite of Spring Test annotations such
+as *`@Autowired`*, *`@DirtiesContext`*, and *`@ContextConfiguration`*.
+
+ a|
+JUnit 3.x (deprecated) - `camel-test-spring`
+
+JUnit 4.x - `camel-test-spring`
+
+TestNG - `camel-test-ng`
+
+|=======================================================================
+
+[[Bookcookbook-CamelSpringTestSupport]]
+CamelSpringTestSupport
+^^^^^^^^^^^^^^^^^^^^^^
+
+The following Spring test support classes:
+
+* *`org.apache.camel.test.CamelSpringTestSupport`*
+* *`org.apache.camel.test.junit4.CamelSpringTestSupport`*, and
+* *`org.apache.camel.testng.CamelSpringTestSupport`*
+
+extend their non-Spring aware counterparts:
+
+* *`org.apache.camel.test.CamelTestSupport`*
+* *`org.apache.camel.test.junit4.CamelTestSupport`*, and 
+* *`org.apache.camel.testng.CamelTestSupport`*
+
+and deliver integration with Spring into your test classes.  
+
+Instead of instantiating the *`CamelContext`* and routes
+programmatically, these classes rely on a Spring context to wire the
+needed components together.  If your test extends one of these classes,
+you must provide the Spring context by implementing the following
+method.
+
+javaprotected abstract AbstractApplicationContext
+createApplicationContext();
+
+You are responsible for the instantiation of the Spring context in the
+method implementation.  All of the features available in the non-Spring
+aware counterparts from link:camel-test.html[Camel Test] are available
+in your test.
+
+[[Bookcookbook-PlainSpringTest]]
+Plain Spring Test
+^^^^^^^^^^^^^^^^^
+
+In this approach, your test classes directly inherit from the Spring
+Test abstract test classes or use the JUnit 4.x test runner provided in
+Spring Test.  This approach supports dependency injection into your test
+class and the full suite of Spring Test annotations. However, it does
+not support the features provided by the *`CamelSpringTestSupport`*
+classes.
+
+[[Bookcookbook-PlainSpringTestusingJUnit3.xwithXMLConfigExample]]
+Plain Spring Test using JUnit 3.x with XML Config Example
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Here is a simple unit test using JUnit 3.x support from Spring Test
+using http://svn.apache.org/repos/asf/camel/trunk/components/camel-spring/src/test/java/org/apache/camel/spring/patterns/FilterTest.java[XML
+Config].\{snippet:lang=java|id=example|url=camel/trunk/components/camel-spring/src/test/java/org/apache/camel/spring/patterns/FilterTest.java}Notice
+that we use *`@DirtiesContext`* on the test methods to
+force link:spring-testing.html[Spring Testing] to automatically reload
+the link:camelcontext.html[CamelContext] after each test method - this
+ensures that the tests don't clash with each other, e.g., one test
+method sending to an endpoint that is then reused in another test
+method.
+
+Also notice the use of *`@ContextConfiguration`* to indicate that by
+default we should look for the file
+http://svn.apache.org/repos/asf/camel/trunk/components/camel-spring/src/test/resources/org/apache/camel/spring/patterns/FilterTest-context.xml[FilterTest-context.xml
+on the classpath] to configure the test case. The test context looks
+like:\{snippet:lang=xml|id=example|url=camel/trunk/components/camel-spring/src/test/resources/org/apache/camel/spring/patterns/FilterTest-context.xml}This
+test will load a Spring XML configuration file called
+*`FilterTest-context.xml`* from the classpath in the same package
+structure as the *`FilterTest`* class and initialize it along with any
+Camel routes we define inside it, then inject the
+**`CamelContext `**instance into our test case.
+
+For instance, like this maven folder layout:
+
+src/test/java/org/apache/camel/spring/patterns/FilterTest.java
+src/test/resources/org/apache/camel/spring/patterns/FilterTest-context.xml
+
+[[Bookcookbook-PlainSpringTestUsingJUnit4.xWithJavaConfigExample]]
+Plain Spring Test Using JUnit 4.x With Java Config Example
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+You can completely avoid using an XML configuration file by using
+link:spring-java-config.html[Spring Java Config].  Here is a unit test
+using JUnit 4.x support from Spring Test
+using http://svn.apache.org/repos/asf/camel/trunk/components/camel-spring-javaconfig/src/test/java/org/apache/camel/spring/javaconfig/patterns/FilterTest.java[Java
+Config].\{snippet:lang=java|id=example|url=camel/trunk/components/camel-spring-javaconfig/src/test/java/org/apache/camel/spring/javaconfig/patterns/FilterTest.java}This
+is similar to the XML Config example above except that there is no XML
+file and instead the nested *`ContextConfig`* class does all of the
+configuration; so your entire test case is contained in a single Java
+class. We currently have to reference by class name this class in the
+*`@ContextConfiguration`* which is a bit ugly. Please vote for
+http://jira.springframework.org/browse/SJC-238[SJC-238] to address this
+and make Spring Test work more cleanly with Spring JavaConfig.
+
+[[Bookcookbook-PlainSpringTestUsingJUnit4.0.xRunnerWithXMLConfig]]
+Plain Spring Test Using JUnit 4.0.x Runner With XML Config
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+You can avoid extending Spring classes by using
+the *`SpringJUnit4ClassRunner`* provided by Spring Test.  This custom
+JUnit runner means you are free to choose your own class hierarchy while
+retaining all the capabilities of Spring Test.
+
+This is for Spring 4.0.x. If you use Spring 4.1 or newer, then see the
+next section.
+
+java@RunWith(SpringJUnit4ClassRunner.class) @ContextConfiguration public
+class MyCamelTest \{     @Autowired     protected CamelContext
+camelContext;     @EndpointInject(uri = "mock:foo")     protected
+MockEndpoint foo; @Test @DirtiesContext     public void
+testMocksAreValid() throws Exception \{ // ...               
+foo.message(0).header("bar").isEqualTo("ABC");        
+MockEndpoint.assertIsSatisfied(camelContext);     } }
+
+[[Bookcookbook-PlainSpringTestUsingJUnit4.1.xRunnerWithXMLConfig]]
+Plain Spring Test Using JUnit 4.1.x Runner With XML Config
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+You can avoid extending Spring classes by using
+the *`SpringJUnit4ClassRunner`* provided by Spring Test.  This custom
+JUnit runner means you are free to choose your own class hierarchy while
+retaining all the capabilities of Spring Test.
+
+From *Spring 4.1*, you need to use the *`@BootstrapWith`* annotation to
+configure it to use Camel testing, as shown below.
+
+java@RunWith(CamelSpringJUnit4ClassRunner.class)
+@BootstrapWith(CamelTestContextBootstrapper.class) @ContextConfiguration
+public class MyCamelTest \{     @Autowired     protected CamelContext
+camelContext;     @EndpointInject(uri = "mock:foo")     protected
+MockEndpoint foo; @Test @DirtiesContext     public void
+testMocksAreValid() throws Exception \{ // ...               
+foo.message(0).header("bar").isEqualTo("ABC");        
+MockEndpoint.assertIsSatisfied(camelContext);     } }
+
+[[Bookcookbook-CamelEnhancedSpringTest]]
+Camel Enhanced Spring Test
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Using the *`org.apache.camel.test.junit4.CamelSpringJUnit4ClassRunner`*
+runner with the *`@RunWith`* annotation or
+extending *`org.apache.camel.testng.AbstractCamelTestNGSpringContextTests`*
+provides the full feature set of Spring Test with support for the
+feature set provided in the *`CamelTestSupport`* classes.  
+
+A number of Camel specific annotations have been developed in order to
+provide for declarative manipulation of the Camel context(s) involved in
+the test.  These annotations free your test classes from having to
+inherit from the *`CamelSpringTestSupport`* classes and also reduce the
+amount of code required to customize the tests.
+
+[width="100%",cols="20%,20%,20%,20%,20%",options="header",]
+|=======================================================================
+|Annotation Class |Applies To |Description |Default Behavioir If Not
+Present |Default Behavior If Present
+|`org.apache.camel.test.spring.DisableJmx` |`Class` |Indicates if JMX
+should be globally disabled in the CamelContexts that are bootstrapped
+ during the test through the use of Spring Test loaded application
+contexts. |JMX is disabled |JMX is disabled
+
+|`org.apache.camel.test.spring.ExcludeRoutes` |`Class` |Indicates if
+certain route builder classes should be excluded from discovery.
+ Initializes a *`org.apache.camel.spi.PackageScanClassResolver`* to
+exclude a set of given classes from being resolved. Typically this is
+used at test time to exclude certain routes, which might otherwise be
+just noisy, from being discovered and initialized. |Not enabled and no
+routes are excluded |No routes are excluded
+
+|`org.apache.camel.test.spring.LazyLoadTypeConverters` |`Class` a|
+*Deprecated.*
+
+Indicates if the CamelContexts that are bootstrapped during the test
+through the use of Spring Test loaded application contexts should use
+lazy loading of type converters.
+
+ |Type converters are not lazy loaded |Type converters are not lazy
+loaded
+
+|`org.apache.camel.test.spring.MockEndpoints` |`Class` |Triggers the
+auto-mocking of endpoints whose URIs match the provided filter.  The
+default filter is *`"*"`* which matches all endpoints.
+ See *`org.apache.camel.impl.InterceptSendToMockEndpointStrategy`*
+for more details on the registration of the mock endpoints. |Not enabled
+|All endpoints are sniffed and recorded in a mock endpoint.
+
+|`org.apache.camel.test.spring.MockEndpointsAndSkip` |`Class` |Triggers
+the auto-mocking of endpoints whose URIs match the provided filter.  The
+default filter is *`"*"`*, which matches all endpoints.
+ See http://svn.apache.org/viewvc/camel/trunk/camel-core/src/main/java/org/apache/camel/impl/InterceptSendToMockEndpointStrategy.java?view=markup[org.apache.camel.impl.InterceptSendToMockEndpointStrategy] for more
+details on the registration of the mock endpoints.  This annotation will
+also skip sending the message to matched endpoints as well. |Not enabled
+|All endpoints are sniffed and recorded in a mock endpoint.  The
+original endpoint is not invoked.
+
+|`org.apache.camel.test.spring.ProvidesBreakpoint` |`Method` |Indicates
+that the annotated method returns an *`org.apache.camel.spi.Breakpoint`*
+for use in the test.  Useful for intercepting traffic to all endpoints
+or simply for setting a break point in an IDE for debugging.  The method
+must be public, static, take no arguments, and return
+*`org.apache.camel.spi.Breakpoint`*. |N/A |The returned *`Breakpoint`*
+is registered in the CamelContext(s)
+
+|`org.apache.camel.test.spring.ShutdownTimeout` |`Class` |Indicates to
+set the shutdown timeout of all CamelContexts instantiated through
+the use of Spring Test loaded application contexts.  If no annotation is
+used, the timeout is automatically reduced to 10 seconds by the test
+framework. |10 seconds |10 seconds
+
+|`org.apache.camel.test.spring.UseAdviceWith` |`Class` a|
+Indicates the use of *`adviceWith()`* within the test class.  If a class
+is annotated with this annotation and *`UseAdviceWith#value()`* returns
+true, any CamelContexts bootstrapped during the test through the use of
+Spring Test loaded application contexts will not be started
+automatically. 
+
+The test author is responsible for injecting the Camel contexts into the
+test and executing *`CamelContext#start()`* on them at the appropriate
+time after any advice has been applied to the routes in the
+CamelContext(s).
+
+ |CamelContexts do not automatically start. |CamelContexts do not
+automatically start.
+
+|`org.apache.camel.test.spring.UseOverridePropertiesWithPropertiesComponent`
+|`Method` |**Camel 2.16:**Indicates that the annotated method returns
+a *`java.util.Properties`* for use in the test, and that those
+properties override any existing properties configured on the
+*`PropertiesComponent`*. |  |Override properties
+|=======================================================================
+
+The following example illustrates the use of the *`@MockEndpoints`*
+annotation in order to setup mock endpoints as interceptors on all
+endpoints using the Camel Log component and the *`@DisableJmx`*
+annotation to enable JMX which is disabled during tests by default.  
+
+Note: we still use the *`@DirtiesContext`* annotation to ensure that the
+CamelContext, routes, and mock endpoints are reinitialized between test
+methods.java@RunWith(CamelSpringJUnit4ClassRunner.class)
+@BootstrapWith(CamelTestContextBootstrapper.class) @ContextConfiguration
+@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
+@MockEndpoints("log:*") @DisableJmx(false) public class
+CamelSpringJUnit4ClassRunnerPlainTest \{ @Autowired protected
+CamelContext camelContext2; protected MockEndpoint mockB;
+@EndpointInject(uri = "mock:c", context = "camelContext2") protected
+MockEndpoint mockC; @Produce(uri = "direct:start2", context =
+"camelContext2") protected ProducerTemplate start2; @EndpointInject(uri
+= "mock:log:org.apache.camel.test.junit4.spring", context =
+"camelContext2") protected MockEndpoint mockLog; @Test public void
+testPositive() throws Exception \{
+mockC.expectedBodiesReceived("David");
+mockLog.expectedBodiesReceived("Hello David"); start2.sendBody("David");
+MockEndpoint.assertIsSatisfied(camelContext); }
+
+[[Bookcookbook-AddingMoreMockExpectations]]
+Adding More Mock Expectations
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+If you wish to programmatically add any new assertions to your test you
+can easily do so with the following. Notice how we
+use *`@EndpointInject`* to inject a Camel endpoint into our code then
+the link:mock.html[Mock] API to add an expectation on a specific
+message.
+
+java@ContextConfiguration public class MyCamelTest extends
+AbstractJUnit38SpringContextTests \{ @Autowired protected CamelContext
+camelContext; @EndpointInject(uri = "mock:foo") protected MockEndpoint
+foo; public void testMocksAreValid() throws Exception \{ // lets add
+more expectations foo.message(0).header("bar").isEqualTo("ABC");
+MockEndpoint.assertIsSatisfied(camelContext); } }
+
+[[Bookcookbook-FurtherProcessingtheReceivedMessages]]
+Further Processing the Received Messages
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Sometimes once a link:mock.html[Mock] endpoint has received some
+messages you want to then process them further to add further assertions
+that your test case worked as you expect.
+
+So you can then process the received message exchanges if you like...
+
+java@ContextConfiguration public class MyCamelTest extends
+AbstractJUnit38SpringContextTests \{ @Autowired protected CamelContext
+camelContext; @EndpointInject(uri = "mock:foo") protected MockEndpoint
+foo; public void testMocksAreValid() throws Exception \{ // lets add
+more expectations... MockEndpoint.assertIsSatisfied(camelContext); //
+now lets do some further assertions List<Exchange> list =
+foo.getReceivedExchanges(); for (Exchange exchange : list) \{ Message in
+= exchange.getIn(); // ... } } }
+
+[[Bookcookbook-SendingandReceivingMessages]]
+Sending and Receiving Messages
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+It might be that the
+link:enterprise-integration-patterns.html[Enterprise Integration
+Patterns] you have defined in either link:spring.html[Spring] XML or
+using the Java link:dsl.html[DSL] do all of the sending and receiving
+and you might just work with the link:mock.html[Mock] endpoints as
+described above. However sometimes in a test case its useful to
+explicitly send or receive messages directly.
+
+To send or receive messages you should use the
+link:bean-integration.html[Bean Integration] mechanism. For example to
+send messages inject a *`ProducerTemplate`* using
+the *`@EndpointInject`* annotation then call the various send methods on
+this object to send a message to an endpoint. To consume messages use
+the *`@MessageDriven`* annotation on a method to have the method invoked
+when a message is received.
+
+javapublic class Foo \{ @EndpointInject(uri = "activemq:foo.bar")
+ProducerTemplate producer; public void doSomething() \{ // lets send a
+message! producer.sendBody("<hello>world!</hello>"); } // lets consume
+messages from the 'cheese' queue @MessageDriven(uri="activemq:cheese")
+public void onCheese(String name) \{ // ... } }
+
+[[Bookcookbook-SeeAlso.1]]
+See Also
+^^^^^^^^
+
+* A
+https://svn.apache.org/repos/asf/camel/trunk/components/camel-spring/src/test/java/org/apache/camel/spring/mock/InterceptSendToMockEndpointStrategyTest.java[real
+example test case using Mock and Spring] along with its
+https://svn.apache.org/repos/asf/camel/trunk/components/camel-spring/src/test/resources/org/apache/camel/spring/mock/InterceptSendToMockEndpointStrategyTest.xml[Spring
+XML]
+* link:bean-integration.html[Bean Integration]
+* link:mock.html[Mock] endpoint
+* link:test.html[Test] endpoint
+
+[[Bookcookbook-CamelGuice]]
+Camel Guice
+~~~~~~~~~~~
+
+We have support for http://code.google.com/p/google-guice/[Google Guice]
+as a dependency injection framework.
+
+Maven users will need to add the following dependency to their `pom.xml`
+for this component:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<dependency>
+    <groupId>org.apache.camel</groupId>
+    <artifactId>camel-guice</artifactId>
+    <version>x.x.x</version>
+    <!-- use the same version as your Camel core version -->
+</dependency>
+----
+
+[[Bookcookbook-DependencyInjectingCamelwithGuice]]
+Dependency Injecting Camel with Guice
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The
+http://camel.apache.org/maven/current/camel-guice/apidocs/org/apache/camel/guice/GuiceCamelContext.html[GuiceCamelContext]
+is designed to work nicely inside Guice. You then need to bind it using
+some Guice Module.
+
+The camel-guice library comes with a number of reusable Guice Modules
+you can use if you wish - or you can bind the GuiceCamelContext yourself
+in your own module.
+
+* http://camel.apache.org/maven/current/camel-guice/apidocs/org/apache/camel/guice/CamelModule.html[CamelModule]
+is the base module which binds the GuiceCamelContext but leaves it up
+you to bind the RouteBuilder instances
+* hhttp://camel.apache.org/maven/current/camel-guice/apidocs/org/apache/camel/guice/CamelModuleWithRouteTypes.html[CamelModuleWithRouteTypes]
+extends CamelModule so that in the constructor of the module you specify
+the RouteBuilder classes or instances to use
+* http://camel.apache.org/maven/current/camel-guice/apidocs/org/apache/camel/guice/CamelModuleWithMatchingRoutes.html[CamelModuleWithMatchingRoutes]
+extends CamelModule so that all bound RouteBuilder instances will be
+injected into the CamelContext or you can supply an optional Matcher to
+find RouteBuilder instances matching some kind of predicate.
+
+So you can specify the exact link:routebuilder.html[RouteBuilder]
+instances you want
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+Injector injector = Guice.createInjector(new CamelModuleWithRouteTypes(MyRouteBuilder.class, AnotherRouteBuilder.class));
+// if required you can lookup the CamelContext
+CamelContext camelContext = injector.getInstance(CamelContext.class);
+----
+
+Or inject them all
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+Injector injector = Guice.createInjector(new CamelModuleWithRouteTypes());
+// if required you can lookup the CamelContext
+CamelContext camelContext = injector.getInstance(CamelContext.class);
+----
+
+You can then use Guice in the usual way to inject the route instances or
+any other dependent objects.
+
+[[Bookcookbook-BootstrappingwithJNDI]]
+Bootstrapping with JNDI
+^^^^^^^^^^^^^^^^^^^^^^^
+
+A common pattern used in J2EE is to bootstrap your application or root
+objects by looking them up in JNDI. This has long been the approach when
+working with JMS for example - looking up the JMS ConnectionFactory in
+JNDI for example.
+
+You can follow a similar pattern with Guice using the
+http://code.google.com/p/guiceyfruit/wiki/GuiceyJndi[GuiceyFruit JNDI
+Provider] which lets you bootstrap Guice from a *jndi.properties* file
+which can include the Guice Modules to create along with environment
+specific properties you can inject into your modules and objects.
+
+If the *jndi.properties* is conflict with other component, you can
+specify the jndi properties file name in the Guice Main with option -j
+or -jndiProperties with the properties file location to let Guice Main
+to load right jndi properties file.
+
+[[Bookcookbook-ConfiguringComponent,EndpointorRouteBuilderinstances]]
+Configuring Component, Endpoint or RouteBuilder instances
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+You can use link:guice.html[Guice] to dependency inject whatever objects
+you need to create, be it an link:endpoint.html[Endpoint],
+link:component.html[Component], link:routebuilder.html[RouteBuilder] or
+arbitrary link:bean-integration.html[bean used within a route].
+
+The easiest way to do this is to create your own Guice Module class
+which extends one of the above module classes and add a provider method
+for each object you wish to create. A provider method is annotated with
+*@Provides* as follows
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+public class MyModule extends CamelModuleWithMatchingRoutes {
+
+    @Provides
+    @JndiBind("jms")
+    JmsComponent jms(@Named("activemq.brokerURL") String brokerUrl) {
+        return JmsComponent.jmsComponent(new ActiveMQConnectionFactory(brokerUrl));
+    }
+}
+----
+
+You can optionally annotate the method with *@JndiBind* to bind the
+object to JNDI at some name if the object is a component, endpoint or
+bean you wish to refer to by name in your routes.
+
+You can inject any environment specific properties (such as URLs,
+machine names, usernames/passwords and so forth) from the
+jndi.properties file easily using the *@Named* annotation as shown
+above. This allows most of your configuration to be in Java code which
+is typesafe and easily refactorable - then leaving some properties to be
+environment specific (the jndi.properties file) which you can then
+change based on development, testing, production etc.
+
+[[Bookcookbook-CreatingmultipleRouteBuilderinstancespertype]]
+Creating multiple RouteBuilder instances per type
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+It is sometimes useful to create multiple instances of a particular
+link:routebuilder.html[RouteBuilder] with different configurations.
+
+To do this just create multiple provider methods for each configuration;
+or create a single provider method that returns a collection of
+RouteBuilder instances.
+
+For example
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+import org.apache.camel.guice.CamelModuleWithMatchingRoutes;
+import com.google.common.collect.Lists;
+
+public class MyModule extends CamelModuleWithMatchingRoutes {
+
+    @Provides
+    @JndiBind("foo")
+    Collection<RouteBuilder> foo(@Named("fooUrl") String fooUrl) {
+        return Lists.newArrayList(new MyRouteBuilder(fooUrl), new MyRouteBuilder("activemq:CheeseQueue"));
+    }
+}
+----
+
+[[Bookcookbook-SeeAlso.2]]
+See Also
+^^^^^^^^
+
+* there are a number of link:examples.html[Examples] you can look at to
+see Guice and Camel being used such as link:guice-jms-example.html[Guice
+JMS Example]
+* link:guice-maven-plugin.html[Guice Maven Plugin] for running your
+Guice based routes via Maven
+
+[[Bookcookbook-Templating]]
+Templating
+~~~~~~~~~~
+
+When you are testing distributed systems its a very common requirement
+to have to stub out certain external systems with some stub so that you
+can test other parts of the system until a specific system is available
+or written etc.
+
+A great way to do this is using some kind of Template system to generate
+responses to requests generating a dynamic message using a mostly-static
+body.
+
+There are a number of templating components included in the Camel
+distribution you could use
+
+* link:freemarker.html[FreeMarker]
+* link:mustache.html[Mustache]
+* link:stringtemplate.html[StringTemplate]
+* link:velocity.html[Velocity]
+* link:xquery.html[XQuery]
+* link:xslt.html[XSLT]
+
+or the following external Camel components
+
+* http://scalate.fusesource.org/camel.html[Scalate]
+
+[[Bookcookbook-Example.1]]
+Example
+^^^^^^^
+
+Here's a simple example showing how we can respond to InOut requests on
+the *My.Queue* queue on link:activemq.html[ActiveMQ] with a template
+generated response. The reply would be sent back to the JMSReplyTo
+Destination.
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from("activemq:My.Queue").
+  to("velocity:com/acme/MyResponse.vm");
+----
+
+If you want to use InOnly and consume the message and send it to another
+destination you could use
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from("activemq:My.Queue").
+  to("velocity:com/acme/MyResponse.vm").
+  to("activemq:Another.Queue");
+----
+
+[[Bookcookbook-SeeAlso.3]]
+See Also
+^^^^^^^^
+
+* link:mock.html[Mock] for details of mock endpoint testing (as opposed
+to template based stubs).
+
+[[Bookcookbook-Database]]
+Database
+~~~~~~~~
+
+Camel can work with databases in a number of different ways. This
+document tries to outline the most common approaches.
+
+[[Bookcookbook-Databaseendpoints]]
+Database endpoints
+^^^^^^^^^^^^^^^^^^
+
+Camel provides a number of different endpoints for working with
+databases
+
+* link:jpa.html[JPA] for working with hibernate, openjpa or toplink.
+When consuming from the endpoints entity beans are read (and
+deleted/updated to mark as processed) then when producing to the
+endpoints they are written to the database (via insert/update).
+* link:ibatis.html[iBATIS] similar to the above but using
+http://ibatis.apache.org/[Apache iBATIS]
+* link:jdbc.html[JDBC] similar though using explicit SQL
+* link:sql-component.html[SQL] useshttp://docs.spring.io/spring/docs/3.2.x/spring-framework-reference/html/jdbc.html[spring-jdbc]
+behind the scene for the actual SQL handling. The difference between
+this component and http://camel.apache.org/jdbc.html[JDBC] component is
+that in case of SQL the query is a property of the endpoint and it uses
+message payload as parameters passed to the query
+
+[[Bookcookbook-Databasepatternimplementations]]
+Database pattern implementations
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Various patterns can work with databases as follows
+
+* link:idempotent-consumer.html[Idempotent Consumer]
+* link:aggregator.html[Aggregator]
+* link:bam.html[BAM] for business activity monitoring
+
+[[Bookcookbook-ParallelProcessingandOrdering]]
+Parallel Processing and Ordering
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+It is a common requirement to want to use parallel processing of
+messages for throughput and load balancing, while at the same time
+process certain kinds of messages in order.
+
+[[Bookcookbook-Howtoachieveparallelprocessing]]
+How to achieve parallel processing
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+You can send messages to a number of Camel
+link:components.html[Components] to achieve parallel processing and load
+balancing such as
+
+* link:seda.html[SEDA] for in-JVM load balancing across a thread pool
+* link:activemq.html[ActiveMQ] or link:jms.html[JMS] for distributed
+load balancing and parallel processing
+* link:jpa.html[JPA] for using the database as a poor mans message
+broker
+
+When processing messages concurrently, you should consider ordering and
+concurrency issues. These are described below
+
+[[Bookcookbook-Concurrencyissues]]
+Concurrency issues
+++++++++++++++++++
+
+Note that there is no concurrency or locking issue when using
+link:activemq.html[ActiveMQ], link:jms.html[JMS] or link:seda.html[SEDA]
+by design; they are designed for highly concurrent use. However there
+are possible concurrency issues in the link:processor.html[Processor] of
+the messages i.e. what the processor does with the message?
+
+For example if a processor of a message transfers money from one account
+to another account; you probably want to use a database with pessimistic
+locking to ensure that operation takes place atomically.
+
+[[Bookcookbook-Orderingissues]]
+Ordering issues
++++++++++++++++
+
+As soon as you send multiple messages to different threads or processes
+you will end up with an unknown ordering across the entire message
+stream as each thread is going to process messages concurrently.
+
+For many use cases the order of messages is not too important. However
+for some applications this can be crucial. e.g. if a customer submits a
+purchase order version 1, then amends it and sends version 2; you don't
+want to process the first version last (so that you loose the update).
+Your link:processor.html[Processor] might be clever enough to ignore old
+messages. If not you need to preserve order.
+
+[[Bookcookbook-Recommendations]]
+Recommendations
+^^^^^^^^^^^^^^^
+
+This topic is large and diverse with lots of different requirements; but
+from a high level here are our recommendations on parallel processing,
+ordering and concurrency
+
+* for distributed locking, use a database by default, they are very good
+at it
+image:https://cwiki.apache.org/confluence/s/en_GB/5997/6f42626d00e36f53fe51440403446ca61552e2a2.1/_/images/icons/emoticons/smile.png[(smile)]
+* to preserve ordering across a JMS queue consider using
+http://activemq.apache.org/exclusive-consumer.html[Exclusive Consumers]
+in the link:activemq.html[ActiveMQ] component
+* even better are http://activemq.apache.org/message-groups.html[Message
+Groups] which allows you to preserve ordering across messages while
+still offering parallelisation via the *JMSXGroupID* header to determine
+what can be parallelized
+* if you receive messages out of order you could use the
+link:resequencer.html[Resequencer] to put them back together again
+
+A good rule of thumb to help reduce ordering problems is to make sure
+each single can be processed as an atomic unit in parallel (either
+without concurrency issues or using say, database locking); or if it
+can't, use a http://activemq.apache.org/message-groups.html[Message
+Group] to relate the messages together which need to be processed in
+order by a single thread.
+
+[[Bookcookbook-UsingMessageGroupswithCamel]]
+Using Message Groups with Camel
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To use a Message Group with Camel you just need to add a header to the
+output JMS message based on some kind of
+link:correlation-identifier.html[Correlation Identifier] to correlate
+messages which should be processed in order by a single thread - so that
+things which don't correlate together can be processed concurrently.
+
+For example the following code shows how to create a message group using
+an XPath expression taking an invoice's product code as the
+link:correlation-identifier.html[Correlation Identifier]
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from("activemq:a").setHeader(JmsConstants.JMS_X_GROUP_ID, xpath("/invoice/productCode")).to("activemq:b");
+----
+
+You can of course use the link:xml-configuration.html[Xml Configuration]
+if you prefer
+
+[[Bookcookbook-AsynchronousProcessing]]
+Asynchronous Processing
+~~~~~~~~~~~~~~~~~~~~~~~
+
+[[Bookcookbook-Overview]]
+Overview
+^^^^^^^^
+
+[Info]
+====
+ **Supported versions**
+
+The information on this page applies for *Camel 2.4* or later.
+
+Before *Camel 2.4* the asynchronous processing is only implemented for
+link:jbi.html[JBI] where as in *Camel 2.4* we have implemented it in
+many other areas. See more at
+link:asynchronous-routing-engine.html[Asynchronous Routing Engine].
+
+====
+
+Camel supports a more complex asynchronous processing model. The
+asynchronous processors implement the
+*`org.apache.camel.AsyncProcessor`* interface which is derived from the
+more synchronous *`org.apache.camel.Processor`* interface. There are
+advantages and disadvantages when using asynchronous processing when
+compared to using the standard synchronous processing model.
+
+*Advantages*:
+
+* Processing routes that are composed fully of asynchronous processors
+do not use up threads waiting for processors to complete on blocking
+calls. This can increase the scalability of your system by reducing the
+number of threads needed to process the same workload.
+* Processing routes can be broken up into link:seda.html[SEDA]
+processing stages where different thread pools can process the different
+stages. This means that your routes can be processed concurrently.
+
+*Disadvantages*:
+
+* Implementing asynchronous processors is more complex than implementing
+the synchronous versions.
+
+[[Bookcookbook-WhentoUse]]
+When to Use
+^^^^^^^^^^^
+
+We recommend that processors and components be implemented the more
+simple synchronous APIs unless you identify a performance of scalability
+requirement that dictates otherwise. A Processor whose *`process()`*
+method blocks for a long time would be good candidates for being
+converted into an asynchronous processor.
+
+[[Bookcookbook-InterfaceDetails]]
+Interface Details
+^^^^^^^^^^^^^^^^^
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+public interface AsyncProcessor extends Processor {
+   boolean process(Exchange exchange, AsyncCallback callback);
+}
+----
+
+The *`AsyncProcessor`* defines a single *`process()`* method which is
+very similar to it's synchronous *`Processor.process()`* brethren.
+
+Here are the differences:
+
+* A non-null *`AsyncCallback`* *MUST* be supplied which will be notified
+when the exchange processing is completed.
+* It *MUST* not throw any exceptions that occurred while processing the
+exchange. Any such exceptions must be stored on the
+exchange's *`Exception`* property.
+* It *MUST* know if it will complete the processing synchronously or
+asynchronously. The method will return *`true`* if it does complete
+synchronously, otherwise it returns *`false`*.
+* When the processor has completed processing the exchange, it must call
+the *`callback.done(boolean sync)`* method.
+* The sync parameter *MUST* match the value returned by the
+*`process()`* method.
+
+[[Bookcookbook-ImplementingProcessorsthatUsetheAsyncProcessorAPI]]
+Implementing Processors that Use the AsyncProcessor API
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+All processors, even synchronous processors that do not implement
+the *`AsyncProcessor`* interface, can be coerced to implement
+the *`AsyncProcessor`* interface. This is usually done when you are
+implementing a Camel component consumer that supports asynchronous
+completion of the exchanges that it is pushing through the Camel routes.
+Consumers are provided a *`Processor`* object when created. All
+Processor object can be coerced to a *`AsyncProcessor`* using the
+following API:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+Processor processor = ...
+AsyncProcessor asyncProcessor = AsyncProcessorTypeConverter.convert(processor);
+----
+
+For a route to be fully asynchronous and reap the benefits to lower
+Thread usage, it must start with the consumer implementation making use
+of the asynchronous processing API. If it called the
+synchronous *`process()`* method instead, the consumer's thread would be
+forced to be blocked and in use for the duration that it takes to
+process the exchange.
+
+It is important to take note that just because you call the asynchronous
+API, it does not mean that the processing will take place
+asynchronously. It only allows the possibility that it can be done
+without tying up the caller's thread. If the processing happens
+asynchronously is dependent on the configuration of the Camel route.
+
+Normally, the the process call is passed in an inline
+inner *`AsyncCallback`* class instance which can reference the exchange
+object that was declared final. This allows it to finish up any post
+processing that is needed when the called processor is done processing
+the exchange.
+
+Example.
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+final Exchange exchange = ...
+AsyncProcessor asyncProcessor = ...
+asyncProcessor.process(exchange, new AsyncCallback() {
+    public void done(boolean sync) {
+
+        if (exchange.isFailed()) {
+            ... // do failure processing.. perhaps rollback etc.
+        } else {
+            ... // processing completed successfully, finish up 
+                // perhaps commit etc.
+        }
+    }
+});
+----
+
+[[Bookcookbook-AsynchronousRouteSequenceScenarios]]
+Asynchronous Route Sequence Scenarios
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Now that we have understood the interface contract of the
+*`AsyncProcessor`*, and have seen how to make use of it when calling
+processors, let's looks a what the thread model/sequence scenarios will
+look like for some sample routes.
+
+The Jetty component's consumers support asynchronous processing through
+the use of continuations. Suffice to say it can take a HTTP request and
+pass it to a Camel route for asynchronous processing. If the processing
+is indeed asynchronous, it uses a Jetty continuation so that the HTTP
+request is 'parked' and the thread is released. Once the Camel route
+finishes processing the request, the Jetty component uses
+the *`AsyncCallback`* to tell Jetty to 'un-park' the request. Jetty
+un-parks the request, the HTTP response returned using the result of the
+exchange processing.
+
+Notice that the jetty continuations feature is only used "If the
+processing is indeed async". This is why *`AsyncProcessor.process()`*
+implementations _must_ accurately report if request is completed
+synchronously or not.
+
+The *`jhc`* component's producer allows you to make HTTP requests and
+implement the *`AsyncProcessor`* interface. A route that uses both the
+jetty asynchronous consumer and the *`jhc`* asynchronous producer will
+be a fully asynchronous route and has some nice attributes that can be
+seen if we take a look at a sequence diagram of the processing route.
+
+For the route:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from("jetty:http://localhost:8080/service")
+    .to("jhc:http://localhost/service-impl");
+----
+
+The sequence diagram would look something like this:
+
+image:book-cookbook.data/simple-async-route.png[image]
+
+The diagram simplifies things by making it looks like processors
+implement the *`AsyncCallback`* interface when in reality
+the *`AsyncCallback`* interfaces are inline inner classes, but it
+illustrates the processing flow and shows how two separate threads are
+used to complete the processing of the original HTTP request. The first
+thread is synchronous up until processing hits the *`jhc`* producer
+which issues the HTTP request. It then reports that the exchange
+processing will complete asynchronously using NIO to get the response
+back. Once the *`jhc`* component has received a full response it uses
+*`AsyncCallback.done()`* method to notify the caller. These callback
+notifications continue up until it reaches the original Jetty consumer
+which then un-parks the HTTP request and completes it by providing the
+response.
+
+[[Bookcookbook-MixingSynchronousandAsynchronousProcessors]]
+Mixing Synchronous and Asynchronous Processors
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+It is totally possible and reasonable to mix the use of synchronous and
+asynchronous processors/components. The pipeline processor is the
+backbone of a Camel processing route. It glues all the processing steps
+together. It is implemented as an *`AsyncProcessor`* and supports
+interleaving synchronous and asynchronous processors as the processing
+steps in the pipeline.
+
+Let's say we have two custom asynchronous processors,
+namely: *`MyValidator`* and *`MyTransformation`*. Let's say we want to
+load file from the data/in directory validate them with
+the *`MyValidator()`* processor, transform them into JPA Java objects
+using *`MyTransformation`* and then insert them into the database using
+the link:jpa.html[JPA] component. Let's say that the transformation
+process takes quite a bit of time and we want to allocate *`20`* threads
+to do parallel transformations of the input files. The solution is to
+make use of the thread processor. The thread is *`AsyncProcessor`* that
+forces subsequent processing in asynchronous thread from a thread pool.
+
+The route might look like:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from("file:data/in")
+  .process(new MyValidator())
+  .threads(20)
+  .process(new MyTransformation())
+  .to("jpa:PurchaseOrder");
+----
+
+The sequence diagram would look something like this:
+
+image:book-cookbook.data/camel-mixed-processors.png[image]
+
+You would actually have multiple threads executing the second part of
+the thread sequence.
+
+[[Bookcookbook-StayingSynchronousinanAsyncProcessor]]
+Staying Synchronous in an `AsyncProcessor`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Generally speaking you get better throughput processing when you process
+things synchronously. This is due to the fact that starting up an
+asynchronous thread and doing a context switch to it adds a little bit
+of of overhead. So it is generally encouraged that *`AsyncProcessor`*'s
+do as much work as they can synchronously. When they get to a step that
+would block for a long time, at that point they should return from the
+process call and let the caller know that it will be completing the call
+asynchronously.
+
+[[Bookcookbook-ImplementingVirtualTopicsonotherJMSproviders]]
+Implementing Virtual Topics on other JMS providers
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+http://activemq.apache.org/[ActiveMQ] supports
+http://activemq.apache.org/virtual-destinations.html[Virtual Topics]
+since durable topic subscriptions kinda suck (see
+http://activemq.apache.org/virtual-destinations.html[this page for more
+detail]) mostly since they don't support
+link:competing-consumers.html[Competing Consumers].
+
+Most folks want Queue semantics when consuming messages; so that you can
+support link:competing-consumers.html[Competing Consumers] for load
+balancing along with things like
+http://activemq.apache.org/message-groups.html[Message Groups] and
+http://activemq.apache.org/exclusive-consumer.html[Exclusive Consumers]
+to preserve ordering or partition the queue across consumers.
+
+However if you are using another JMS provider you can implement Virtual
+Topics by switching to ActiveMQ
+image:https://cwiki.apache.org/confluence/s/en_GB/5997/6f42626d00e36f53fe51440403446ca61552e2a2.1/_/images/icons/emoticons/smile.png[(smile)]
+or you can use the following Camel pattern.
+
+First here's the ActiveMQ approach.
+
+* send to *activemq:topic:VirtualTopic.Orders*
+* for consumer A consume from *activemq:Consumer.A.VirtualTopic.Orders*
+
+When using another message broker use the following pattern
+
+* send to *jms:Orders*
+* add this route with a to() for each logical durable topic subscriber
++
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from("jms:Orders").to("jms:Consumer.A", "jms:Consumer.B", ...); 
+----
+* for consumer A consume from *jms:Consumer.A*
+
+[[Bookcookbook-What'stheCamelTransportforCXF]]
+What's the Camel Transport for CXF
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In CXF you offer or consume a webservice by defining its address. The
+first part of the address specifies the protocol to use. For example
+address="http://localhost:9000" in an endpoint configuration means your
+service will be offered using the http protocol on port 9000 of
+localhost. When you integrate Camel Tranport into CXF you get a new
+transport "camel". So you can specify
+address="camel://direct:MyEndpointName" to bind the CXF service address
+to a camel direct endpoint.
+
+Technically speaking Camel transport for CXF is a component which
+implements the
+http://cwiki.apache.org/CXF20DOC/cxf-architecture.html#CXFArchitecture-Transports[CXF
+transport API] with the Camel core library. This allows you to easily
+use Camel's routing engine and integration patterns support together
+with your CXF services.
+
+[[Bookcookbook-IntegrateCamelintoCXFtransportlayer]]
+Integrate Camel into CXF transport layer
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To include the Camel Tranport into your CXF bus you use the
+CamelTransportFactory. You can do this in Java as well as in Spring.
+
+[[Bookcookbook-SettinguptheCamelTransportinSpring]]
+Setting up the Camel Transport in Spring
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+You can use the following snippet in your applicationcontext if you want
+to configure anything special. If you only want to activate the camel
+transport you do not have to do anything in your application context. As
+soon as you include the camel-cxf-transport jar (or camel-cxf.jar if
+your camel version is less than 2.7.x) in your app, cxf will scan the
+jar and load a CamelTransportFactory for you.
+
+xml<!-- you don't need to specify the CamelTransportFactory
+configuration as it is auto load by CXF bus --> <bean
+class="org.apache.camel.component.cxf.transport.CamelTransportFactory">
+<property name="bus" ref="cxf" /> <property name="camelContext"
+ref="camelContext" /> <!-- checkException new added in Camel 2.1 and
+Camel 1.6.2 --> <!-- If checkException is true , CamelDestination will
+check the outMessage's exception and set it into camel exchange. You can
+also override this value in CamelDestination's configuration. The
+default value is false. This option should be set true when you want to
+leverage the camel's error handler to deal with fault message -->
+<property name="checkException" value="true" /> <property
+name="transportIds"> <list>
+<value>http://cxf.apache.org/transports/camel</value> </list>
+</property> </bean>
+
+[[Bookcookbook-IntegratingtheCamelTransportinaprogrammaticway]]
+Integrating the Camel Transport in a programmatic way
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Camel transport provides a setContext method that you could use to set
+the Camel context into the transport factory. If you want this factory
+take effect, you need to register the factory into the CXF bus. Here is
+a full example for you.
+
+javaimport org.apache.cxf.Bus; import org.apache.cxf.BusFactory; import
+org.apache.cxf.transport.ConduitInitiatorManager; import
+org.apache.cxf.transport.DestinationFactoryManager; ... BusFactory bf =
+BusFactory.newInstance(); Bus bus = bf.createBus();
+CamelTransportFactory camelTransportFactory = new
+CamelTransportFactory(); // set up the CamelContext which will be use by
+the CamelTransportFactory camelTransportFactory.setCamelContext(context)
+// if you are using CXF higher then 2.4.x the
+camelTransportFactory.setBus(bus); // if you are lower CXF, you need to
+register the ConduitInitiatorManager and DestinationFactoryManager like
+below // register the conduit initiator ConduitInitiatorManager cim =
+bus.getExtension(ConduitInitiatorManager.class);
+cim.registerConduitInitiator(CamelTransportFactory.TRANSPORT_ID,
+camelTransportFactory); // register the destination factory
+DestinationFactoryManager dfm =
+bus.getExtension(DestinationFactoryManager.class);
+dfm.registerDestinationFactory(CamelTransportFactory.TRANSPORT_ID,
+camelTransportFactory); // set or bus as the default bus for cxf
+BusFactory.setDefaultBus(bus);
+
+[[Bookcookbook-ConfigurethedestinationandconduitwithSpring]]
+Configure the destination and conduit with Spring
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+[[Bookcookbook-Namespace]]
+Namespace
+^^^^^^^^^
+
+The elements used to configure an Camel transport endpoint are defined
+in the namespace `http://cxf.apache.org/transports/camel`. It is
+commonly referred to using the prefix `camel`. In order to use the Camel
+transport configuration elements, you will need to add the lines shown
+below to the beans element of your endpoint's configuration file. In
+addition, you will need to add the configuration elements' namespace to
+the `xsi:schemaLocation` attribute.
+
+Adding the Configuration Namespace<beans ...
+xmlns:camel="http://cxf.apache.org/transports/camel ...
+xsi:schemaLocation="... http://cxf.apache.org/transports/camel
+http://cxf.apache.org/transports/camel.xsd ...>
+
+[[Bookcookbook-Thedestinationelement]]
+The `destination` element
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+You configure an Camel transport server endpoint using the
+`camel:destination` element and its children. The `camel:destination`
+element takes a single attribute, `name`, that specifies the WSDL port
+element that corresponds to the endpoint. The value for the `name`
+attribute takes the form __portQName__`.camel-destination`. The example
+below shows the `camel:destination` element that would be used to add
+configuration for an endpoint that was specified by the WSDL fragment
+`<port binding="widgetSOAPBinding" name="widgetSOAPPort">` if the
+endpoint's target namespace was `http://widgets.widgetvendor.net`.
+
+camel:destination Element... <camel:destination
+name="\{http://widgets/widgetvendor.net}widgetSOAPPort.http-destination>
+<camelContext id="context"
+xmlns="http://activemq.apache.org/camel/schema/spring"> <route> <from
+uri="direct:EndpointC" /> <to uri="direct:EndpointD" /> </route>
+</camelContext> </camel:destination> <!-- new added feature since Camel
+2.11.x <camel:destination
+name="\{http://widgets/widgetvendor.net}widgetSOAPPort.camel-destination"
+camelContextId="context" /> ...
+
+The `camel:destination` element for Spring has a number of child
+elements that specify configuration information. They are described
+below.
+
+[width="100%",cols="50%,50%",options="header",]
+|=======================================================================
+|Element |Description
+|`camel-spring:camelContext` |You can specify the camel context in the
+camel destination
+
+|`camel:camelContextRef` |The camel context id which you want inject
+into the camel destination
+|=======================================================================
+
+[[Bookcookbook-Theconduitelement]]
+The `conduit` element
+^^^^^^^^^^^^^^^^^^^^^
+
+You configure a Camel transport client using the `camel:conduit` element
+and its children. The `camel:conduit` element takes a single attribute,
+`name`, that specifies the WSDL port element that corresponds to the
+endpoint. The value for the `name` attribute takes the form
+__portQName__`.camel-conduit`. For example, the code below shows the
+`camel:conduit` element that would be used to add configuration for an
+endpoint that was specified by the WSDL fragment
+`<port binding="widgetSOAPBinding" name="widgetSOAPPort">` if the
+endpoint's target namespace was `http://widgets.widgetvendor.net`.
+
+xmlhttp-conf:conduit Element... <camelContext id="conduit_context"
+xmlns="http://activemq.apache.org/camel/schema/spring"> <route> <from
+uri="direct:EndpointA" /> <to uri="direct:EndpointB" /> </route>
+</camelContext> <camel:conduit
+name="\{http://widgets/widgetvendor.net}widgetSOAPPort.camel-conduit">
+<camel:camelContextRef>conduit_context</camel:camelContextRef>
+</camel:conduit> <!-- new added feature since Camel 2.11.x
+<camel:conduit
+name="\{http://widgets/widgetvendor.net}widgetSOAPPort.camel-conduit"
+camelContextId="conduit_context" /> <camel:conduit
+name="*.camel-conduit"> <!-- you can also using the wild card to specify
+the camel-conduit that you want to configure --> ... </camel:conduit>
+...
+
+The `camel:conduit` element has a number of child elements that specify
+configuration information. They are described below.
+
+[width="100%",cols="50%,50%",options="header",]
+|=======================================================================
+|Element |Description
+|`camel-spring:camelContext` |You can specify the camel context in the
+camel conduit
+
+|`camel:camelContextRef` |The camel context id which you want inject
+into the camel conduit
+|=======================================================================
+
+[[Bookcookbook-ConfigurethedestinationandconduitwithBlueprint]]
+Configure the destination and conduit with Blueprint
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+From *Camel 2.11.x*, Camel Transport supports to be configured with
+Blueprint.
+
+If you are using blueprint, you should use the the namespace
+`http://cxf.apache.org/transports/camel/blueprint` and import the schema
+like the blow.
+
+Adding the Configuration Namespace for blueprint<beans ...
+xmlns:camel="http://cxf.apache.org/transports/camel/blueprint" ...
+xsi:schemaLocation="... http://cxf.apache.org/transports/camel/blueprint
+http://cxf.apache.org/schmemas/blueprint/camel.xsd ...>
+
+In blueprint `camel:conduit` `camel:destination` only has one
+camelContextId attribute, they doesn't support to specify the camel
+context in the camel destination.
+
+<camel:conduit id="*.camel-conduit" camelContextId="camel1" />
+<camel:destination id="*.camel-destination" camelContextId="camel1" />
+
+[[Bookcookbook-ExampleUsingCamelasaloadbalancerforCXF]]
+Example Using Camel as a load balancer for CXF
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This example shows how to use the camel load balancing feature in CXF.
+You need to load the configuration file in CXF and publish the endpoints
+on the address "camel://direct:EndpointA" and "camel://direct:EndpointB"
+
+\{snippet:id=example|lang=xml|url=camel/trunk/examples/camel-example-cxf/src/main/resources/org/apache/camel/example/camel/transport/CamelDestination.xml}
+
+[[Bookcookbook-CompleteHowtoandExampleforattachingCameltoCXF]]
+Complete Howto and Example for attaching Camel to CXF
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+link:better-jms-transport-for-cxf-webservice-using-apache-camel.html[Better
+JMS Transport for CXF Webservice using Apache Camel] 
+
+[[Bookcookbook-Introduction]]
+Introduction
+~~~~~~~~~~~~
+
+When sending an link:exchange.html[Exchange] to an
+link:endpoint.html[Endpoint] you can either use a
+link:routes.html[Route] or a
+link:producertemplate.html[ProducerTemplate]. This works fine in many
+scenarios. However you may need to guarantee that an exchange is
+delivered to the same endpoint that you delivered a previous exchange
+on. For example in the case of delivering a batch of exchanges to a
+link:mina.html[MINA] socket you may need to ensure that they are all
+delivered through the same socket connection. Furthermore once the batch
+of exchanges have been delivered the protocol requirements may be such
+that you are responsible for closing the socket.
+
+[[Bookcookbook-UsingaProducer]]
+Using a Producer
+~~~~~~~~~~~~~~~~
+
+To achieve fine grained control over sending exchanges you will need to
+program directly to a Producer. Your code will look similar to:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+  CamelContext camelContext = ...
+
+  // Obtain an endpoint and create the producer we will be using.
+  Endpoint endpoint = camelContext.getEndpoint("someuri:etc");
+  Producer producer = endpoint.createProducer();
+  producer.start();
+
+  try {
+    // For each message to send...
+    Object requestMessage = ...
+    Exchange exchangeToSend = producer.createExchange();
+    exchangeToSend().setBody(requestMessage);
+    producer.process(exchangeToSend);
+    ...
+
+  } finally {
+    // Tidy the producer up.
+    producer.stop();
+  }
+----
+
+In the case of using Apache MINA the producer.stop() invocation will
+cause the socket to be closed.

@@ -1,0 +1,90 @@
+[[ConfluenceContent]]
+[[Camel@ApacheCon-Camel@ApacheCon]]
+ +
+Camel @ ApacheCon
+-----------------
+
+ +
+This page is intended to collect material about Camel and Camelists at
+http://www.apachecon.com/[ApacheCon]. +
+These infos could be used for organizing meetings.
+
+[[Camel@ApacheCon-ApacheConEU,17.11.2014-23.11.2014]]
+ApacheCon EU, 17.11.2014-23.11.2014
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Webpage: http://events.linuxfoundation.org/events/apachecon-europe +
+Place: Budapest
+
+[[Camel@ApacheCon-TravelAssistance]]
+Travel Assistance
+^^^^^^^^^^^^^^^^^
+
+The Travel Assistance Committee (TAC) is happy to anounce that we now
+accept applications for ApacheCon Europe 2014, 17-21 November in
+Budapest, Hungary +
+Applications are welcome from individuals within the Apache community
+at-large, users, developers, educators, students, Committers, and
+Members, who need financial support to attend ApacheCon. +
+Please be aware the seats are very limited, and all applicants will be
+scored on their individual merit. +
+More information can be found at http://www.apache.org/travel including
+a link to the online application and detailed instructions for
+submitting. +
+Applications will close on 25 July 2014 at 23:00 UTC/GMT. +
+Please help spread the word among your community.
+
+[[Camel@ApacheCon-TalksaboutCamel]]
+Talks about Camel
+^^^^^^^^^^^^^^^^^
+
+The
+http://events.linuxfoundation.org/events/apachecon-europe/program/cfp[Call
+For Papers] for that conference is still open, but all submissions must
+be received by June 25, 2014. We need you talk proposals, to represent
+Camel at ApacheCon. We need all kinds of talks - deep technical talks,
+hands-on tutorials, introductions for beginners, or case studies about
+the awesome stuff you're doing with Camel. +
+ +
+Please consider submitting a proposal, at +
+http://events.linuxfoundation.org//events/apachecon-europe/program/cfp +
+ +
+
+[cols=",,,",options="header",]
+|=======================================================================
+|Title |Performer |Accepted |Date
+|All You Need to Know About CXF JAX-RS in Camel |Sergey Beryozkin |  | 
+
+|Apache Falcon with Camel, ActiveMQ, Karaf for CDC in Hadoop
+|Jean-Baptiste Onofré |  | 
+
+|Using WebSocket with CXF and Camel |Akitoshi Yoshida |  | 
+|=======================================================================
+
+[[Camel@ApacheCon-Attendees]]
+Attendees
+^^^^^^^^^
+
+[width="100%",cols="50%,50%",options="header",]
+|========================================================
+|Name |Contact
+|Christian Müller a|
+christian.mueller@gmail.com
+
+https://www.linkedin.com/pub/christian-mueller/11/551/642
+
+|========================================================
+
+[[Camel@ApacheCon-Meetings]]
+Meetings
+^^^^^^^^
+
+[cols=",,",options="header",]
+|====================================
+|Where |When |Topic
+|At the bar |tonight |Meet&Greet
+|Computre Centre |tomorrow |Hackathon
+|====================================
+
+There is also a wiki page for Hackathons:
+http://wiki.apache.org/apachecon/HackathonEU14

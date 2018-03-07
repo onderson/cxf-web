@@ -1,0 +1,318 @@
+[[ConfluenceContent]]
+[[AdviceWith-AdviceWith]]
+AdviceWith
+~~~~~~~~~~
+
+*Available as of Camel 2.1*
+
+AdviceWith is used for testing Camel routes where you can _advice_ an
+existing route before its being tested. What *`adviceWith`* allows is to
+changes some factors on the route before the test is being run. At the
+current time you can _advice_ an existing route by adding
+link:intercept.html[Intercept], link:exception-clause.html[Exception
+Clause] etc. which then will apply for the route being advice.
+
+For example, in the route below we intercept sending a message to the
+*`mock:foo`* endpoint and detour the
+message.\{snippet:id=e1|lang=java|url=camel/trunk/camel-core/src/test/java/org/apache/camel/processor/interceptor/AdviceWithTest.java}
+
+Recommendation
+
+It is recommended to only advice a given route once (you can of course
+advice multiple routes). If you do it multiple times, then it may not
+work as expected, especially when any kind of error handling is
+involved. +
+The Camel team plan for *Camel 3.0* to support this as internal
+refactorings in the routing engine is needed to support this properly.
+
+Recommendation
+
+It's recommended to only advice routes which are not started already. If
+you advice already started routes, then it may not work as expected.
+
+Telling Camel you are using adviceWith
+
+From *Camel 2.9*: it's recommended to override the *`isUseAdviceWith()`*
+method and return true to tell Camel you are using advice with in your
+unit tests. Then after you have done the *`adviceWith()`*, then you must
+start *`CamelContext`* manually. See further below for an example.
+
+[[AdviceWith-UsingAdviceWithRouteBuilder]]
+Using `AdviceWithRouteBuilder`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available as of Camel 2.7*
+
+The *`AdviceWithRouteBuilder`* is a specialized *`RouteBuilder`* which
+has additional methods for advising routes. For example this allows you
+to manipulate the advised route, such as replacing a node with some
+other nodes.
+
+The *`AdviceWithRouteBuilder`* offers the following extra methods:
+
+[width="100%",cols="50%,50%",options="header",]
+|=======================================================================
+|Method |Description
+|`mockEndpoints` |Is used to easily mock all endpoints. See more details
+and examples at link:mock.html[Mock].
+
+|`mockEndpoints(patterns)` |Is used to easily mock endpoints using a
+pattern. See more details and examples at link:mock.html[Mock]. See
+below for pattern matching. From Camel 2.10 onwards you can specify
+multiple patterns.
+
+|`mockEndpointsAndSkip(patterns)` |Is used to easily mock endpoints
+using a pattern, and *skip* sending to the original endpoint. See more
+details and examples at link:mock.html[Mock]. See below for pattern
+matching. You can specify multiple patterns.
+
+|`weaveById(pattern)` |Is used to select node(s) matching by id's, and
+weave in the following nodes. See below for pattern matching and
+examples.
+
+|`weaveByToString(pattern)` |Is used to select nodes(s) matching by
+their *`toString`* representation, and weave in the following nodes. See
+below for pattern matching and examples.
+
+|`weaveByType(Class)` |*Camel 2.8:* Is used to select node(s) matching
+by their class type (the classes from the *`org.apache.camel.model`*
+package), and weave in the following nodes. See below for examples.
+
+|`weaveAddFirst` |*Camel 2.8:* Is a short hand to easily weave in the
+following nodes in the start of the route.
+
+|`weaveAddLast` |*Camel 2.8:* Is a short hand to easily weave in the
+following nodes in the end of the route.
+
+|`replaceFromWith(uri)` |*Camel 2.9:* To replace the route input with a
+new endpoint URI.
+|=======================================================================
+
+The *`pattern`* option is used for matching. It uses the same rules as
+the link:intercept.html[Intercept], which is applied in the following
+order:
+
+* match exact
+* match by wildcard
+* match by regular expression
+
+For example to match exact you can use *`weaveById("foo")`* which will
+match only the id in the route which has the value: *`foo`*. The
+wildcard is when the pattern ends with a *`*`* character, such
+as: *`weaveById("foo*")`* which will match any id's starting with
+*`foo`*, such as: *`foo`, `foobar`*, *`foobie`* and so forth. The
+regular expression is more advanced and allows you to match multiple
+ids, such as *`weaveById("(foo|bar)")`* which will match both *`foo`*
+and *`bar`*.
+
+If you try to match a `pattern` on an exact endpoint URI, then mind that
+URI options ordering may influence, and hence its best to match by
+wildcard.
+
+For example:
+
+mockEndpointsAndSkip("activemq:queue:foo?*")
+
+To match the *`foo`* queue and disregard any options.
+
+[[AdviceWith-UsingweaveById]]
+Using `weaveById`
+^^^^^^^^^^^^^^^^^
+
+The *`weaveById`* allows you to manipulate the route, for example by
+replacing a node with other nodes.
+
+The following methods are available:
+
+[width="100%",cols="50%,50%",options="header",]
+|====================================================================
+|Method |Description
+|`remove` |Removes the selected node(s).
+|`replace` |Replaces the selected node(s) with the following nodes.
+|`before` |Before the selected node(s), the following nodes is added.
+|`after` |After the selected node(s), the following nodes is added.
+|====================================================================
+
+For example given the following route:
+
+javaRoutefrom("direct:start") .to("mock:foo") .to("mock:bar").id("bar")
+.to("mock:result");
+
+Then let's go over the four methods to see how you can use them in unit
+tests:\{snippet:id=e1|lang=java|title=Replace|url=camel/trunk/camel-core/src/test/java/org/apache/camel/processor/interceptor/AdviceWithTasksTest.java}In
+this example we replace the *`.to("mock:bar").id("bar")`* with the
+*`.multicast().to("mock:a").to("mock:b")`*. +
+That means instead of sending the message to a `mock:bar` endpoint, we
+do a link:multicast.html[Multicast] to `mock:a` and `mock:b` endpoints
+instead.\{snippet:id=e2|lang=java|title=Remove|url=camel/trunk/camel-core/src/test/java/org/apache/camel/processor/interceptor/AdviceWithTasksTest.java}In
+the example above, we simply just remove the
+*`.to("mock:bar").id("bar")`*.\{snippet:id=e3|lang=java|title=Before|url=camel/trunk/camel-core/src/test/java/org/apache/camel/processor/interceptor/AdviceWithTasksTest.java}In
+the example above, we add the following nodes
+*`to("mock:a").transform(constant("Bye World"))` before* the node with
+the id *`bar`*. +
+That means the message being send to *`mock:bar`* would have been
+transformed to a constant message
+"*`Bye World`*".\{snippet:id=e4|lang=java|title=After|url=camel/trunk/camel-core/src/test/java/org/apache/camel/processor/interceptor/AdviceWithTasksTest.java}In
+the example above, we add the following nodes
+*`to("mock:a").transform(constant("Bye World"))` after* the node with
+the id `bar`.
+
+[[AdviceWith-UsingweaveByToString]]
+Using `weaveByToString`
+^^^^^^^^^^^^^^^^^^^^^^^
+
+The *`weaveByToString`* also allows you to manipulate the route, for
+example by replacing a node with other nodes. As opposed to
+*`weaveById`*, this method uses the *`toString`* representation of the
+node(s) when matching. This allows you to match nodes, which may not
+have assigned ids, or to match link:eip.html[EIP] pattern. You have to
+be a bit more careful when using this as the *`toString`* representation
+can be verbose and contain characters such as *[ ] ( )->* and so forth.
+That is why using the regular expression matching is the must usable.
+
+The *`weaveByToString`* has the same methods as *`weaveById`*.
+
+For example to replace any nodes which has `"foo"` you can
+do\{snippet:id=e1|lang=java|title=Replace|url=camel/trunk/camel-core/src/test/java/org/apache/camel/processor/interceptor/AdviceWithTasksToStringPatternTest.java}Notice
+that we have to use `".foo."` in the pattern to match that `"foo"` is
+present anywhere in the string.
+
+[[AdviceWith-UsingweaveByType]]
+Using `weaveByType`
+^^^^^^^^^^^^^^^^^^^
+
+*Available as of Camel 2.8*
+
+The *`weaveByToType`* also allows you to manipulate the route, for
+example by replacing a node with other nodes. As opposed to
+*`weaveById`, and* `weaveByToString` this method uses the class type of
+the node(s) when matching. This allows you to match link:eip.html[EIP]
+pattern by its type.
+
+The *`weaveByToType`* has the same methods as *`weaceById`* and
+*`weaveByToString`*.
+
+For example to remove a transform from the following
+route:\{snippet:id=e5|lang=java|title=Route|url=camel/trunk/camel-core/src/test/java/org/apache/camel/processor/interceptor/AdviceWithTypeTest.java}You
+can
+do:\{snippet:id=e2|lang=java|title=Remove|url=camel/trunk/camel-core/src/test/java/org/apache/camel/processor/interceptor/AdviceWithTypeTest.java}
+
+[[AdviceWith-UsingSelectors]]
+Using Selectors
+^^^^^^^^^^^^^^^
+
+*Available os of Camel 2.8*
+
+The following methods *`weaveById(pattern)`*,
+*`weaveByToString(pattern)`* and *`weaveByType(Class)`* each match N+
+nodes. By using optional selectors you can narrow down the nodes being
+used. For example if *`weaveByType(Class)`* returns 2 nodes. Then you
+can use a selector to indicate it should only select the first node.
+
+[width="100%",cols="50%,50%",options="header",]
+|=======================================================================
+|Selector |Description
+|`selectFirst` |Will only select the first matched node.
+
+|`selectLast` |Will only select the last matched node.
+
+|`selectIndex(index)` |Will only select the N'th matched node. The index
+is zero-based.
+
+|`selectRange(from, to)` |Will only select the matches node within the
+given range by index (both inclusive). The index is zero-based.
+
+|`maxDeep(to)` |*Camel 2.14.2/2.15:* To limit the selection to at most N
+level deep in the Camel route tree. The first level is starting from
+number 1. So number 2 is the children of the 1st level nodes.
+|=======================================================================
+
+For example to remove the first *`.to`* node in route you can do as
+follows:
+
+javacontext.getRouteDefinitions().get(0).adviceWith(context, new
+AdviceWithRouteBuilder() \{ @Override public void configure() throws
+Exception \{ // only remove the first to node in the route
+weaveByType(ToDefinition.class).selectFirst().remove(); } });
+
+[[AdviceWith-UsingweaveAddFirst/weaveAddLast]]
+Using `weaveAddFirst` / `weaveAddLast`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available as of Camel 2.8*
+
+The *`weaveAddFirst`* and *`weaveAddLast`* is a shorthand to easily add
+nodes to the route. These methods can only *add* to an existing routes.
+If you want to manipulate the route, then there are plenty of methods as
+already shown on this page.
+
+For example if you want to send a message to a *`mock:input`* endpoint
+you can do as follows:
+
+javacontext.getRouteDefinitions().get(0).adviceWith(context, new
+AdviceWithRouteBuilder() \{ @Override public void configure() throws
+Exception \{ // send the incoming message to mock:input
+weaveAddFirst().to("mock:input"); } });
+
+Likewise if you want to easily send a message to a `mock:output`
+endpoint you can do as follows:
+
+javacontext.getRouteDefinitions().get(0).adviceWith(context, new
+AdviceWithRouteBuilder() \{ @Override public void configure() throws
+Exception \{ // send the outgoing message to mock:output
+weaveAddLast().to("mock:output"); } });
+
+You can of course combine those in the same advice with:
+
+javacontext.getRouteDefinitions().get(0).adviceWith(context, new
+AdviceWithRouteBuilder() \{ @Override public void configure() throws
+Exception \{ weaveAddFirst().to("mock:input");
+weaveAddLast().to("mock:output"); } });
+
+[[AdviceWith-ReplacefromWithAnotherEndpoint]]
+Replace `from` With Another Endpoint
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available as of Camel 2.9*
+
+You may have routes which consumes messages from endpoints which you
+want to substitute with another endpoint for easier unit testing. For
+example a link:jms.html[JMS] endpoint could be replaced with a
+link:seda.html[SEDA] or link:direct.html[Direct] for unit testing a
+route, as shown below where we replace the input of the route to
+a *`seda:foo`* endpoint:
+
+javacontext.getRouteDefinitions().get(0).adviceWith(context, new
+AdviceWithRouteBuilder() \{ @Override public void configure() throws
+Exception \{ replaceFromWith("seda:foo"); } });
+
+[[AdviceWith-UsingMockEndpoints]]
+Using Mock Endpoints
+^^^^^^^^^^^^^^^^^^^^
+
+While routing messages, you may want to easily know how the messages was
+routed. For example you can let Camel mock all endpoints, which mean
+that when a message is sent to any endpoint, its first send to a mock
+endpoint, and then afterwards to the original endpoint. Then from your
+unit tests, you can setup expectations on the mock endpoints.
+
+See more details see: _Mocking existing endpoints using the camel-test
+component_ at link:mock.html[Mock].
+
+[[AdviceWith-UsingisUseAdviceWith()]]
+Using `isUseAdviceWith()`
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available as of Camel 2.9* +
+It is recommended to override the method *`isUseAdviceWith`* and return
+*`true`* to instruct Camel that you are using *`adviceWith`* in the unit
+tests. Then in your unit test methods, after you have done the
+*`adviceWith`* you *must* start *`CamelContext`* by invoke the *`start`*
+method on the `context` instance. In the following we have an example.
+The route is using link:activemq.html[ActiveMQ] to route messages. What
+we would like to do in a unit test is to test the route, but without
+having to set and use link:activemq.html[ActiveMQ]. We do not have
+link:activemq.html[ActiveMQ] on the classpath. So for that we need to
+advice the route and replace link:activemq.html[ActiveMQ] with for
+example a link:seda.html[SEDA] endpoint
+instead.\{snippet:id=e1|lang=java|title=isUseAdviceWith|url=camel/branches/camel-2.9.x/components/camel-test/src/test/java/org/apache/camel/test/IsUseAdviceWithJUnit4Test.java}

@@ -1,0 +1,67 @@
+[[ConfluenceContent]]
+[[Navigation-Overviewhttps://cwiki.apache.org/confluence/pages/viewpage.action?pageId=49132]]
+link:overview.html[Overview]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* link:index.html[Home]
+* link:download.html[Download]
+* link:getting-started.html[Getting Started]
+* link:faq.html[FAQ]
+
+[[Navigation-Documentationhttps://cwiki.apache.org/confluence/pages/viewpage.action?pageId=49534]]
+link:documentation.html[Documentation]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* link:user-guide.html[User Guide]
+* link:manual.html[Manual]
+* link:books.html[Books]
+* link:tutorials.html[Tutorials]
+* link:examples.html[Examples]
+* link:cookbook.html[Cookbook]
+* link:architecture.html[Architecture]
+* link:enterprise-integration-patterns.html[Enterprise Integration
+Patterns]
+* link:dsl.html[DSL]
+* link:components.html[Components]
+* link:data-format.html[Data Format]
+* link:languages.html[Languages]
+* link:security.html[Security]
+* link:security-advisories.html[Security Advisories]
+
+[[Navigation-Search]]
+Search
+^^^^^^
+
+[[Navigation-Communityhttps://cwiki.apache.org/confluence/pages/viewpage.action?pageId=49115]]
+link:community.html[Community]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* link:support.html[Support]
+* link:contributing.html[Contributing]
+* link:mailing-lists.html[Mailing Lists]
+* link:irc-room.html[Gitter / IRC Chat]
+* link:user-stories.html[User Stories]
+* link:news.html[News]
+* link:articles.html[Articles]
+* link:site.html[Site]
+* link:team.html[Team]
+* http://camel-extra.googlecode.com/[Camel Extra]
+
+[[Navigation-Developershttps://cwiki.apache.org/confluence/pages/viewpage.action?pageId=49124]]
+link:developers.html[Developers]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* link:developers.html[Developer Guide]
+* link:source.html[Source]
+* https://github.com/apache/camel/[Github]
+* link:building.html[Building]
+* link:javadoc.html[JavaDoc]
+
+[[Navigation-ApacheSoftwareFoundation]]
+Apache Software Foundation
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* http://www.apache.org/licenses/[License]
+* http://www.apache.org/foundation/sponsorship.html[Sponsorship]
+* http://www.apache.org/foundation/thanks.html[Thanks]
+* http://www.apache.org/security/[Security]

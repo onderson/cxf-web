@@ -1,0 +1,253 @@
+[[ConfluenceContent]]
+[[Camel2.21.0Release-Camelx.y.zRelease(currentlyinprogress)]]
+Camel x.y.z Release (currently in progress)
+-------------------------------------------
+
+image:http://camel.apache.org/images/camel-box-small.png[image]
+
+ 
+
+[[Camel2.21.0Release-NewandNoteworthy]]
+New and Noteworthy
+~~~~~~~~~~~~~~~~~~
+
+Welcome to the x.y.z release which approx XXX issues resolved (new
+features, improvements and bug fixes such as...)
+
+* Upgraded to JAXB 2.3.0 which is more JDK9 compliant.
+* Added better support for `javax.jms.StreamMessage` types
+in link:jms.html[JMS] component.
+* Optimised link:jms.html[JMS] to support ActiveMQ Artemis
+http://activemq.apache.org/artemis/docs/latest/large-messages.html[large
+messages] so you can send and receive big messages such as GB's in size.
+There is an example demonstrating this in
+camel-example-artemis-large-messages.
+* Added support for route coverage reports which allows 3rd party
+tooling via SPI to visualise route coverage to Camel developers.
+* Added route-coverage goal to the
+https://github.com/apache/camel/blob/master/tooling/maven/camel-maven-plugin/src/main/docs/camel-maven-plugin.adoc[Camel
+Maven Plugin] so you can report route coverage from Maven command line.
+* Added support for doing manual commits via Java code when using
+link:kafka.html[Kafka] consumer.
+* Vendor extensions in the swagger generated API docs is now disabled
+turned off, when using link:rest-dsl.html[Rest DSL] (not all 3rd
+party API gateways/tooling support vendor extensions). You can turn this
+back-on via the apiVendorExtension option.
+* The SFTP consumer now also supports the `useList` option which can be
+used to download a single known file without use LIST operation on the
+FTP server (which can be slow if the FTP server has many files in the
+LIST results)
+* Camel link:json.html[JSON] with camel-jackson will now automatic use
+shared ObjectMapper instance if there is only one instance in
+the link:registry.html[Registry]. For example users with Spring Boot
+then allows Camel to easily use the default mapper from Spring Boot.
+* Added `ExtendedStartupListener` that allows a callback just after the
+CamelContext has been fully started.
+* You can now specify examples in the link:rest-dsl.html[Rest DSL] that
+are included in the generated Swagger api-doc via camel-swagger-java.
+* Improved file/ftp consumer to use current thread to poll, instead of a
+scheduled background task, when using pollEnrich
+(link:content-enricher.html[Content Enricher]).
+* link:direct.html[Direct] component now blocks by default if sending to
+a consumer which is not yet ready, which may happen during startup
+(little window of opportunity). This
+avoids `DirectConsumerNotAvailableException` being thrown during startup
+etc.
+* The link:ftp.html[FTP] component can now log progress (turn
+on transferLoggingLevel) when perfomring download/upload and other
+operations. You can also find this information for the consumer in JMX. 
+* Added support for resuming downloads to link:ftp.html[FTP] component.
+For example if you download big files and has connection problems with
+the FTP server. Then later when the connectivity works again, Camel can
+resume download the in-progress file.
+* The link:jetty.html[Jetty] and link:servlet.html[SERVLET] consumers
+will now return HTTP Status 405 (method not allowed) for requests that
+would have been processed by another HTTP request method, for example
+calling REST services with the wrong method. Beforehand a 404 error code
+was always regardless.
+* Reworked the `FileIdempotentRepository` so the internal in-memory
+cache is only used for quick lookup of the most frequent file names, and
+lookup from disk as well. See more details in the class javadoc of the
+file.
+
+The following issues has been fixed
+
+* Fixed afterApplicationStart callback on camel-spring-boot to be called
+later and after CamelContext has been fully started.
+* Fixed an issue testing with @UseAdviceWith and Camel on Spring Boot.
+* Fixed link:oncompletion.html[OnCompletion] would not be triggered from
+a route using link:splitter.html[Splitter] and an exception was thrown
+during splitting.
+* Fixed link:kafka.html[Kafka] consumer stops consuming messages when
+exception occurs during offset commit.
+* Fixed link:netty4.html[Netty4] consumer to stop taking in new requests
+while being shutdown, as otherwise it cannot graceful shutdown if new
+requests come in faster than it can process existing in-flight messages.
+* Fixed an issue with link:routing-slip.html[Routing Slip]
+and link:dynamic-router.html[Dynamic Router] when using context scoped
+error handler, could cause the error handler to become stopped.
+* Fixed link:rest-dsl.html[Rest DSL] with link:jetty.html[Jetty]
+security via custom define security handler and turned on api-doc as
+well would not startup Jetty server due missing NoLoginService error.
+
+[[Camel2.21.0Release-New]]
+New link:enterprise-integration-patterns.html[Enterprise Integration
+Patterns]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+[[Camel2.21.0Release-New.1]]
+New link:components.html[Components]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* camel-aws - MQ component for working with Amazon MQ
+* camel-elasticsearch5-rest - The elasticsearch component is used for
+interfacing with ElasticSearch server using 5.x REST API.
+* camel-yql - The YQL (Yahoo! Query Language) platform enables you to
+query, filter, and combine data across the web.
+* camel-wordpres - To integrate Camel with Wordpres
+
+[[Camel2.21.0Release-NewDSL]]
+New DSL
+^^^^^^^
+
+* Saga EIP pattern
+
+[[Camel2.21.0Release-NewAnnotations]]
+New Annotations
+^^^^^^^^^^^^^^^
+
+[[Camel2.21.0Release-NewDataFormats]]
+New link:data-format.html[Data Formats]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+[[Camel2.21.0Release-New.2]]
+New link:languages.html[Languages]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+[[Camel2.21.0Release-APIbreaking]]
+API breaking
+~~~~~~~~~~~~
+
+* Minor API changes
+to `org.apache.camel.component.file.GenericFileOperations`
+* Minor API changes
+to `org.apache.camel.http.common.ServletResolveConsumerStrategy`
+
+[[Camel2.21.0Release-KnownIssues]]
+Known Issues
+~~~~~~~~~~~~
+
+[[Camel2.21.0Release-Importantchangestoconsiderwhenupgrading]]
+Important changes to consider when upgrading
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+* Jetty has been upgraded to 9.4 by default, and camel-jetty is requring
+version 9.3 or 9.4 to run in OSGi.
+* link:direct.html[Direct] component now blocks by default if sending to
+a consumer which is not yet ready, which may happen during startup
+(little window of opportunity). This
+avoids `DirectConsumerNotAvailableException` being thrown during startup
+etc. The old beavhaior can be turned on by setting `block=false` on the
+direct component level, or on endpoints where needed.
+* When using `camel-saxon` then the SaxonXpathFactory class is created
+in the
+https://www.saxonica.com/html/documentation/xpath-api/jaxp-xpath/factory.html[recommended
+way] from Saxon. It will fallback and create the factory the old way if
+not possible.
+* The `camel-json-validator` component has switched from using Everit to
+NetworkNT JSon Schema validator library, as the former had ASF license
+implications and would not be allowed in future Camel releases. The
+NetworkNT supports v4 draft of JSon Schema as validation so make sure to
+use that draft version in your schemas.
+* Reworked the `FileIdempotentRepository` so the internal in-memory
+cache is only used for quick lookup of the most frequent file names, and
+lookup from disk as well. See more details in the class javadoc of the
+file.
+* The link:karaf.html[Karaf] commands for routes is changed so the
+arguments for the camel context is first, and the route id is the 2nd
+argument. This allows the route completer to use the selected camel
+context name to only show route ids from that camel context, as
+otherwise it shows all the routes for every Camel application running in
+Karaf.
+
+[[Camel2.21.0Release-GettingtheDistributions]]
+Getting the Distributions
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+[[Camel2.21.0Release-BinaryDistributions]]
+Binary Distributions
+^^^^^^^^^^^^^^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Description |Download Link |PGP Signature file of download
+|Windows Distribution
+|http://www.apache.org/dyn/closer.cgi/camel/apache-camel/x.y.x/apache-camel-x.y.x.zip[apache-camel-x.y.x.zip]
+|http://www.apache.org/dist/camel/apache-camel/x.y.x/apache-camel-x.y.x.zip.asc[apache-camel-x.y.x.zip.asc]
+
+|Unix/Linux/Cygwin Distribution
+|http://www.apache.org/dyn/closer.cgi/camel/apache-camel/x.y.x/apache-camel-x.y.x.tar.gz[apache-camel-x.y.x.tar.gz]
+|http://www.apache.org/dist/camel/apache-camel/x.y.x/apache-camel-x.y.x.tar.gz.asc[apache-camel-x.y.x.tar.gz.asc]
+|=======================================================================
+
+[Info]
+====
+ **The above URLs use redirection**
+
+The above URLs use the Apache Mirror system to redirect you to a
+suitable mirror for your download. Some users have experienced issues
+with some versions of browsers (e.g. some Safari browsers). If the
+download doesn't seem to work for you from the above URL then try using
+http://www.mozilla.com/en-US/firefox/[FireFox]
+
+====
+
+[[Camel2.21.0Release-SourceDistributions]]
+Source Distributions
+^^^^^^^^^^^^^^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Description |Download Link |PGP Signature file of download
+|Source (zip)
+|http://www.apache.org/dyn/closer.cgi/camel/apache-camel/x.y.x/apache-camel-x.y.x-src.zip[apache-camel-x.y.x-src.zip]
+|http://www.apache.org/dist/camel/apache-camel/x.y.x/apache-camel-x.y.x-src.zip.asc[apache-camel-x.y.x-src.zip.asc]
+|=======================================================================
+
+[[Camel2.21.0Release-GettingtheBinariesusingMaven2]]
+Getting the Binaries using Maven 2
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To use this release in your maven project, the proper dependency
+configuration that you should use in your
+http://maven.apache.org/guides/introduction/introduction-to-the-pom.html[Maven
+POM] is:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<dependency>
+  <groupId>org.apache.camel</groupId>
+  <artifactId>camel-core</artifactId>
+  <version>x.y.x</version>
+</dependency>
+----
+
+[[Camel2.21.0Release-GitTagCheckout]]
+Git Tag Checkout
+^^^^^^^^^^^^^^^^
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+git clone https://git-wip-us.apache.org/repos/asf/camel.git
+cd camel
+git checkout camel-x.y.x
+----
+
+[[Camel2.21.0Release-Changelog]]
+Changelog
+~~~~~~~~~
+
+For a more detailed view of new features and bug fixes, see the:
+
+* http://issues.apache.org/jira/secure/ReleaseNote.jspa?projectId=12311211&styleName=Html[Release
+notes for x.y.x]

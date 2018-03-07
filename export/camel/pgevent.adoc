@@ -1,0 +1,73 @@
+[[ConfluenceContent]]
+[[PGEvent-PGEventComponent(PostgresSQLEvent)]]
+PGEvent Component (PostgresSQL Event)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This is a component for Apache Camel which allows for
+Producing/Consuming PostgreSQL events related to the LISTEN/NOTIFY
+commands added since PostgreSQL 8.3.
+
+Maven users will need to add the following dependency to their `pom.xml`
+for this component:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<dependency>
+    <groupId>org.apache.camel</groupId>
+    <artifactId>camel-pgevent</artifactId>
+    <version>x.x.x</version>
+    <!-- use the same version as your Camel core version -->
+</dependency>
+----
+
+URI format
+
+The pgevent component uses the following two styles of endpoint URI
+notation:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+pgevent:datasource[?parameters]
+pgevent://host:port/database/channel[?parameters]
+----
+
+ 
+
+You can append query options to the URI in the following format,
+`?option=value&option=value&...`
+
+[[PGEvent-Options]]
+Options
+^^^^^^^
+
+[width="100%",cols="25%,25%,25%,25%",options="header",]
+|=======================================================================
+|Option |Type |Default |Description
+|`datasource` |String |  |Name of datasource to lookup from the registry
+to use
+
+|hostname |String |localhost |Instead of using datasource, then connect
+to the PostgresSQL database using this hostname and port
+
+|port |int |5432 |Instead of using datasource, then connect to the
+PostgresSQL database using this hostname and port
+
+|database |String |  |The database name
+
+|channel |String |  |The channel name
+
+|user |String |postgres |Username
+
+|pass |String |  |Password
+|=======================================================================
+
+ 
+
+[[PGEvent-SeeAlso]]
+See Also
+^^^^^^^^
+
+* link:configuring-camel.html[Configuring Camel]
+* link:component.html[Component]
+* link:endpoint.html[Endpoint]
+* link:getting-started.html[Getting Started]

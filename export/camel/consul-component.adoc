@@ -1,0 +1,190 @@
+[[ConfluenceContent]]
+https://www.consul.io/[Consul]  is a distributed, highly available,
+datacenter-aware, service discovery and configuration system.
+
+Maven users will need to add the following dependency to
+their `pom.xml` for this component.
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<dependency>
+    <groupId>org.apache.camel</groupId>
+    <artifactId>camel-consul</artifactId>
+    <!-- use the same version as your Camel core version -->
+    <version>x.y.z</version>
+</dependency>
+----
+
+ 
+
+[[ConsulComponent-URIformat]]
+URI format
+^^^^^^^^^^
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+consul:apiEndpoint[?options]
+----
+
+Where *apiEnpoint* represents the
+consul's https://www.consul.io/docs/agent/http.html[HTTP API] the
+consul-component should operate on: 
+
+Supported HTTP API are:
+
+* https://www.consul.io/docs/agent/http/kv.html[kv]
+* https://www.consul.io/docs/agent/http/event.html[event]
+* https://www.consul.io/docs/agent/http/agent.html[agent]
+
+ 
+
+[[ConsulComponent-Options]]
+Options
+^^^^^^^
+
+[width="100%",cols="20%,20%,20%,20%,20%",options="header",]
+|=======================================================================
+|Name |Group |Default |Java Type |Description
+|url |common |  |String |Defines the URIs the component should connect
+to.
+
+|key |common |  |String |The default key. Can be overridden by
+CamelConsulKey
+
+|action |producer |  |String |The default action. Can be overridden by
+CamelConsulAction
+
+|pingInstance |common |true |boolean |Configure if the AgentClient
+should attempt a ping before returning the Consul instance
+
+|valueAsString |common |false |boolean |Default to transform values
+retrieved from Consul i.e. on KV endpoint to string.
+
+|connectTimeoutMillis |common |  |Long |Connect timeout for OkHttpClient
+
+|readTimeoutMillis |common |  |Long |Read timeout for OkHttpClient
+
+|writeTimeoutMillis |common |  |Long |Write timeout for OkHttpClient
+
+|sslContextParameters |security |  |SSLContextParameters |SSL
+configuration using an org.apache.camel.util.jsse.SSLContextParameters
+instance
+
+|userName |security |  |String |Sets the username to be used for basic
+authentication
+
+|password |security |  |String |Sets the password to be used for basic
+authentication
+
+|aclToken |security |  |String |Sets the ACL token to be used with
+Consul
+
+|blockSeconds |consumer, watch |10 |Integer |The second to wait for a
+watch event default 10 seconds
+
+|firstIndex |consumer, watch |0 |Long |The first index to watch for
+
+|recursive |consumer, watch |false |boolean |Recursively watch
+|=======================================================================
+
+ 
+
+[[ConsulComponent-Headers]]
+Headers
+^^^^^^^
+
+[cols=",,",options="header",]
+|=======================================================================
+|Name |Java Type |Description
+|CamelConsulAction |String |The action to perform
+
+|CamelConsulKey |String |The Key on which the action should be applied
+
+|CamelConsulEventId |String |The event id 
+
+|CamelConsulEventName |String |The event name
+
+|CamelConsulEventLTime |Long |The event ltime
+
+|CamelConsulNodeFilter |String |The node filter
+
+|CamelConsulTagFilter |String |The tag filter
+
+|CamelConsulSessionFilter |String |The session filter
+
+|CamelConsulVersion |Integer |The data version
+
+|CamelConsulFlags |Long |Flags associated with a value
+
+|CamelConsulCreateIndex |Long |The internal index value that represents
+when the entry was created
+
+|CamelConsulLockIndex |Long |The number of times this key has
+successfully been acquired in a lock
+
+|CamelConsulModifyIndex |Long |The last index that modified this key
+
+|CamelConsulOptions |Object |Options associated to the request
+
+|CamelConsulResult |Boolean |true if the response has a result
+
+|CamelConsulSession |String |The session id
+
+|CamelConsulValueAsString |Boolean |To transform values retrieved from
+Consul i.e. on KV endpoint to string.
+|=======================================================================
+
+ 
+
+[[ConsulComponent-KVAPIexample:]]
+KV API example:
+^^^^^^^^^^^^^^^
+
+ 
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+CamelContext context = new DefaultCamelContext();
+context.addRoutes(new RouteBuilder() {
+    public void configure() {
+       from("direct:put")
+            .to("consul:kv-put")
+                .to("log:camel-consul?level=INFO");
+    }
+});
+
+ 
+FluentProducerTemplate.on(context)
+    .withHeader(ConsulConstants.CONSUL_ACTION, ConsulKeyValueActions.PUT)
+    .withHeader(ConsulConstants.CONSUL_KEY, "mykey")
+    .withBody(val)
+    .to("direct:kv-put")
+    .send();
+
+
+ 
+----
+
+[[ConsulComponent-WatchAPIexample:]]
+Watch API example:
+^^^^^^^^^^^^^^^^^^
+
+ 
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+CamelContext context = new DefaultCamelContext();
+context.addRoutes(new RouteBuilder() {
+    public void configure() {
+       from("consul:kv?key=myKey&valueAsString=true")
+           .to("log:camel-consul?level=INFO&showAll=true")
+           .to("mock:kv-watch");
+    }
+});
+----
+
+ 
+
+ 
+
+ 

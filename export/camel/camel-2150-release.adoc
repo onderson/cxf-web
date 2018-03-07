@@ -1,0 +1,443 @@
+[[ConfluenceContent]]
+[[Camel2.15.0Release-Camel2.15.0release]]
+Camel 2.15.0 release
+--------------------
+
+image:http://camel.apache.org/download.data/camel-box-v1.0-150x200.png[image]
+
+ 
+
+[[Camel2.15.0Release-NewandNoteworthy]]
+New and Noteworthy
+~~~~~~~~~~~~~~~~~~
+
+Welcome to the 2.15.0 release which approx 500 issues resolved (new
+features, improvements and bug fixes such as...)
+
+* Component, data format, language and eip documentation now included in
+the built component JARs. And Java API and JMX API to access that
+documentation. And APIs to explain an endpoint uri, eip configuration
+and what all those configured options mean. In other words the same
+level of complete documentation of your Camel apps at both design and
+runtime, accessible from Java / JMX and tooling.
+* Component, data format, language and eip can now
+have associated label(s) which are used for grouping components into:
+core, database, messaging, http, rest, etc.
+* The XML DSL schema now include documentation
+* Provide Configurer for user to configure the CXF conduit and CXF
+destination from Java code
+* Added a `DelegateEndpoint` interface into Camel API
+* Support to setup the SslContextParameters in the
+link:restlet.html[camel-restlet] component
+* Java DSL - Should support nested choice in doTry .. doCatch
+* link:mongodb.html[MongoDb] component now
+https://issues.apache.org/jira/browse/CAMEL-7996[stores OIDs] of the
+inserted records in the message header
+* link:recipient-list.html[Recipient List] now supports specifying
+custom link:exchange-pattern.html[Exchange Pattern] in the endpoint ur's
+* link:type-converter.html[Type Converter] to enum's is now case
+insensitive, so you can convert safely level=info to an enum with name
+Level.INFO etc.
+* link:xslt.html[XSLT]
+and https://cwiki.apache.org/confluence/pages/viewpage.action?pageId=38909[Validation]
+components now provides all their endpoint configurations in the
+endpoint, and not only in the component, making these components like
+any other components.
+* Made the link:karaf.html[Camel Karaf Commands] reusable by moving
+common code into a `camel-commands-core` module that SPI can extend and
+plugin Camel commands for other environments.
+* Further hardening of the link:sjms.html[SJMS] component.
+* link:rest-dsl.html[Rest DSL] with embedded routes now supports
+link:exception-clause.html[onException], link:intercept.html[intercept]
+etc in use for those embedded routes, just like any regular routes. 
+* link:rest-dsl.html[Rest DSL] now by default uses custom error message
+as-is without attempting to binding output (requires a HTTP error code
+of 300+ is set as a header)
+* Camel link:using-propertyplaceholder.html[Using PropertyPlaceholder]
+now supports specifying a default value together with the key to lookup.
+* Camel link:using-propertyplaceholder.html[Using PropertyPlaceholder]
+now supports not having to define a PropertiesComponent if all the
+placeholder keys has default values which are to be used (less
+configuration needed in those situations).
+* Camel link:using-propertyplaceholder.html[Using PropertyPlaceholder]
+now supports 3rd party functions to lookup the property values, this
+allow end users to implement their own logic - we provide 3 out of the
+box functions to lookup values from OS environment variable, JVM system
+properties, or the service name idiom.
+* link:rabbitmq.html[RabbitMQ] now pools Channels for the producer to
+avoid sharing same Channel among concurrent producers which are not
+recommended by RabbitMQ client.
+* Camel commands is now reusable outside Apache Karaf as a base by
+the `commands-core` module.
+* Camel commands using http://www.jolokia.org/[Jolokia] for remote
+communication by the `commands-jolokia` module.
+* More minor processors such as setHeader, removeHeader, removeHeaders
+and ditto for properties is now also enlisted in JMX under processors.
+* Optimized usage of type conversion during routing reducing the number
+of attempts needed.
+* Optimized CaseInsentiveMap used as message headers to use a single map
+instead of two and yield less memory overhead and performance
+* Asynchronous routing engine that are forced to block threads now
+exposes this using a link:asyncprocessorawaitmanager.html[manager] that
+offers runtime insight using JMX. And as well attempts to free blocked
+threads during graceful shutdown, to avoid any threads hanging in the
+JVM.
+* link:swagger.html[Swagger] now supports any kind of runtime
+environment, as only JMX being enabled is required.
+* link:xml-security-component.html[XML Security component] supports
+now  XAdES-BES/EPES in the signer endpoint.
+* link:hl7.html[HL7] MLLP codec now supports link:netty4.html[Netty4]
+based transport.
+* Inflight repository now allows to browse the current inflight
+exchanges to obtain information where these exchanges are inflight and
+for how long. Expose this information in JMX and Camel commands as well.
+* link:graceful-shutdown.html[Graceful Shutdown] now logs information
+about the inflight exchanges that are still present during shutdown and
+a timeout was hit.
+* link:message-history.html[Message History] which dumps Exchange
+information not supports
+the link:how-do-i-set-the-max-chars-when-debug-logging-messages-in-camel.html[Exchange.LOG_DEBUG_BODY_MAX_CHARS]
+option to limit the max chars outputted in the logs.
+* `DefaultClassLoader` now fallback and use the application context
+classloader that may have been set on `CamelContext` to better be able
+to load classes/resources from classpath in different runtime
+environments. +
+* link:camel-jmx.html[Camel JMX] now includes current inflight exchanges
+at processor level, which means we can have a complete breakdown where
+exchanges are, and as well from the improved `InflightRegistry` which
+has APi and JMX api to browse the current inflight with details of the
+exchange and processing times etc.
+* Support for Jetty 9 using the new `camel-component-jetty9` module.
+* The `EndpointRegistry` now stores endpoints in two caches; a static
+unbounded cache to keep endpoints for their lifetime, and a dynamic
+limited cache to keep only the recently used endpoints. 
+* link:endpoint.html[Endpoint]'s used by routes are kept in the static
+cache of the `EndpointRegistry` as long as the lifetime of the routes.
+* Removing a route now also remove its
+static link:endpoint.html[Endpoint]'s from the `EndpointRegistry` (if
+those endpoints are not shared and used by other routes). Mind that any
+dynamic endpoint created during routing from dynamic link:eip.html[EIP]s
+such as recipient list, routing slip, dynamic router etc, are not
+removed from the `EndpointRegistry` when the route is removed.
+* link:dead-letter-channel.html[Dead Letter Channel] now logs a WARN if
+a new exception occurred while it was attempting to process the dead
+letter message. The new exception will by default be handled so
+the link:dead-letter-channel.html[Dead Letter Channel] always complete
+succesfull. The new option deadLetterHandleNewException can be set
+to `false` to turn this off.
+* link:groovy.html[GroovyShell] creation process can now be
+https://issues.apache.org/jira/browse/CAMEL-8259[customized] using
+`GroovyShellFactory` SPI interface.
+* link:how-do-i-configure-endpoints.html[Configuring endpoint uris in
+XML DSL] now allow to specify the uri attribute using multiple lines;
+this can make it more readable when having very long uris. Notice only
+the uri attributes support this.
+* link:how-do-i-configure-endpoints.html[Configuring endpoint uris in
+XML DSL] now allow to specify endpoint options using <property>  bean
+style in the <endpoint> configuration;  this can make it more readable
+when having very long uris. 
+* Using custom Jackson modules is easier with the
+Jackson link:json.html[JSON] data format.
+* Enabling and disabling features using link:json.html[Jackson] data
+format is easier from both Java and XML DSL.
+* Some HTTP producer now allows GET operations with message body (though
+a bit unusual to do)
+* Aggregate EIP now supports letting the `AggregationStrategy` determine
+if the current group is complete by returning a boolean property on the
+returned exchange.
+* camel-cdi supports CDI 1.0 onwards now.
+
+[[Camel2.15.0Release-Fixedissues]]
+Fixed issues
+^^^^^^^^^^^^
+
+* Fixed processors was not enlisted in JMX when routes was transacted.
+* Fixed the NullPointerException when using CXF endpoint with enrich
+* Fixed the endpointProperty of restConfiguration doesn't work issue
+* Fixed the issue that CircuitBreakerLoadBalancer fails on async
+processors
+* Fixed MyBatis consumer
+https://issues.apache.org/jira/browse/CAMEL-8011[ignoring
+maxMessagesPerPoll] option
+* Fixed potential issue with pollEnrich not triggering error handler if
+an exception was thrown in the polling.
+* Fixed a memory leak if using link:dynamic-router.html[Dynamic Router]
+that loops many times, and uses any of `convertBodyTo` or `setBody`
+or `transform` in the loop, causing memory to stack up until the
+Exchange is done.
+* Fixed and improved how link:bean.html[Bean] component
+and link:simple.html[Simple] language invoking beans detect methods that
+are overridden, and able to filter and apply this as a single method, to
+be invoked. Avoids AmbiguousMethodCallException being thrown.
+* Fixed a thread leak if restarting routes using stop/start and the
+routes is a scheduled poll consumer, such as file/ftp components.
+* Using ?exchangePattern=InOnly or InOut in endpoint uris now take
+precedence as the pattern in use when sending to the endpoint, using
+to/recipient list.
+* link:mail.html[Mail] component no longer includes headers starting
+with `Camel` in their keys, as those are consider internal headers and
+should not be included in the sent emails.
+* Fixed readLock=fileLock on the file component
+* Fixed link:stomp.html[Stomp] not detecting failure when sending, but
+was assuming a send always succeeded
+* Fixed link:mqtt.html[MQTT] sending to broker being more resilient and
+automatic ensure re-connection when connection failures
+* Fixed sending to FTP may cause the producer to hang in an endless
+reconnection attempt if the socket connection is dead. (Use
+soTimeout=10000 or some positive value to potential mitigate this in
+older releases).
+* link:wire-tap.html[Wire Tap] and link:multicast.html[Multicast] (in
+parallel mode) EIPs now copies the message body if its
+link:stream-caching.html[Stream caching] based - this allows concurrent
+threads to work individually using their own copy of the stream, to have
+reliable access to the body. +
+ +
+
+[[Camel2.15.0Release-New]]
+New link:enterprise-integration-patterns.html[Enterprise Integration
+Patterns]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+[[Camel2.15.0Release-New.1]]
+New link:components.html[Components]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* link:beanstalk.html[camel-beanstalk] - for working with Amazon
+Beanstalk jobs.
+* came-cassandraql - Cassandra CQL3 support
+* `camel-chunk` - for templating with Chunk engine.
+* link:docker.html[camel-docker] - to communicate with Docker.
+* link:dozer.html[camel-dozer]- Now also as a component to convert
+messages using the Dozer type conversion framework
+* camel-github - for integrating with github
+* camel-google-calendar - provides access
+to http://google.com/calendar[Google Calendar] via
+the https://developers.google.com/google-apps/calendar/v3/reference/[Google
+Calendar Web APIs].
+* camel-google-mail - provides access to http://gmail.com/[Gmail] via
+the https://developers.google.com/gmail/api/v1/reference/[Google Mail
+Web APIs].
+* link:hipchat.html[camel-hipchat] - to integrate with the Hipchat
+service
+* camel-pgevent - Component for sending/receiving notifications in
+PostgreSQL via the pgjdbc-ng driver
+* camel-jira - for integrating with JIRA issue tracker
+* link:kura.html[camel-kura] - for deploying Camel OSGi routes into
+https://eclipse.org/kura/[Eclipse Kura] M2M container.
+* camel-scr - for using Camel with
+http://felix.apache.org/documentation/subprojects/apache-felix-maven-scr-plugin/scr-annotations.html[SCR] (OSGi
+declarative services) on OSGi containers such as Apache Karaf
+* link:spring-boot.html[camel-spring-boot] - for using Camel with Spring
+Boot
+* camel-test-spring40 - for testing with Spring 4.0.x. camel-test-spring
+is for Spring 4.1.x onwards.
+* link:scheduler.html[scheduler] - for timer based scheduler using a
+scheduled thread pool and with more functionality.
+
+[[Camel2.15.0Release-NewDSL]]
+New DSL
+^^^^^^^
+
+* Added *removeProperties* to remove the properties from exchange.
+
+[[Camel2.15.0Release-NewAnnotations]]
+New Annotations
+^^^^^^^^^^^^^^^
+
+[[Camel2.15.0Release-NewDataFormats]]
+New link:data-format.html[Data Formats]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* camel-univocity-parsers
+
+[[Camel2.15.0Release-New.2]]
+New link:languages.html[Languages]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+[[Camel2.15.0Release-New.3]]
+New link:examples.html[Examples]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+[[Camel2.15.0Release-New.4]]
+New link:tutorials.html[Tutorials]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+[[Camel2.15.0Release-KnownIssues]]
+Known Issues
+~~~~~~~~~~~~
+
+The camel-cxf feature doesn't install the required camel-spring feature
+by default. Therefore, you have to install it separately before:
+'features:install camel-spring'
+
+The camel-swagger feature doesn't install the required scala-reflect
+bundle by default. Therefore, you have to install it separately before:
+'install -s mvn:org.scala-lang/scala-reflect/2.10.4'
+
+[[Camel2.15.0Release-DependencyUpgrades]]
+Dependency Upgrades
+~~~~~~~~~~~~~~~~~~~
+
+* AWS-Java-SDK 1.8.3 to 1.8.9.1
+* Codahale Metrics 3.0 to 3.1
+* CXF 3.0.2 to 3.0.4
+* Hazelcast 3.3.2 to 3.4
+* JAXB 2.2.7 to 2.2.11
+* JRuby 1.7.16 to 1.7.18
+* Guava 17.0 to 18.0
+* Jsch 0.1.50 to 0.1.51
+* JsonPath 1.1.0 to 1.2.0
+* Spring 4.0.7.RELEASE to 4.1.5.RELEASE
+* Spring Security 3.1.7.RELEASE to 3.2.5.RELEASE
+* RX Java 0.20 to 1.0.5
+* Disruptor 3.3.0 to 3.3.2
+* ... and many other upgrades
+
+[[Camel2.15.0Release-Importantchangestoconsiderwhenupgrading]]
+Important changes to consider when upgrading
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+* Spring 4.1.x is now the default out of the box Spring version.
+* Unit testing with Spring 4.0.x requires using camel-test-spring40, as
+camel-test-spring is for Spring 4.1 or better.
+* Remember to
+add `@BootstrapWith``(CamelTestContextBootstrapper.``class``)` if
+upgrading from Spring 3.x or 4.0.x to Spring 4.1 onwards, and using the
+camel-test-spring module.
+* link:xslt.html[XSLT] component now require
+configuring `transformerFactory` using link:uris.html[URIs] with the
+#syntax to refer to a bean. Just like any other component would do.
+* Slight refactor in `camel-metrics` component which may affect users
+who are using the java endpoint types instead of configuring using uris
+* `camel-csv` upgraded to Commons CSV 1.x which has a different API than
+the old 0.x version. End users may need to adjust their code.
+* `camel-sjms` has been refactored a bit to further harden this
+component. End users may need to adjust their code.
+* The link:simple.html[simple] function properties:locations:key has
+been renamed to properties-location:locations:key, as it would clash
+with the new functionality to specify a default value after the key
+name, eg properties:key:default
+* Removed the backlog tracer commands from the Karaf Camel commands as
+they are not suitable for a CLI environment
+* The need for runtime specific servlets in
+link:swagger.html[Swagger] has been removed, and instead just use the
+default servlet which is provided out of the box. 
+* `org.apache.camel.spi.InflightRepository` now includes additional
+methods for browsing in-flight exchanges.
+* Using ?exchangePattern=InOnly or InOut in endpoint uris now take
+precedence as the pattern in use when sending to the endpoint, using
+to/recipient list.
+* `DefaultClassLoader` now fallback and use the application context
+classloader that may have been set on `CamelContext` to better be able
+to load classes/resources from classpath in different runtime
+environments.
+* link:mail.html[Mail] component no longer includes headers starting
+with `Camel` in their keys, as those are consider internal headers and
+should not be included in the sent emails.
+* Removing a route now also remove its
+static link:endpoint.html[Endpoint]'s from the `EndpointRegistry` (if
+those endpoints are not shared and used by other routes). Mind that any
+dynamic endpoint created during routing from dynamic link:eip.html[EIP]s
+such as recipient list, routing slip, dynamic router etc, are not
+removed from the `EndpointRegistry` when the route is removed.
+* All boolean isFoo methods on the model classes has been removed to
+ensure the model has consistent java bean getter/setter style with
+exactly one getter and one setter of the same type.
+* The exchange property language has been renamed from property to
+exchangeProperty to avoid ambiguity, confusion and clash with properties
+as a general term. So use exchangeProperty instead of property.
+* The delay option in link:snmp.html[SNMP] has changed from using
+seconds to millis as time unit.
+* Routing starting from a link:bean.html[Bean] endpoint is not supported
+(which wasnt really intended anyway), instead start with a scheduler and
+use to bean instead.
+* Added `copy` method to `StreamCache` api
+for link:stream-caching.html[Stream caching]
+* The `camel-jetty` component is now split into `camel-jetty8`
+and `camel-jetty9` to support both Jetty versions. But only one is
+supported on the the classpath so pick only one of them.
+* Custom components using `@UriEndpoint` must now include a syntax
+attribute to document the uri syntax of the endpoint, when using the apt
+compiler plugin to generate documentation.
+* Scala users should favor using ScalaRouteBuilder instance of
+RouteBuilder. +
+ +
+
+[[Camel2.15.0Release-GettingtheDistributions]]
+Getting the Distributions
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+[[Camel2.15.0Release-BinaryDistributions]]
+Binary Distributions
+^^^^^^^^^^^^^^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Description |Download Link |PGP Signature file of download
+|Windows Distribution
+|http://www.apache.org/dyn/closer.lua/camel/apache-camel/2.15.0/apache-camel-2.15.0.zip[apache-camel-2.15.0.zip]
+|http://www.apache.org/dist/camel/apache-camel/2.15.0/apache-camel-2.15.0.zip.asc[apache-camel-2.15.0.zip.asc]
+
+|Unix/Linux/Cygwin Distribution
+|http://www.apache.org/dyn/closer.lua/camel/apache-camel/2.15.0/apache-camel-2.15.0.tar.gz[apache-camel-2.15.0.tar.gz]
+|http://www.apache.org/dist/camel/apache-camel/2.15.0/apache-camel-2.15.0.tar.gz.asc[apache-camel-2.15.0.tar.gz.asc]
+|=======================================================================
+
+[Info]
+====
+ **The above URLs use redirection**
+
+The above URLs use the Apache Mirror system to redirect you to a
+suitable mirror for your download. Some users have experienced issues
+with some versions of browsers (e.g. some Safari browsers). If the
+download doesn't seem to work for you from the above URL then try using
+http://www.mozilla.com/en-US/firefox/[FireFox]
+
+====
+
+[[Camel2.15.0Release-SourceDistributions]]
+Source Distributions
+^^^^^^^^^^^^^^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Description |Download Link |PGP Signature file of download
+|Source for Windows
+|http://www.apache.org/dyn/closer.lua/camel/apache-camel/2.15.0/apache-camel-2.15.0-src.zip[apache-camel-2.15.0-src.zip]
+|http://www.apache.org/dist/camel/apache-camel/2.15.0/apache-camel-x.y.x-src.zip.asc[apache-camel-2.15.0-src.zip.asc]
+
+|Source for Unix/Linux/Cygwin
+|http://www.apache.org/dyn/closer.lua/camel/apache-camel/2.15.0/apache-camel-x.y.x-src.tar.gz[apache-camel-2.15.0-src.tar.gz]
+|http://www.apache.org/dist/camel/apache-camel/2.15.0/apache-camel-2.15.0-src.tar.gz.asc[apache-camel-2.15.0-src.tar.gz.asc]
+|=======================================================================
+
+ 
+
+[[Camel2.15.0Release-GettingtheBinariesusingMaven2]]
+Getting the Binaries using Maven 2
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To use this release in your maven project, the proper dependency
+configuration that you should use in your
+http://maven.apache.org/guides/introduction/introduction-to-the-pom.html[Maven
+POM] is:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<dependency>
+  <groupId>org.apache.camel</groupId>
+  <artifactId>camel-core</artifactId>
+  <version>2.15.0</version>
+</dependency>
+----
+
+ 
+
+[[Camel2.15.0Release-Changelog]]
+Changelog
+~~~~~~~~~
+
+For a more detailed view of new features and bug fixes, see the:
+
+* https://issues.apache.org/jira/secure/ReleaseNote.jspa?version=12327940&projectId=12311211&styleName=Html[release
+notes for 2.15.0]

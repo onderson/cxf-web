@@ -1,0 +1,64 @@
+[[ConfluenceContent]]
+[[LoanBrokerExample-LoanBrokerExample]]
+Loan Broker Example
+-------------------
+
+This example shows how to use Camel to implement the
+http://www.enterpriseintegrationpatterns.com/ComposedMessagingExample.html[EIP's
+loan broker example].
+
+The example has two versions,one for JMS, one for webservice one. +
+The JMS version which leverages the message queue to connect the credit
+agency and bank loan quote processors together, it just uses the InOnly
+exchange pattern to handle the message asynchronously; +
+the webservice version which shows how to integrate the credit agency
+and bank web services together by using the InOut exchange pattern
+synchronously.
+
+[[LoanBrokerExample-Examplewithmessagequeue(JMS)]]
+Example with message queue (JMS)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The
+https://svn.apache.org/repos/asf/camel/trunk/examples/camel-example-loan-broker/src/main/java/org/apache/camel/loanbroker/queue/version[queue
+version of loan broker] is based on the camel-jms component, and it
+shows how to using the message queue to connect the different service
+models (such as the credit agency , and banks).
+
+The example should run if you type
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+mvn exec:java -PQueue.LoanBroker
+
+mvn exec:java -PQueue.Client
+----
+
+To stop the example hit ctrl + c
+
+[[LoanBrokerExample-Examplewithwebservice]]
+Example with web service
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+The
+https://svn.apache.org/repos/asf/camel/trunk/examples/camel-example-loan-broker/src/main/java/org/apache/camel/loanbroker/webservice/version/[web
+service version of loan broker] is based on the camel-cxf component
+which can produce and consume the SOAP message on the wire. It uses the
+InOut Message exchange pattern, when the client send out the message to
+the router , it can get the response message back from the same
+endpoint. +
+When we send out the quote message to the three different banks, we
+could choice to call the bank service one by one or send out the message
+parallelly(one request thread per request). +
+You can compare the response time after you run the sample.
+
+The example should run if you type
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+mvn exec:java -PWS.LoanBroker
+
+mvn exec:java -PWS.Client
+----
+
+To stop the example hit ctrl + c

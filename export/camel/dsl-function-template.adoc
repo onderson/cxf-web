@@ -1,0 +1,47 @@
+[[ConfluenceContent]]
+Use this as the basis for a wiki page describing a DSL function +
+<<description>>
+
+[[DSLFunctionTemplate-Syntax]]
+Syntax
+------
+
+[[DSLFunctionTemplate-Java]]
+Java
+~~~~
+
+<<Java Syntax1>
+
+[[DSLFunctionTemplate-SpringXML]]
+Spring XML
+~~~~~~~~~~
+
+<<Spring xml Syntax>>
+
+[[DSLFunctionTemplate-Parameters]]
+Parameters
+~~~~~~~~~~
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|============================
+|Parameter |Type |Description
+|  |  | 
+|============================
+
+[[DSLFunctionTemplate-Examples]]
+Examples
+--------
+
+[[DSLFunctionTemplate-Example1]]
+Example1
+~~~~~~~~
+
+<< example description >>
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<<spring xml example>>
+----
+
+<<if the example would look substantially different in java also create
+a java example>>

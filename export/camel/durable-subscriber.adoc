@@ -1,0 +1,112 @@
+[[ConfluenceContent]]
+[[DurableSubscriber-DurableSubscriber]]
+Durable Subscriber
+^^^^^^^^^^^^^^^^^^
+
+Camel supports the
+http://www.enterpriseintegrationpatterns.com/DurableSubscription.html[Durable
+Subscriber] from the link:enterprise-integration-patterns.html[EIP
+patterns] using the link:jms.html[JMS] component which supports publish
+& subscribe using Topics with support for non-durable and durable
+subscribers.
+
+image:http://www.enterpriseintegrationpatterns.com/img/DurableSubscriptionSolution.gif[image]
+
+Another alternative is to combine the
+link:message-dispatcher.html[Message Dispatcher] or
+link:content-based-router.html[Content Based Router] with
+link:file2.html[File] or link:jpa.html[JPA] components for durable
+subscribers then something like link:seda.html[Seda] for non-durable.
+
+Here is a simple example of creating durable subscribers to a
+link:jms.html[JMS] topic
+
+*Using the link:fluent-builders.html[Fluent Builders]*
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from("direct:start").to("activemq:topic:foo");
+
+from("activemq:topic:foo?clientId=1&durableSubscriptionName=bar1").to("mock:result1");
+
+from("activemq:topic:foo?clientId=2&durableSubscriptionName=bar2").to("mock:result2");
+----
+
+*Using the link:spring-xml-extensions.html[Spring XML Extensions]*
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<route>
+    <from uri="direct:start"/>
+    <to uri="activemq:topic:foo"/>
+</route>
+
+<route>
+    <from uri="activemq:topic:foo?clientId=1&durableSubscriptionName=bar1"/>
+    <to uri="mock:result1"/>
+</route>
+
+<route>
+    <from uri="activemq:topic:foo?clientId=2&durableSubscriptionName=bar2"/>
+    <to uri="mock:result2"/>
+</route>
+----
+
+Here is another example of link:jms.html[JMS] durable subscribers, but
+this time using
+http://activemq.apache.org/virtual-destinations.html[virtual topics]
+(recommended by AMQ over durable subscriptions)
+
+*Using the link:fluent-builders.html[Fluent Builders]*
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from("direct:start").to("activemq:topic:VirtualTopic.foo");
+
+from("activemq:queue:Consumer.1.VirtualTopic.foo").to("mock:result1");
+
+from("activemq:queue:Consumer.2.VirtualTopic.foo").to("mock:result2");
+----
+
+*Using the link:spring-xml-extensions.html[Spring XML Extensions]*
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<route>
+    <from uri="direct:start"/>
+    <to uri="activemq:topic:VirtualTopic.foo"/>
+</route>
+
+<route>
+    <from uri="activemq:queue:Consumer.1.VirtualTopic.foo"/>
+    <to uri="mock:result1"/>
+</route>
+
+<route>
+    <from uri="activemq:queue:Consumer.2.VirtualTopic.foo"/>
+    <to uri="mock:result2"/>
+</route>
+----
+
+[[DurableSubscriber-SeeAlso]]
+See Also
+++++++++
+
+* link:jms.html[JMS]
+* link:file2.html[File]
+* link:jpa.html[JPA]
+* link:message-dispatcher.html[Message Dispatcher]
+* link:selective-consumer.html[Selective Consumer]
+* link:content-based-router.html[Content Based Router]
+* link:endpoint.html[Endpoint]
+
+[[DurableSubscriber-UsingThisPattern]]
+Using This Pattern
+++++++++++++++++++
+
+If you would like to use this EIP Pattern then please read the
+link:getting-started.html[Getting Started], you may also find the
+link:architecture.html[Architecture] useful particularly the description
+of link:endpoint.html[Endpoint] and link:uris.html[URIs]. Then you could
+try out some of the link:examples.html[Examples] first before trying
+this pattern out.

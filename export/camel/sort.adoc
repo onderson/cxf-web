@@ -1,0 +1,128 @@
+[[ConfluenceContent]]
+[[Sort-Sort]]
+Sort
+~~~~
+
+Sort can be used to sort a message. Imagine you consume text files and
+before processing each file you want to be sure the content is sorted.
+
+Sort will by default sort the body using a default comparator that
+handles numeric values or uses the string representation. You can
+provide your own comparator, and even an expression to return the value
+to be sorted. Sort requires the value returned from the expression
+evaluation is convertible to `java.util.List` as this is required by the
+JDK sort operation.
+
+[[Sort-Options]]
+Options
+^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Name |Default Value |Description
+|`comparatorRef` |  |Refers to a custom `java.util.Comparator` to use
+for sorting the message body. Camel will by default use a comparator
+which does a A..Z sorting.
+|=======================================================================
+
+[[Sort-UsingfromJavaDSL]]
+Using from Java DSL
+^^^^^^^^^^^^^^^^^^^
+
+In the route below it will read the file content and tokenize by line
+breaks so each line can be sorted.
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from("file://inbox").sort(body().tokenize("\n")).to("bean:MyServiceBean.processLine");
+----
+
+You can pass in your own comparator as a 2nd argument:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from("file://inbox").sort(body().tokenize("\n"), new MyReverseComparator()).to("bean:MyServiceBean.processLine");
+----
+
+[[Sort-UsingfromSpringDSL]]
+Using from Spring DSL
+^^^^^^^^^^^^^^^^^^^^^
+
+In the route below it will read the file content and tokenize by line
+breaks so each line can be sorted.
+
+*Camel 2.7 or better*
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<route>
+  <from uri="file://inbox"/>
+  <sort>
+    <simple>body</simple>
+  </sort>
+  <beanRef ref="myServiceBean" method="processLine"/>
+</route>
+----
+
+*Camel 2.6 or older*
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<route>
+  <from uri="file://inbox"/>
+  <sort>
+    <expression>
+      <simple>body</simple>
+    </expression>
+  </sort>
+  <beanRef ref="myServiceBean" method="processLine"/>
+</route>
+----
+
+And to use our own comparator we can refer to it as a spring bean:
+
+*Camel 2.7 or better*
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<route>
+  <from uri="file://inbox"/>
+  <sort comparatorRef="myReverseComparator">
+    <simple>body</simple>
+  </sort>
+  <beanRef ref="MyServiceBean" method="processLine"/>
+</route>
+
+<bean id="myReverseComparator" class="com.mycompany.MyReverseComparator"/>
+----
+
+*Camel 2.6 or older*
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<route>
+  <from uri="file://inbox"/>
+  <sort comparatorRef="myReverseComparator">
+    <expression>
+      <simple>body</simple>
+    </expression>
+  </sort>
+  <beanRef ref="MyServiceBean" method="processLine"/>
+</route>
+
+<bean id="myReverseComparator" class="com.mycompany.MyReverseComparator"/>
+----
+
+Besides `<simple>`, you can supply an expression using any
+link:languages.html[language] you like, so long as it returns a list.
+
+[[Sort-UsingThisPattern]]
+Using This Pattern
+++++++++++++++++++
+
+If you would like to use this EIP Pattern then please read the
+link:getting-started.html[Getting Started], you may also find the
+link:architecture.html[Architecture] useful particularly the description
+of link:endpoint.html[Endpoint] and link:uris.html[URIs]. Then you could
+try out some of the link:examples.html[Examples] first before trying
+this pattern out.

@@ -1,0 +1,20 @@
+[[ConfluenceContent]]
+[[GuiceEmbeddedMavenGoal-guice:embedded]]
+guice:embedded
+~~~~~~~~~~~~~~
+
+The *guice:embedded* goal of the link:guice-maven-plugin.html[Guice
+Maven Plugin] is used to run your Camel link:guice.html[Guice]
+configurations in the same JVM as Maven, so it should startup a bit
+faster than link:guice-run-maven-goal.html[guice:run]. Though sometimes
+we all get the odd classpath issue; so sometimes forking a new JVM can
+work around any strange Maven classpath issues.
+
+A good example application to get you started is the
+link:guice-jms-example.html[Guice JMS Example].
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+cd examples/camel-example-guice-jms
+mvn guice:embedded
+----

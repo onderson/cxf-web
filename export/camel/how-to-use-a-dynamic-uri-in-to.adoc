@@ -1,0 +1,89 @@
+[[ConfluenceContent]]
+[[HowtouseadynamicURIinto()-HowtouseadynamicURIinto()]]
+How to use a dynamic URI in to()
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+A dynamic URI is an endpoint URI that varies depending on inflight
+routing information, such as Exchange properties, message headers, the
+body, the Camel Context, etc.
+
+[Info]
+====
+ **Dynamic To - out of the box**
+
+From *Camel 2.16* onwards there is a new <toD> which is a dynamic to.
+See more details at link:message-endpoint.html[Message Endpoint].
+
+====
+
+ 
+
+For example, if you're using a Freemarker producer and the template
+location is provided inside the current message, you might expect the
+following code to work, *but it will not*.
+
+[Warning]
+====
+ **This is not valid code**
+
+This snippet is not valid code. Read on.
+
+====
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+.to("freemarker://templateHome/${body.templateName}.ftl")
+----
+
+In this case, you must use an EIP (Enterprise Integration Pattern) that
+is capable of computing a dynamic URI using
+an link:expression.html[Expression], such as
+the link:recipient-list.html[Recipient List] EIP pattern.
+
+For example, rewriting the snippet above to use the
+link:simple.html[Simple] expression language:
+
+[Tip]
+====
+ **This is valid code**
+
+This snippet is valid code.
+
+====
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+.recipientList(simple("freemarker://templateHome/${body.templateName}.ftl"))
+----
+
+Or you could use any other of Camel link:languages.html[Languages].
+
+[Info]
+====
+
+
+Notice that the link:recipient-list.html[Recipient List] can send to
+multiple
+https://cwiki.apache.org/confluence/pages/viewpage.action?pageId=101496[Endpoints]
+if the expression returns either a `java.util.List`, array,
+`java.util.Iteratable` or a `String`. If the returned value is a
+`String` then you can specify multiple endpoints separated by comma. So
+if you only want to send to *one* endpoint and use a `String` type, then
+beware of the comma. If you need to use a comma, then you can change or
+turn off the separator on the link:recipient-list.html[Recipient List].
+
+For example, to turn it, when using *Camel 2.13* onwards:
+
+....
+.recipientList(simple("sql:select firstName, lastName from myTable where user = ${header.user}"), "false")
+....
+
+ +
+ ====
+
+And for users of *Camel 2.12.x* or older, we use a non existing
+delimiter char:
+
+....
+.recipientList(simple("sql:select firstName, lastName from myTable where user = ${header.user}"), "@")
+....

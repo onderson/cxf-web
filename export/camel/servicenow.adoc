@@ -1,0 +1,171 @@
+[[ConfluenceContent]]
+[[ServiceNow-ServiceNowComponent]]
+ServiceNow Component
+~~~~~~~~~~~~~~~~~~~~
+
+*Available as of Camel 2.18*
+
+The ServiceNow component provides access to all of ServiceNow
+https://developer.servicenow.com/app.do#!/rest_api_doc?v=fuji[REST
+API]. 
+
+Maven users will need to add the following dependency to their pom.xml
+for this component:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+    <dependency>
+        <groupId>org.apache.camel</groupId>
+        <artifactId>camel-servicenow</artifactId>
+        <version>${camel-version}</version>
+    </dependency>
+----
+
+[[ServiceNow-URIformat]]
+URI format
+^^^^^^^^^^
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+    servicenow://instanceName?[options]
+----
+
+ 
+
+[[ServiceNow-Options]]
+Options
+^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Name |Default Value |Description
+|`userName` |null |The user name to use for authentication
+
+|password |`null` |The password to use for authentication
+
+|oauthClientId |null |OAuth2 client id
+
+|oauthClientSecret |null |OAuth2 client secret
+
+|oauthTokenUrl |https://incenceName.service-now.com/oauth_token.do |The
+OAuth2 token url
+
+|apiUrl |https://incenceName.service-now.com/api/now |The ServiceNow API
+url
+
+|table |null |The default table, can be overridden by header
+CamelServiceNowTable
+
+|excludeReferenceLink |false |True to exclude Table API links for
+reference fields
+
+|suppressAutoSysField |false |True to suppress auto generation of system
+fields
+
+|displayValue |false |Return the display value (true), actual value
+(false), or both (all) for reference fields (default: false)
+
+|inputDisplayValue |false |True to set raw value of input fields
+
+|models |null |Defines the default model to use for a table i.e
+models.incident = my.company.model.Incident
+
+|mapper |  |ServiceNow component uses Jackson Databind to translate
+request/response to/from Json and you can customize how it is done by
+providing a custom ObjectMapper
+|=======================================================================
+
+ 
+
+[[ServiceNow-Headers]]
+Headers
+^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Name |Type |Description
+|CamelServiceNowResource |String |The resource to access TABLE,
+AGGREGATE, IMPORT
+
+|CamelServiceNowTable |String |The table to access
+
+|CamelServiceNowAction |String |The action to perform RETRIEVE, CREATE,
+MODIFY, DELETE, UPDATE
+
+|CamelServiceNowModel |Class |The data model
+
+|CamelServiceNowSysId |String |ServiceNow sysy_id
+
+|CamelServiceNowQuery |String |An encoded query
+
+|CamelServiceNowDisplayValue |String |Return the display value (true),
+actual value (false), or both (all) for reference fields (default:
+false)
+
+|CamelServiceNowInputDisplayValue |Boolean |True to set raw value of
+input fields
+
+|CamelServiceNowExcludeReferenceLink |Boolean |True to exclude Table API
+links for reference fields
+
+|CamelServiceNowFields |String |Comma-separated field names to return in
+the response
+
+|CamelServiceNowMinFields |String |A comma-separated list of fields for
+which to calculate the minimum value
+
+|CamelServiceNowMaxFields |String |A comma-separated list of fields for
+which to calculate the maximum value
+
+|CamelServiceNowSumFields |String |A comma-separated list of fields for
+which to calculate the sum of the values
+
+|CamelServiceNowLimit |Integer |Limit to be applied on pagination
+
+|CamelServiceNowView |String |UI view to determine fields returned in
+the response.
+
+|CamelServiceNowSuppressAutoSysField |Boolean |True to suppress auto
+generation of system fields
+
+|CamelServiceNowAvgFields |String |A comma-separated list of fields for
+which to calculate the average value
+
+|CamelServiceNowCount |Boolean |A boolean flag. You can set this
+parameter to *true* for the number of records returned by the query
+
+|CamelServiceGroupBy |String |The fields to group the returned data by
+
+|CamelServiceOrderBy |String |A list of values to order grouped results
+by
+
+|CamelServiceHaving |String |An additional query allowing you to filter
+the data based on an aggregate operation
+|=======================================================================
+
+ 
+
+[[ServiceNow-Usageexamples:]]
+Usage examples:
+^^^^^^^^^^^^^^^
+
+ 
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+context.addRoutes(new RouteBuilder() {
+    public void configure() {
+       from("direct:servicenow")
+           .to("servicenow:{{env:SERVICENOW_INSTANCE}}"
+               + "?userName={{env:SERVICENOW_USERNAME}}"
+               + "&password={{env:SERVICENOW_PASSWORD}}"
+               + "&oauthClientId={{env:SERVICENOW_OAUTH2_CLIENT_ID}}"
+               + "&oauthClientSecret={{env:SERVICENOW_OAUTH2_CLIENT_SECRET}}"
+               + "&model.incident=org.apache.camel.component.servicenow.model.Incident")
+           .to("mock:servicenow");
+    }
+}); Map<String, Object> headers = new HashMap<>();headers.put(ServiceNowConstants.RESOURCE, "table");
+headers.put(ServiceNowConstants.ACTION, ServiceNowConstants.ACTION_RETRIEVE);
+headers.put(ServiceNowConstants.SYSPARM_LIMIT, "10");
+headers.put(ServiceNowConstants.TABLE, "incident");template.sendBodyAndHeaders("direct:servicenow", null, headers);
+----

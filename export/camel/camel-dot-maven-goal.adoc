@@ -1,0 +1,72 @@
+[[ConfluenceContent]]
+[[CamelDotMavenGoal-camel:dot]]
+camel:dot
+~~~~~~~~~
+
+The *camel:dot* goal of the link:camel-maven-plugin.html[Camel Maven
+Plugin] is used to generate link:visualisation.html[Visualisation]
+diagrams for your link:enterprise-integration-patterns.html[Enterprise
+Integration Patterns]. +
+It works like link:camel-embedded-maven-goal.html[camel:embedded], it
+will boot up your link:spring.html[Spring] configuration but it will
+only keep up for a few seconds. This will then generate a
+http://graphviz.org[GraphViz] DOT file in _target/site/cameldoc_.
+
+The plugin will then try and convert the DOT file into a HTML, PNG and
+SVG representation. To do this an installation of
+http://graphviz.org[GraphViz] is required to be on your PATH.
+
+So to use this plugin, please http://graphviz.org/Download..php[download
+Graphviz] then put it on your PATH.
+
+By default the plugin will evaluate the _dot_ executable, but you can
+overload this by configuring the plugin's executable property. e.g.
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<configuration>
+ <executable>DOT.EXE</executable>
+</configuration>
+----
+
+[[CamelDotMavenGoal-Tryingoutcamel:dot]]
+Trying out camel:dot
+^^^^^^^^^^^^^^^^^^^^
+
+A good example application to get you started is the
+link:spring-example.html[Spring Example].
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+cd examples/camel-example-spring
+mvn compile camel:dot
+----
+
+Your generated PNG/SVG files will then be in the _target/site/cameldoc_
+directory - assuming Maven could find your DOT executable.
+
+Note that you do not need to explicitly run this goal; you could just
+link:camel-maven-plugin.html[integrate this plugin into the normal Maven
+report generation].
+
+[[CamelDotMavenGoal-DisablingexecutionofDOTexecutable]]
+Disabling execution of DOT executable
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In Camel 1.4 you can disable the execution of DOT by setting the useDot
+configuration parameter to false.
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.camel</groupId>
+        <artifactId>camel-maven-plugin</artifactId>
+        <configuration>
+          <useDot>false</useDot>
+        </configuration>
+      </plugin>
+    </plugins>
+</reporting>
+----

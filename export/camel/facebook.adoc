@@ -1,0 +1,961 @@
+[[ConfluenceContent]]
+[[Facebook-FacebookComponent]]
+Facebook Component
+~~~~~~~~~~~~~~~~~~
+
+*Available as of Camel 2.12*
+
+The Facebook component provides access to all of the Facebook APIs
+accessible using http://facebook4j.org/en/index.html[Facebook4J]. It
+allows producing messages to retrieve, add, and delete posts, likes,
+comments, photos, albums, videos, photos, checkins, locations, links,
+etc. It also supports APIs that allow polling for posts, users,
+checkins, groups, locations, etc.
+
+Facebook requires the use of OAuth for all client application
+authentication. In order to use camel-facebook with your account, you'll
+need to create a new application within Facebook at
+https://developers.facebook.com/apps and grant the application access to
+your account. The Facebook application's id and secret will allow access
+to Facebook APIs which do not require a current user. A user access
+token is required for APIs that require a logged in user. More
+information on obtaining a user access token can be found at
+https://developers.facebook.com/docs/facebook-login/access-tokens/.
+
+Maven users will need to add the following dependency to their pom.xml
+for this component:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+    <dependency>
+        <groupId>org.apache.camel</groupId>
+        <artifactId>camel-facebook</artifactId>
+        <version>${camel-version}</version>
+    </dependency>
+----
+
+[[Facebook-URIformat]]
+URI format
+^^^^^^^^^^
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+  facebook://[endpoint]?[options]
+----
+
+[[Facebook-FacebookComponent.1]]
+FacebookComponent
+^^^^^^^^^^^^^^^^^
+
+The facebook component can be configured with the Facebook account
+settings below, which are mandatory. The values can be provided to the
+component using the bean property *configuration* of type
+*org.apache.camel.component.facebook.config.FacebookConfiguration*. The
+*oAuthAccessToken* option may be ommited but that will only allow access
+to application APIs.
+
+You can also configure these options directly in an endpoint URI.
+
+[width="100%",cols="50%,50%",options="header",]
+|=======================================
+|Option |Description
+|oAuthAppId |The application Id
+|oAuthAppSecret |The application Secret
+|oAuthAccessToken |The user access token
+|=======================================
+
+In addition to the above settings, non-mandatory options below can be
+used to configure the underlying Facebook4J runtime through either the
+component's *configuration* property or in an endpoint URI.
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Option |Description |Default Value
+|oAuthAuthorizationURL |OAuth authorization URL
+|https://www.facebook.com/dialog/oauth
+
+|oAuthPermissions a|
+Default OAuth permissions. Comma separeted permission names. See
+
+https://developers.facebook.com/docs/reference/login/#permissions
+
+for the detail
+
+ |null
+
+|oAuthAccessTokenURL |OAuth access token URL
+|https://graph.facebook.com/oauth/access_token
+
+|debugEnabled |Enables deubg output. Effective only with the embedded
+logger |false
+
+|gzipEnabled |Use Facebook GZIP encoding |true
+
+|httpConnectionTimeout |Http connection timeout in milliseconds |20000
+
+|httpDefaultMaxPerRoute |HTTP maximum connections per route |2
+
+|httpMaxTotalConnections |HTTP maximum total connections |20
+
+|httpProxyHost |HTTP proxy server host name |null
+
+|httpProxyPassword |HTTP proxy server password |null
+
+|httpProxyPort |HTTP proxy server port |null
+
+|httpProxyUser |HTTP proxy server user name |null
+
+|httpReadTimeout |Http read timeout in milliseconds |120000
+
+|httpRetryCount |Number of HTTP retries |0
+
+|httpRetryIntervalSeconds |HTTP retry interval in seconds |5
+
+|httpStreamingReadTimeout |HTTP streaming read timeout in milliseconds
+|40000
+
+|jsonStoreEnabled |If set to true, raw JSON forms will be stored in
+DataObjectFactory |false
+
+|mbeanEnabled |If set to true, Facebook4J mbean will be registerd |false
+
+|prettyDebugEnabled |prettify JSON debug output if set to true |false
+
+|restBaseURL |API base URL |https://graph.facebook.com/
+
+|useSSL |Use SSL |true
+
+|videoBaseURL |Video API base URL |https://graph-video.facebook.com/
+
+|clientURL |Facebook4J API client URL
+|http://facebook4j.org/en/facebook4j-<version>.xml
+
+|clientVersion |Facebook4J client API version |1.1.12
+|=======================================================================
+
+[[Facebook-ProducerEndpoints:]]
+Producer Endpoints:
+^^^^^^^^^^^^^^^^^^^
+
+Producer endpoints can use endpoint names and options from the table
+below. Endpoints can also use the short name without the *get* or
+*search* prefix, except *checkin* due to ambiguity between *getCheckin*
+and *searchCheckin*. Endpoint options that are not mandatory are denoted
+by [].
+
+Producer endpoints can also use a special option **inBody** that in turn
+should contain the name of the endpoint option whose value will be
+contained in the Camel Exchange In message. For example, the facebook
+endpoint in the following route retrieves activities for the user id
+value in the incoming message body.
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+    from("direct:test").to("facebook://activities?inBody=userId")...
+----
+
+Any of the endpoint options can be provided in either the endpoint URI,
+or dynamically in a message header. The message header name must be of
+the format
+*CamelFacebook.https://cwiki.apache.org/confluence/pages/createpage.action?spaceKey=CAMEL&title=option&linkCreation=true&fromPageId=34020899[option]*.
+For example, the *userId* option value in the previous route could
+alternately be provided in the message header *CamelFacebook.userId*.
+Note that the inBody option overrides message header, e.g. the endpoint
+option *inBody=user* would override a *CamelFacebook.userId* header.
+
+Endpoints that return a String return an Id for the created or modified
+entity, e.g. *addAlbumPhoto* returns the new album Id. Endpoints that
+return a boolean, return true for success and false otherwise. In case
+of Facebook API errors the endpoint will throw a RuntimeCamelException
+with a facebook4j.FacebookException cause.
+
+[width="100%",cols="25%,25%,25%,25%",]
+|=======================================================================
+|Endpoint |Short Name |Options |Body Type
+
+|*Accounts* |  |  | 
+
+|getAccounts |accounts |[reading],[userId]
+|facebook4j.ResponseList<facebook4j.Account>
+
+|*Activities* |  |  | 
+
+|getActivities |activities |[reading],[userId]
+|facebook4j.ResponseList<facebook4j.Activity>
+
+|*Albums* |  |  | 
+
+|addAlbumPhoto |addAlbumPhoto |albumId,source,[message] |String
+
+|commentAlbum |commentAlbum |albumId,message |String
+
+|createAlbum |createAlbum |albumCreate,[userId] |String
+
+|getAlbum |album |albumId,[reading] |facebook.Album
+
+|getAlbumComments |albumComments |albumId,[reading]
+|facebook4j.ResponseList<facebook4j.Comment>
+
+|getAlbumCoverPhoto |albumCoverPhoto |albumId |java.net.URL
+
+|getAlbumLikes |albumLikes |albumId,[reading]
+|facebook4j.ResponseList<facebook4j.Like>
+
+|getAlbumPhotos |albumPhotos |albumId,[reading]
+|facebook4j.ResponseList<facebook4j.Photos>
+
+|getAlbums |albums |[reading],[userId]
+|facebook4j.ResponseList<facebook4j.Album>
+
+|likeAlbum |likeAlbum |albumId |boolean
+
+|unlikeAlbum |unlikeAlbum |albumId |boolean
+
+|*Checkins* |  |  | 
+
+|checkin |checkin |checkinCreate,[userId] |String
+
+|commentCheckin |commentCheckin |checkinId,message |String
+
+|getCheckin |checkin |checkinId,[reading] |facebook4j.Checkin
+
+|getCheckinComments |checkinComments |checkinId,[reading]
+|facebook4j.ResponseList<facebook4j.Comment>
+
+|getCheckinLikes |checkinLikes |checkinId,[reading]
+|facebook4j.ResponseList<facebook4j.Like>
+
+|getCheckins |checkins |[reading],[userId]
+|facebook4j.ResponseList<facebook4j.Checkin>
+
+|likeCheckin |likeCheckin |checkinId |boolean
+
+|unlikeCheckin |unlikeCheckin |checkinId |boolean
+
+|*Comments* |  |  | 
+
+|deleteComment |deleteComment |commentId |boolean
+
+|getComment |comment |commentId |facebook4j.Comment
+
+|getCommentLikes |commentLikes |commentId,[reading]
+|facebook4j.ResponseList<facebook4j.Like>
+
+|likeComment |likeComment |commentId |boolean
+
+|unlikeComment |unlikeComment |commentId |boolean
+
+|*Domains* |  |  | 
+
+|getDomain |domain |domainId |facebook4j.Domain
+
+|getDomainByName |domainByName |domainName |facebook4j.Domain
+
+|getDomainsByName |domainsByName |domainNames
+|java.util.List<facebook4j.Domain>
+
+|*Events* |  |  | 
+
+|createEvent |createEvent |eventUpdate,[userId] |String
+
+|deleteEvent |deleteEvent |eventId |boolean
+
+|deleteEventPicture |deleteEventPicture |eventId |boolean
+
+|editEvent |editEvent |eventId,eventUpdate |boolean
+
+|getEvent |event |eventId,[reading] |facebook4j.Event
+
+|getEventFeed |eventFeed |eventId,[reading]
+|facebook4j.ResponseList<facebook4j.Post>
+
+|getEventPhotos |eventPhotos |eventId,[reading]
+|facebook4j.ResponseList<facebook4j.Photo>
+
+|getEventPictureURL |eventPictureURL |eventId,[size] |java.net.URL
+
+|getEvents |events |[reading],[userId]
+|facebook4j.ResponseList<facebook4j.Event>
+
+|getEventVideos |eventVideos |eventId,[reading]
+|facebook4j.ResponseList<facebook4j.Video>
+
+|getRSVPStatusAsInvited |rSVPStatusAsInvited |eventId,[userId]
+|facebook4j.ResponseList<facebook4j.RSVPStatus>
+
+|getRSVPStatusAsNoreply |rSVPStatusAsNoreply |eventId,[userId]
+|facebook4j.ResponseList<facebook4j.RSVPStatus>
+
+|getRSVPStatusInAttending |rSVPStatusInAttending |eventId,[userId]
+|facebook4j.ResponseList<facebook4j.RSVPStatus>
+
+|getRSVPStatusInDeclined |rSVPStatusInDeclined |eventId,[userId]
+|facebook4j.ResponseList<facebook4j.RSVPStatus>
+
+|getRSVPStatusInMaybe |rSVPStatusInMaybe |eventId,[userId]
+|facebook4j.ResponseList<facebook4j.RSVPStatus>
+
+|inviteToEvent |inviteToEvent |eventId,[userId],[userIds] |boolean
+
+|postEventFeed |postEventFeed |eventId,postUpdate |String
+
+|postEventLink |postEventLink |eventId,link,[message] |String
+
+|postEventPhoto |postEventPhoto |eventId,source,[message] |String
+
+|postEventStatusMessage |postEventStatusMessage |eventId,message |String
+
+|postEventVideo |postEventVideo |eventId,source,[title,description]
+|String
+
+|rsvpEventAsAttending |rsvpEventAsAttending |eventId |boolean
+
+|rsvpEventAsDeclined |rsvpEventAsDeclined |eventId |boolean
+
+|rsvpEventAsMaybe |rsvpEventAsMaybe |eventId |boolean
+
+|uninviteFromEvent |uninviteFromEvent |eventId,userId |boolean
+
+|updateEventPicture |updateEventPicture |eventId,source |boolean
+
+|*Family* |  |  | 
+
+|getFamily |family |[reading],[userId]
+|facebook4j.ResponseList<facebook4j.Family>
+
+|*Favorites* |  |  | 
+
+|getBooks |books |[reading],[userId]
+|facebook4j.ResponseList<facebook4j.Book>
+
+|getGames |games |[reading],[userId]
+|facebook4j.ResponseList<facebook4j.Game>
+
+|getInterests |interests |[reading],[userId]
+|facebook4j.ResponseList<facebook4j.Interest>
+
+|getMovies |movies |[reading],[userId]
+|facebook4j.ResponseList<facebook4j.Movie>
+
+|getMusic |music |[reading],[userId]
+|facebook4j.ResponseList<facebook4j.Music>
+
+|getTelevision |television |[reading],[userId]
+|facebook4j.ResponseList<facebook4j.Television>
+
+|*Facebook Query Language (FQL)* |  |  | 
+
+|executeFQL |executeFQL |query,[locale]
+|facebook4j.internal.org.json.JSONArray
+
+|executeMultiFQL |executeMultiFQL |queries,[locale]
+|java.util.Map<String,facebook4j.internal.org.json.JSONArray>
+
+|*Friends* |  |  | 
+
+|addFriendlistMember |addFriendlistMember |friendlistId,userId |boolean
+
+|createFriendlist |createFriendlist |friendlistName,[userId] |String
+
+|deleteFriendlist |deleteFriendlist |friendlistId |boolean
+
+|getBelongsFriend |belongsFriend |friendId,[reading],[userId]
+|facebook4j.ResponseList<facebook4j.Friend>
+
+|getFriendlist |friendlist |friendlistId,[reading]
+|facebook4j.FriendList
+
+|getFriendlistMembers |friendlistMembers |friendlistId
+|facebook4j.ResponseList<facebook4j.Friend>
+
+|getFriendlists |friendlists |[reading],[userId]
+|facebook4j.ResponseList<facebook4j.FriendList>
+
+|getFriendRequests |friendRequests |[reading],[userId]
+|facebook4j.ResponseList<facebook4j.FriendRequest>
+
+|getFriends |friends |[reading],[userId]
+|facebook4j.ResponseList<facebook4j.Friend>
+
+|getMutualFriends |mutualFriends
+|[friendUserId],[reading],[userId1,userId2]
+|facebook4j.ResponseList<facebook4j.Friend>
+
+|removeFriendlistMember |removeFriendlistMember |friendlistId,userId
+|boolean
+
+|*Games* |  |  | 
+
+|deleteAchievement |deleteAchievement |achievementURL,[userId] |boolean
+
+|deleteScore |deleteScore |[userId] |boolean
+
+|getAchievements |achievements |[reading],[userId]
+|facebook4j.ResponseList<facebook4j.Achievement>
+
+|getScores |scores |[reading],[userId]
+|facebook4j.ResponseList<facebook4j.Score>
+
+|postAchievement |postAchievement |achievementURL,[userId] |String
+
+|postScore |postScore |scoreValue,[userId] |String
+
+|*Groups* |  |  | 
+
+|getGroup |group |groupId,[reading] |facebook4j.Group
+
+|getGroupDocs |groupDocs |groupId,[reading]
+|facebook4j.ResponseList<facebook4j.GroupDoc>
+
+|getGroupFeed |groupFeed |groupId,[reading]
+|facebook4j.ResponseList<facebook4j.Post>
+
+|getGroupMembers |groupMembers |groupId,[reading]
+|facebook4j.ResponseList<facebook4j.GroupMember>
+
+|getGroupPictureURL |groupPictureURL |groupId |java.net.URL
+
+|getGroups |groups |[reading],[userId]
+|facebook4j.ResponseList<facebook4j.Group>
+
+|postGroupFeed |postGroupFeed |groupId,postUpdate |String
+
+|postGroupLink |postGroupLink |groupId,link,[message] |String
+
+|postGroupStatusMessage |postGroupStatusMessage |groupId,message |String
+
+|*Insights* |  |  | 
+
+|getInsights |insights |objectId,metric,[reading]
+|facebook4j.ResponseList<facebook4j.Insight>
+
+|*Likes* |  |  | 
+
+|getUserLikes |userLikes |[reading],[userId]
+|facebook4j.ResponseList<facebook4j.Like>
+
+|*Links* |  |  | 
+
+|commentLink |commentLink |linkId,message |String
+
+|getLink |link |linkId,[reading] |facebook4j.Link
+
+|getLinkComments |linkComments |linkId,[reading]
+|facebook4j.ResponseList<facebook4j.Comment>
+
+|getLinkLikes |linkLikes |linkId,[reading]
+|facebook4j.ResponseList<facebook4j.Like>
+
+|likeLink |likeLink |linkId |boolean
+
+|unlikeLink |unlikeLink |linkId |boolean
+
+|*Locations* |  |  | 
+
+|getLocations |locations |[reading],[userId]
+|facebook4j.ResponseList<facebook4j.Location>
+
+|*Messages* |  |  | 
+
+|getInbox |inbox |[reading],[userId]
+|facebook4j.InboxResponseList<facebook4j.Inbox>
+
+|getMessage |message |messageId,[reading] |facebook4j.Message
+
+|getOutbox |outbox |[reading],[userId]
+|facebook4j.ResponseList<facebook4j.Message>
+
+|getUpdates |updates |[reading],[userId]
+|facebook4j.ResponseList<facebook4j.Message>
+
+|*Notes* |  |  | 
+
+|commentNote |commentNote |noteId,message |String
+
+|createNote |createNote |subject,message,[userId] |String
+
+|getNote |note |noteId,[reading] |facebook4j.Note
+
+|getNoteComments |noteComments |noteId,[reading]
+|facebook4j.ResponseList<facebook4j.Comment>
+
+|getNoteLikes |noteLikes |noteId,[reading]
+|facebook4j.ResponseList<facebook4j.Like>
+
+|getNotes |notes |[reading],[userId]
+|facebook4j.ResponseList<facebook4j.Note>
+
+|likeNote |likeNote |noteId |boolean
+
+|unlikeNote |unlikeNote |noteId |boolean
+
+|*Notifications* |  |  | 
+
+|getNotifications |notifications |[includeRead],[reading],[userId]
+|facebook4j.ResponseList<facebook4j.Notification>
+
+|markNotificationAsRead |markNotificationAsRead |notificationId |boolean
+
+|*Permissions* |  |  | 
+
+|getPermissions |permissions |[userId]
+|java.util.List<facebook4j.Permission>
+
+|revokePermission |revokePermission |permissionName,[userId] |boolean
+
+|*Photos* |  |  | 
+
+|addTagToPhoto |addTagToPhoto
+|photoId,[toUserId],[toUserIds],[tagUpdate] |boolean
+
+|commentPhoto |commentPhoto |photoId,message |String
+
+|deletePhoto |deletePhoto |photoId |boolean
+
+|getPhoto |photo |photoId,[reading] |facebook4j.Photo
+
+|getPhotoComments |photoComments |photoId,[reading]
+|facebook4j.ResponseList<facebook4j.Comment>
+
+|getPhotoLikes |photoLikes |photoId,[reading]
+|facebook4j.ResponseList<facebook4j.Like>
+
+|getPhotos |photos |[reading],[userId]
+|facebook4j.ResponseList<facebook4j.Photo>
+
+|getPhotoURL |photoURL |photoId |java.net.URL
+
+|getTagsOnPhoto |tagsOnPhoto |photoId,[reading]
+|facebook4j.ResponseList<facebook4j.Tag>
+
+|likePhoto |likePhoto |photoId |boolean
+
+|postPhoto |postPhoto |source,[message],[place],[noStory],[userId]
+|String
+
+|unlikePhoto |unlikePhoto |photoId |boolean
+
+|updateTagOnPhoto |updateTagOnPhoto |photoId,[toUserId],[tagUpdate]
+|boolean
+
+|*Pokes* |  |  | 
+
+|getPokes |pokes |[reading],[userId]
+|facebook4j.ResponseList<facebook4j.Poke>
+
+|*Posts* |  |  | 
+
+|commentPost |commentPost |postId,message |String
+
+|deletePost |deletePost |postId |boolean
+
+|getFeed |feed |[reading],[userId]
+|facebook4j.ResponseList<facebook4j.Post>
+
+|getHome |home |[reading] |facebook4j.ResponseList<facebook4j.Post>
+
+|getLinks |links |[reading],[userId]
+|facebook4j.ResponseList<facebook4j.Link>
+
+|getPost |post |postId,[reading] |facebook4j.Post
+
+|getPostComments |postComments |postId,[reading]
+|facebook4j.ResponseList<facebook4j.Comment>
+
+|getPostLikes |postLikes |postId,[reading]
+|facebook4j.ResponseList<facebook4j.Like>
+
+|getPosts |posts |[reading],[userId]
+|facebook4j.ResponseList<facebook4j.Post>
+
+|getStatuses |statuses |[reading],[userId]
+|facebook4j.ResponseList<facebook4j.Post>
+
+|getTagged |tagged |[reading],[userId]
+|facebook4j.ResponseList<facebook4j.Post>
+
+|likePost |likePost |postId |boolean
+
+|postFeed |postFeed |postUpdate,[userId] |String
+
+|postLink |postLink |link,[message],[userId] |String
+
+|postStatusMessage |postStatusMessage |message,[userId] |String
+
+|unlikePost |unlikePost |postId |boolean
+
+|*Questions* |  |  | 
+
+|addQuestionOption |addQuestionOption |questionId,optionDescription
+|String
+
+|createQuestion |createQuestion
+|question,[options],[allowNewOptions],[userId] |String
+
+|deleteQuestion |deleteQuestion |questionId |boolean
+
+|getQuestion |question |questionId,[reading] |facebook4j.Question
+
+|getQuestionOptions |questionOptions |questionId,[reading]
+|facebook4j.ResponseList<facebook4j.Question.Option>
+
+|getQuestionOptionVotes |questionOptionVotes |questionId
+|facebook4j.ResponseList<facebook4j.QuestionVotes>
+
+|getQuestions |questions |[reading],[userId]
+|facebook4j.ResponseList<facebook4j.Question>
+
+|getSubscribedto |subscribedto |[reading],[userId]
+|facebook4j.ResponseList<facebook4j.Subscribedto>
+
+|getSubscribers |subscribers |[reading],[userId]
+|facebook4j.ResponseList<facebook4j.Subscriber>
+
+|*Test Users* |  |  | 
+
+|createTestUser |createTestUser |appId,[name],[userLocale],[permissions]
+|facebook4j.TestUser
+
+|deleteTestUser |deleteTestUser |testUserId |boolean
+
+|getTestUsers |testUsers |appId |java.util.List<facebook4j.TestUser>
+
+|makeFriendTestUser |makeFriendTestUser |testUser1,testUser2 |boolean
+
+|*Users* |  |  | 
+
+|getMe |me |[reading] |facebook4j.User
+
+|getPictureURL |pictureURL |[size],[userId] |java.net.URL
+
+|getUser |user |userId,[reading] |facebook4j.User
+
+|getUsers |users |ids |java.util.List<facebook4j.User>
+
+|*Videos* |  |  | 
+
+|commentVideo |commentVideo |videoId,message |String
+
+|getVideo |video |videoId,[reading] |facebook4j.Video
+
+|getVideoComments |videoComments |videoId,[reading]
+|facebook4j.ResponseList<facebook4j.Comment>
+
+|getVideoCover |videoCover |videoId |java.net.URL
+
+|getVideoLikes |videoLikes |videoId,[reading]
+|facebook4j.ResponseList<facebook4j.Like>
+
+|getVideos |videos |[reading],[userId]
+|facebook4j.ResponseList<facebook4j.Video>
+
+|likeVideo |likeVideo |videoId |boolean
+
+|postVideo |postVideo |source,[title,description],[userId] |String
+
+|unlikeVideo |unlikeVideo |videoId |boolean
+
+|*Search* |  |  | 
+
+|search |search |query,[reading]
+|facebook4j.ResponseList<facebook4j.internal.org.json.JSONObject>
+
+|searchCheckins |checkins |[reading]
+|facebook4j.ResponseList<facebook4j.Checkin>
+
+|searchEvents |events |query,[reading]
+|facebook4j.ResponseList<facebook4j.Event>
+
+|searchGroups |groups |query,[reading]
+|facebook4j.ResponseList<facebook4j.Group>
+
+|searchLocations |locations |[center,distance],[reading],[placeId]
+|facebook4j.ResponseList<facebook4j.Location>
+
+|searchPlaces |places |query,[reading],[center,distance]
+|facebook4j.ResponseList<facebook4j.Place>
+
+|searchPosts |posts |query,[reading]
+|facebook4j.ResponseList<facebook4j.Post>
+
+|searchUsers |users |query,[reading]
+|facebook4j.ResponseList<facebook4j.User>
+|=======================================================================
+
+[[Facebook-ConsumerEndpoints:]]
+Consumer Endpoints:
+^^^^^^^^^^^^^^^^^^^
+
+Any of the producer endpoints that take a
+https://cwiki.apache.org/confluence/pages/createpage.action?spaceKey=CAMEL&title=reading&linkCreation=true&fromPageId=34020899[reading#reading]
+parameter can be used as a consumer endpoint. The polling consumer uses
+the *since* and *until* fields to get responses within the polling
+interval. In addition to other reading fields, an initial *since* value
+can be provided in the endpoint for the first poll.
+
+Rather than the endpoints returning a List (or
+*facebook4j.ResponseList*) through a single route exchange,
+camel-facebook creates one route exchange per returned object. As an
+example, if *"facebook://home"* results in five posts, the route will be
+executed five times (once for each Post).
+
+[[Facebook-urioptions]]
+
+1.  URI Options #
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Name |Type |Description
+|achievementURL |java.net.URL |The unique URL of the achievement
+
+|albumCreate |facebook4j.AlbumCreate |The facebook Album to be created
+
+|albumId |String |The album ID
+
+|allowNewOptions |boolean |True if allows other users to add new options
+
+|appId |String |The ID of the Facebook Application
+
+|center |facebook4j.GeoLocation |Location latitude and longitude
+
+|checkinCreate |facebook4j.CheckinCreate |The checkin to be created.
+*Deprecated*, instead create a Post with an attached location
+
+|checkinId |String |The checkin ID
+
+|commentId |String |The comment ID
+
+|description |String |The description text
+
+|distance |int |Distance in meters
+
+|domainId |String |The domain ID
+
+|domainName |String |The domain name
+
+|domainNames |String[] |The domain names
+
+|eventId |String |The event ID
+
+|eventUpdate |facebook4j.EventUpdate |The event to be created or updated
+
+|friendId |String |The friend ID
+
+|friendUserId |String |The friend user ID
+
+|friendlistId |String |The friend list ID
+
+|friendlistName |String |The friend list Name
+
+|groupId |String |The group ID
+
+|ids |String[] |The ids of users
+
+|includeRead |boolean |Enables notifications that the user has already
+read in addition to unread ones
+
+|link |java.net.URL |Link URL
+
+|linkId |String |The link ID
+
+|locale |java.util.Locale |Desired FQL locale
+
+|message |String |The message text
+
+|messageId |String |The message ID
+
+|metric |String |The metric name
+
+|name |String |Test user name, must be of the form 'first last'
+
+|noStory |boolean |If set to true, optionally suppresses the feed story
+that is automatically generated on a user’s profile when they upload a
+photo using your application.
+
+|noteId |String |The note ID
+
+|notificationId |String |The notification ID
+
+|objectId |String |The insight object ID
+
+|optionDescription |String |The question's answer option description
+
+|options |java.util.List<String> |The question's answer options
+
+|permissionName |String |The permission name
+
+|permissions |String |Test user permissions in the format
+perm1,perm2,...
+
+|photoId |String |The photo ID
+
+|place |String |The Facebook ID of the place associated with the Photo
+
+|placeId |String |The place ID
+
+|postId |String |The post ID
+
+|postUpdate |facebook4j.PostUpdate |The post to create or update
+
+|queries |java.util.Map<String> |FQL queries
+
+|query |String |FQL query or search terms for search* endpoints
+
+|question |String |The question text
+
+|questionId |String |The question id
+
+|reading |facebook4j.Reading |Optional reading parameters. See
+https://cwiki.apache.org/confluence/pages/createpage.action?spaceKey=CAMEL&title=Reading+Options&linkCreation=true&fromPageId=34020899[Reading
+Options](#reading)
+
+|scoreValue |int |The numeric score with value
+
+|size |facebook4j.PictureSize |The picture size, one of large, normal,
+small or square
+
+|source |facebook4j.Media |The media content from either a java.io.File
+or java.io.Inputstream
+
+|subject |String |The note of the subject
+
+|tagUpdate |facebook4j.TagUpdate |Photo tag information
+
+|testUser1 |facebook4j.TestUser |Test user
+
+|testUser2 |facebook4j.TestUser |Test user
+
+|testUserId |String |The ID of the test user
+
+|title |String |The title text
+
+|toUserId |String |The ID of the user to tag
+
+|toUserIds |java.util.List<String> |The IDs of the users to tag
+
+|userId |String |The Facebook user ID
+
+|userId1 |String |The ID of a user
+
+|userId2 |String |The ID of a user
+
+|userIds |String[] |The IDs of users to invite to event
+
+|userLocale |String |The test user locale
+
+|videoId |String |The video ID
+|=======================================================================
+
+[[Facebook-#reading]]
+
+[[Facebook-ReadingOptions]]
+Reading Options
+^^^^^^^^^^^^^^^
+
+The *reading* option of type *facebook4j.Reading* adds support for
+reading parameters, which allow selecting specific fields, limits the
+number of results, etc. For more information see
+https://cwiki.apache.org/confluence/pages/createpage.action?spaceKey=CAMEL&title=Graph+API&linkCreation=true&fromPageId=34020899[Graph
+API#reading] -
+https://developers.facebook.com/docs/reference/api/#reading[Facebook
+Developers].
+
+It is also used by consumer endpoints to poll Facebook data to avoid
+sending duplicate messages across polls.
+
+The reading option can be a reference or value of type
+*facebook4j.Reading*, or can be specified using the following reading
+options in either the endpoint URI or exchange header with
+*CamelFacebook.* prefix.
+
+[width="100%",cols="50%,50%",options="header",]
+|=======================================================================
+|Option |Description
+|reading.fields |Field names to retrieve, in the format
+field1,field2,...
+
+|reading.limit |Limit for number of items to return for list results,
+e.g. a limit of 10 returns items 1 through 10
+
+|reading.offset |Starting offset for list results, e.g. a limit of 10,
+and offset of 10 returns items 11 through 20
+
+|reading.until |A Unix timestamp or
+http://php.net/manual/en/function.strtotime.php[strtotime] data value
+that points to the end of the range of time-based data
+
+|reading.since |A Unix timestamp or
+http://php.net/manual/en/function.strtotime.php[strtotime] data value
+that points to the start of the range of time-based data
+
+|reading.locale |Retrieve localized content in a particular locale,
+specified as a String with the format language[,country][,variant]
+
+|reading.with |Retrieve information about objects that have location
+information attached, set it to true
+
+|reading.metadata |Use Facebook Graph API
+https://developers.facebook.com/docs/reference/api/introspection/[Introspection]
+to retrieve object metadata, set it to true
+
+|reading.filter |User's stream filter key. See
+https://developers.facebook.com/docs/reference/fql/stream_filter/[Facebook
+stream_filter]
+|=======================================================================
+
+[[Facebook-Messageheader]]
+Message header
+^^^^^^^^^^^^^^
+
+Any of the
+https://cwiki.apache.org/confluence/pages/createpage.action?spaceKey=CAMEL&title=URI+options&linkCreation=true&fromPageId=34020899[URI
+options#urioptions] can be provided in a message header for producer
+endpoints with *CamelFacebook.* prefix.
+
+[[Facebook-Messagebody]]
+Message body
+^^^^^^^^^^^^
+
+All result message bodies utilize objects provided by the Facebook4J
+API. Producer endpoints can specify the option name for incoming message
+body in the *inBody* endpoint parameter.
+
+For endpoints that return an array, or *facebook4j.ResponseList*, or
+*java.util.List*, a consumer endpoint will map every elements in the
+list to distinct messages.
+
+[[Facebook-Usecases]]
+Use cases
+^^^^^^^^^
+
+To create a post within your Facebook profile, send this producer a
+facebook4j.PostUpdate body.
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+    from("direct:foo")
+        .to("facebook://postFeed?inBody=postUpdate);
+----
+
+To poll, every 5 sec (You can set the link:polling-consumer.html[polling
+consumer] options by adding a prefix of "consumer"), all statuses on
+your home feed:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+    from("facebook://home?consumer.delay=5000")
+        .to("bean:blah");
+----
+
+Searching using a producer with dynamic options from header.
+
+In the bar header we have the Facebook search string we want to execute
+in public posts, so we need to assign this value to the
+CamelFacebook.query header.
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+    from("direct:foo")
+        .setHeader("CamelFacebook.query", header("bar"))
+        .to("facebook://posts");
+----

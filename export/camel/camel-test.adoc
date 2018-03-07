@@ -1,0 +1,261 @@
+[[ConfluenceContent]]
+[[CamelTest-CamelTest]]
+Camel Test
+~~~~~~~~~~
+
+As a simple alternative to using link:cdi-testing.html[CDI
+Testing], link:spring-testing.html[Spring Testing] or
+link:guice.html[Guice] the *camel-test* module was introduced so you can
+perform powerful link:testing.html[Testing] of your
+link:enterprise-integration-patterns.html[Enterprise Integration
+Patterns] easily.
+
+JUnit or TestNG
+
+The *`camel-test`* JAR is using JUnit. There is an alternative
+*`camel-testng`* JAR (from *Camel 2.8*) using the
+http://testng.org/doc/index.html[TestNG] test framework.
+
+[[CamelTest-Addingtoyourpom.xml]]
+Adding to your `pom.xml`
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+To get started using Camel Test you will need to add an entry to your
+*`pom.xml`*:
+
+[[CamelTest-JUnit]]
+JUnit
++++++
+
+xml<dependency> <groupId>org.apache.camel</groupId>
+<artifactId>camel-test</artifactId> <version>$\{camel-version}</version>
+<scope>test</scope> </dependency>
+
+[[CamelTest-TestNG]]
+TestNG
+++++++
+
+*Available as of Camel 2.8*
+
+xml<dependency> <groupId>org.apache.camel</groupId>
+<artifactId>camel-testng</artifactId>
+<version>$\{camel-version}</version> <scope>test</scope> </dependency>
+
+You might also want to add *`slf4j`* and *`log4j`* to ensure nice
+logging messages (and maybe adding a
+http://svn.apache.org/repos/asf/camel/trunk/components/camel-test/src/test/resources/log4j.properties[log4j.properties]
+file into your *`src/test/resources`* directory).
+
+xml<dependency> <groupId>org.slf4j</groupId>
+<artifactId>slf4j-log4j12</artifactId> <scope>test</scope> </dependency>
+<dependency> <groupId>log4j</groupId> <artifactId>log4j</artifactId>
+<scope>test</scope> </dependency>
+
+[[CamelTest-Writingyourtest]]
+Writing your test
+^^^^^^^^^^^^^^^^^
+
+You firstly need to derive from the
+class *`CamelTestSupport`* *(`org.apache.camel.test.CamelTestSupport`,
+`org.apache.camel.test.junit4.CamelTestSupport`*,
+or *`org.apache.camel.testng.CamelTestSupport`* for JUnit 3.x, JUnit
+4.x, and TestNG, respectively) and typically you will need to override
+the **`createRouteBuilder()`* or *`createRouteBuilders()`** method to
+create routes to be tested.
+
+Here is an
+http://svn.apache.org/repos/asf/camel/trunk/components/camel-test/src/test/java/org/apache/camel/test/patterns/FilterTest.java[example].\{snippet:lang=java|id=example|url=camel/trunk/components/camel-test/src/test/java/org/apache/camel/test/patterns/FilterTest.java}*Note*:
+how you can use the various link:bean-integration.html[Camel binding and
+injection annotations] to inject individual link:endpoint.html[Endpoint]
+objects - particularly the link:mock.html[Mock endpoints] which are very
+useful for link:testing.html[Testing]. Also you can inject
+link:pojo-producing.html[producer objects such as ProducerTemplate or
+some application code interface] for sending messages or invoking
+services.
+
+[[CamelTest-FeaturesProvidedbyCamelTestSupport]]
+Features Provided by `CamelTestSupport`
++++++++++++++++++++++++++++++++++++++++
+
+The various *`CamelTestSupport`* classes provide a standard set of
+behaviors relating to the *`CamelContext`* used to host the route(s)
+under test.  The classes provide a number of methods that allow a test
+to alter the configuration of the *`CamelContext`* used.  The following
+table describes the available customization methods and the default
+behavior of tests that are built from a *`CamelTestSupport`* class.
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Method Name |Description |Default Behavior
+|`boolean isUseRouteBuilder()` |If the route builders returned from
+either *`createRouteBuilder()`* or *`createRouteBuilders()`* should be
+added to the *`CamelContext`* for the test to be started. a|
+Returns *`true`*. 
+
+**`createRouteBuilder()`* or *`createRouteBuilders()`** are invoked and
+the *`CamelContext`* is started automatically.
+
+|`boolean isUseAdviceWith()` a|
+If the *`CamelContext`* use in the test should be automatically started
+before test methods are invoked.
+
+ +
+Override when using link:advicewith.html[advice with] and return
+*`true`*.  This helps in knowing the *`adviceWith()`* is to be used, and
+the *`CamelContext`* will not be started before the advice with takes
+place. This delay helps by ensuring the advice with has been property
+setup before the *`CamelContext`* is started.
+
+Its important to start the *`CamelContext`* manually from the unit test
+after you are done doing all the advice with.
+
+ a|
+Returns *`false`*. 
+
+The *`CamelContext`* is started automatically before test methods are
+invoked.
+
+|`boolean isCreateCamelContextPerClass()`
+|See link:camel-test.html[Setup CamelContext once per class, or per
+every test method]. |The *`CamelContext`* and routes are recreated for
+each test method.
+
+|`String isMockEndpoints()` a|
+Triggers the auto-mocking of endpoints whose URIs match the provided
+filter.  The default filter is *`null`* which disables this feature.  
+
+Return *`"*"`*  to match all endpoints.  
+
+See *`org.apache.camel.impl.InterceptSendToMockEndpointStrategy`*
+for more details on the registration of the mock endpoints.
+
+ |Disabled
+
+|`boolean isUseDebugger()` a|
+If this method returns *`true`*, the methods:
+
+* *`debugBefore(Exchange exchange, Processor processor, ProcessorDefinition<?> definition, String id, String label)`*
+* *`debugAfter(Exchange exchange, Processor processor, ProcessorDefinition<?> definition, String id, String label, long timeTaken)`*
+
+are invoked for each processor in the registered routes.
+
+ a|
+Disabled
+
+The methods are not invoked during the test.
+
+|`int getShutdownTimeout()` a|
+Returns the number of seconds that Camel should wait for graceful
+shutdown.  
+
+Useful for decreasing test times when a message is still in flight at
+the end of the test.
+
+ |10 seconds
+
+|`boolean useJmx()` |If JMX should be disabled on the *`CamelContext`*
+used in the test. |JMX is disabled
+
+|`JndiRegistry createRegistry()` |Provides a hook for adding objects
+into the registry.  Override this method to bind objects to the registry
+before test methods are invoked. |An empty registry is initialized
+
+|`useOverridePropertiesWithPropertiesComponent` |*Camel 2.10:* Allows to
+add/override properties when link:using-propertyplaceholder.html[Using
+PropertyPlaceholder] in Camel. |*`null`*
+
+|`ignoreMissingLocationWithPropertiesComponent` |*Camel 2.10:* Allows to
+control if Camel should ignore missing locations for properties.
+|*`null`*
+
+|`boolean isDumpRouteCoverage` |*Camel 2.16:* If enabled, then Camel
+will dump all route coverage statistics into XML files in the
+target/camel-route-coverage directory. These XML files contains
+information about "route coverage" of all the routes that was used
+during the unit test. This allows tooling to inspect these XML files and
+generate nice route coverage reports. |Disabled
+|=======================================================================
+
+[[CamelTest-JNDI]]
+JNDI
+^^^^
+
+Camel uses a link:registry.html[Registry] to allow you to configure
+link:component.html[Component] or link:endpoint.html[Endpoint] instances
+or link:bean-integration.html[Beans used in your routes]. If you are not
+using link:spring.html[Spring] or
+https://cwiki.apache.org/confluence/pages/createpage.action?spaceKey=CAMEL&title=OSGi&linkCreation=true&fromPageId=104074[OSGi]
+then link:jndi.html[JNDI] is used as the default registry
+implementation.
+
+So you will also need to create a *`jndi.properties`* file in
+your *`src/test/resources`* directory so that there is a default
+registry available to initialize the
+link:camelcontext.html[CamelContext].
+
+Here is
+http://svn.apache.org/repos/asf/camel/trunk/components/camel-test/src/test/resources/jndi.properties[an
+example jndi.properties file]
+
+java.naming.factory.initial =
+org.apache.camel.util.jndi.CamelInitialContextFactory
+
+[[CamelTest-DynamicallyAssigningPorts]]
+Dynamically Assigning Ports
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available as of Camel 2.7*
+
+Tests that use port numbers will fail if that port is already on use.
+*`AvailablePortFinder`* provides methods for finding unused port numbers
+at run time.
+
+java// Get the next available port number starting from the default
+starting port of 1024 int port1 =
+AvailablePortFinder.getNextAvailable(); /* * Get another port. Note that
+just getting a port number does not reserve it so * we look starting one
+past the last port number we got. */ int port2 =
+AvailablePortFinder.getNextAvailable(port1 + 1);
+
+[[CamelTest-SetupCamelContextonceperclass,orpereverytestmethod]]
+Setup CamelContext once per class, or per every test method
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available as of Camel 2.8*
+
+The link:camel-test.html[Camel Test] kit will by default setup and
+shutdown link:camelcontext.html[CamelContext] per every test method in
+your test class. So for example if you have 3 test methods, then
+link:camelcontext.html[CamelContext] is started and shutdown after each
+test, that is 3 times.
+
+TestNG
+
+This feature is also supported in *`camel-testng`*
+
+Beware
+
+When using this the link:camelcontext.html[CamelContext] will keep state
+between tests, so have that in mind. So if your unit tests start to fail
+for no apparent reason, it could be due this fact. So use this feature
+with a bit of care.
+
+You may want to do this once, to share the
+link:camelcontext.html[CamelContext] between test methods, to speedup
+unit testing. This requires the use of JUnit 4! In your unit test method
+you have to extend the *`org.apache.camel.test.junit4.CamelTestSupport`*
+or the *`org.apache.camel.test.junit4.CamelSpringTestSupport`* test
+class and override the *`isCreateCamelContextPerClass`* method and
+return `true` as shown in the following
+example:\{snippet:id=example|lang=java|title=Setup CamelContext once per
+class|url=camel/trunk/components/camel-test/src/test/java/org/apache/camel/test/patterns/FilterCreateCamelContextPerClassTest.java}
+
+[[CamelTest-SeeAlso]]
+See Also
+^^^^^^^^
+
+* link:testing.html[Testing]
+* link:mock.html[Mock]
+* link:test.html[Test]
+
+ 

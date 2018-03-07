@@ -1,0 +1,18 @@
+[[ConfluenceContent]]
+[[Book-Book]]
+Book
+~~~~
+
+These pages are used to create the DocBook for the User Guide
+
+* link:book-introduction.html[Introduction]
+* link:book-getting-started.html[Getting Started]
+* link:book-architecture.html[Architecture]
+* link:book-enterprise-integration-patterns.html[Enterprise Integration
+Patterns]
+* link:book-cookbook.html[Cook Book]
+* link:book-tutorials.html[Tutorials]
+* link:book-languages-appendix.html[Languages Appendix]
+* link:book-dataformat-appendix.html[DataFormat Appendix]
+* link:book-pattern-appendix.html[Pattern Appendix]
+* link:book-component-appendix.html[Component Appendix]

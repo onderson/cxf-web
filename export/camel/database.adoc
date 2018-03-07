@@ -1,0 +1,37 @@
+[[ConfluenceContent]]
+[[Database-Database]]
+Database
+~~~~~~~~
+
+Camel can work with databases in a number of different ways. This
+document tries to outline the most common approaches.
+
+[[Database-Databaseendpoints]]
+Database endpoints
+^^^^^^^^^^^^^^^^^^
+
+Camel provides a number of different endpoints for working with
+databases
+
+* link:jpa.html[JPA] for working with hibernate, openjpa or toplink.
+When consuming from the endpoints entity beans are read (and
+deleted/updated to mark as processed) then when producing to the
+endpoints they are written to the database (via insert/update).
+* link:ibatis.html[iBATIS] similar to the above but using
+http://ibatis.apache.org/[Apache iBATIS]
+* link:jdbc.html[JDBC] similar though using explicit SQL
+* link:sql-component.html[SQL] useshttp://docs.spring.io/spring/docs/3.2.x/spring-framework-reference/html/jdbc.html[spring-jdbc]
+behind the scene for the actual SQL handling. The difference between
+this component and http://camel.apache.org/jdbc.html[JDBC] component is
+that in case of SQL the query is a property of the endpoint and it uses
+message payload as parameters passed to the query
+
+[[Database-Databasepatternimplementations]]
+Database pattern implementations
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Various patterns can work with databases as follows
+
+* link:idempotent-consumer.html[Idempotent Consumer]
+* link:aggregator.html[Aggregator]
+* link:bam.html[BAM] for business activity monitoring

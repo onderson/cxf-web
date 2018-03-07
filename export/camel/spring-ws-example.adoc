@@ -1,0 +1,89 @@
+[[ConfluenceContent]]
+[[SpringWSExample-SpringWebServicesExample]]
+Spring Web Services Example
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+*Available as of Camel 2.6*
+
+This example shows how to expose a SOAP-based web service using Camel
+and Spring Web Services.
+
+[[SpringWSExample-Runningtheexample]]
+Running the example
+^^^^^^^^^^^^^^^^^^^
+
+The example is included in the distribution at
+`examples/camel-example-spring-ws`. To start the example use Maven:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+mvn clean install jetty:run
+----
+
+This will expose a web service on `http://localhost:8080/increment`.
+With help of a tool such as http://www.soap-ui.org[Soap-UI] it's easy to
+sent messages to this endpoint. There's a ready to use SOAP-UI project
+available at `examples/camel-example-spring-ws/client`.
+
+[[SpringWSExample-Codewalkthrough]]
+Code walk through
+^^^^^^^^^^^^^^^^^
+
+The Camel route that exposes the above web service is defined as:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+JaxbDataFormat jaxb = new JaxbDataFormat(false);
+jaxb.setContextPath("org.apache.camel.example.server.model");
+
+from("spring-ws:rootqname:{http://camel.apache.org/example/increment}incrementRequest?endpointMapping=#endpointMapping")
+.unmarshal(jaxb)
+.process(new IncrementProcessor())
+.marshal(jaxb);
+----
+
+Taking a closer look at the URI reveals that this route consumes
+messages with a certain `rootqname`. In this case it listens for
+messages with root element `incrementRequest` defined in the
+`http://camel.apache.org/example/increment` namespace. These XML
+messages are unmarshalled to Java objects using Camel's
+link:data-format.html[Data Format] support. After processing the
+resulting object is marshalled back to XML and returned to the client.
+
+Further notice that the URI contains a reference to an `endpointMapping`
+in the link:registry.html[Registry]. Since we're using Spring the
+registry is a Spring ApplicationContext defined in
+`spring-ws-servlet.xml`. This file contains the following bean:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<bean id="endpointMapping" class="org.apache.camel.component.spring.ws.bean.CamelEndpointMapping">
+    <property name="interceptors">
+        <list>
+            <ref local="validatingInterceptor" />
+            <ref local="loggingInterceptor" />
+        </list>
+    </property>
+</bean>
+----
+
+This bean is a Spring-WS
+http://static.springsource.org/spring-ws/sites/1.5/reference/html/server.html#server-endpoint-mapping[endpoint
+mapping] that maps incoming messages to appropriate Camel routes. You'll
+only need to define _one_ `CamelEndpointMapping` regardless of the
+number of Camel routes that use Spring-WS endpoints.
+
+The above `endpointMapping` bean is automatically picked up by the
+`MessageDispatcherServlet` declared in `web.xml`:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<servlet>
+    <servlet-name>spring-ws</servlet-name>
+    <servlet-class>org.springframework.ws.transport.http.MessageDispatcherServlet</servlet-class>
+</servlet>
+----
+
+Since the servlet is named `spring-ws` it will look for the file
+`/WEB-INF/spring-ws-servlet.xml` containing the earlier mentioned
+`endpointMapping` bean.

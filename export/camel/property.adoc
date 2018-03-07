@@ -1,0 +1,42 @@
+[[ConfluenceContent]]
+[[Property-PropertyExpressionLanguage]]
+Property Expression Language
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The Property Expression Language allows you to extract values of named
+exchange properties.
+
+From *Camel 2.15* onwards the property language has been renamed to
+exchangeProperty to avoid ambiguity, confusion and clash with properties
+as a general term. So use exchangeProperty instead of property when
+using Camel 2.15 onwards.
+
+ 
+
+[[Property-Exampleusage]]
+Example usage
+^^^^^^^^^^^^^
+
+The recipientList element of the Spring DSL can utilize a property
+expression like:
+
+\{snippet:id=e1|lang=xml|url=camel/trunk/components/camel-spring/src/test/resources/org/apache/camel/spring/processor/recipientListWithStringDelimitedProperty.xml}
+
+In this case, the list of recipients are contained in the property
+'myProperty'.
+
+And the same example in Java DSL:
+
+\{snippet:id=example|lang=java|url=camel/trunk/camel-core/src/test/java/org/apache/camel/processor/RecipientListWithStringDelimitedPropertyTest.java}
+
+And with a slightly different syntax where you use the builder to the
+fullest (i.e. avoid using parameters but using stacked operations,
+notice that property is not a parameter but a stacked method call)
+
+java from("direct:a").recipientList().property("myProperty");
+
+[[Property-Dependencies]]
+Dependencies
+^^^^^^^^^^^^
+
+The Property language is part of *camel-core*.

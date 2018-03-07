@@ -1,0 +1,16 @@
+[[ConfluenceContent]]
+When you use scala object you can define the static method for others to
+use. Scala will create a Class which implements the singleton pattern
+for that class object. +
+If the object name is A, you can find the singleton class name with A$.
+Using javap to recompile the class A and A$, you will find A has bunch
+of static method, and A$ doesn't has any of them. If you specify the
+converter class package name in
+META-INF/service/org/apache/camel/TypeConverter, camel will load the
+class A and A$ at the same time. As the A$ construction method is not
+supposed to be invoked, camel will complain that he cannot load the
+converter method which you are suppose to use because of he can't create
+a instance of A$.
+
+To avoid this kind of error, we need to specify the full class name of A
+in the TypeConverter to let camel load the converter directly.

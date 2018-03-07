@@ -1,0 +1,14 @@
+[[ConfluenceContent]]
+This page contains the main navigation links to the parts which make up
+the Site layout.
+
+* link:banner.html[Banner]
+* link:book.html[Book]
+* link:book-in-one-page.html[Book In One Page]
+* link:includes.html[Includes]
+* link:navigation.html[Navigation]
+* link:quicklinks.html[QuickLinks]
+* link:scratch-page.html[Scratch Page]
+* link:siteindex.html[SiteIndex]
+* link:sitemap.html[SiteMap]
+* link:site-update-ideas.html[Site Update Ideas]

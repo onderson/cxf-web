@@ -1,0 +1,9 @@
+[[ConfluenceContent]]
+link:testing.html[Testing] of distributed and asynchronous processing is
+notoriously difficult. The link:mock.html[Mock], link:test.html[Test]
+and link:dataset.html[DataSet] endpoints work great with the
+link:testing.html[Camel Testing Framework] to simplify your unit and
+integration testing using
+link:enterprise-integration-patterns.html[Enterprise Integration
+Patterns] and Camel's large range of link:components.html[Components]
+together with the powerful link:bean-integration.html[Bean Integration].

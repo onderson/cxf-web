@@ -1,0 +1,58 @@
+[[ConfluenceContent]]
+[[CompetingConsumers-CompetingConsumers]]
+Competing Consumers
+^^^^^^^^^^^^^^^^^^^
+
+Camel supports the
+http://www.enterpriseintegrationpatterns.com/CompetingConsumers.html[Competing
+Consumers] from the link:enterprise-integration-patterns.html[EIP
+patterns] using a few different components.
+
+image:http://www.enterpriseintegrationpatterns.com/img/CompetingConsumers.gif[image]
+
+You can use the following components to implement competing consumers:-
+
+* link:seda.html[Seda] for SEDA based concurrent processing using a
+thread pool
+* link:jms.html[JMS] for distributed SEDA based concurrent processing
+with queues which support reliable load balancing, failover and
+clustering.
+
+[[CompetingConsumers-EnablingCompetingConsumerswithJMS]]
+Enabling Competing Consumers with JMS
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To enable Competing Consumers you just need to set the
+*concurrentConsumers* property on the link:jms.html[JMS] endpoint.
+
+For example
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+from("jms:MyQueue?concurrentConsumers=5").bean(SomeBean.class);
+----
+
+or in Spring DSL
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<route>
+  <from uri="jms:MyQueue?concurrentConsumers=5"/>
+  <to uri="bean:someBean"/>
+</route>
+----
+
+Or just run multiple JVMs of any link:activemq.html[ActiveMQ] or
+link:jms.html[JMS] route
+image:https://cwiki.apache.org/confluence/s/en_GB/5997/6f42626d00e36f53fe51440403446ca61552e2a2.1/_/images/icons/emoticons/smile.png[(smile)]
+
+[[CompetingConsumers-UsingThisPattern]]
+Using This Pattern
+++++++++++++++++++
+
+If you would like to use this EIP Pattern then please read the
+link:getting-started.html[Getting Started], you may also find the
+link:architecture.html[Architecture] useful particularly the description
+of link:endpoint.html[Endpoint] and link:uris.html[URIs]. Then you could
+try out some of the link:examples.html[Examples] first before trying
+this pattern out.

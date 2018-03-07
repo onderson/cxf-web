@@ -1,0 +1,217 @@
+[[ConfluenceContent]]
+[[WireTap-WireTap]]
+Wire Tap
+^^^^^^^^
+
+http://www.enterpriseintegrationpatterns.com/WireTap.html[Wire Tap]
+(from the link:enterprise-integration-patterns.html[EIP patterns])
+allows you to route messages to a separate location while they are being
+forwarded to the ultimate destination.
+
+image:http://www.enterpriseintegrationpatterns.com/img/WireTap.gif[image]
+
+Streams
+
+If you link:wire-tap.html[Wire Tap] a stream message body then you
+should consider enabling link:stream-caching.html[Stream caching] to
+ensure the message body can be read at each endpoint. See more details
+at link:stream-caching.html[Stream caching].
+
+[[WireTap-Options]]
+Options
+^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Name |Default |Description
+|`uri` |  a|
+*Mandatory:* The URI of the endpoint to which the wire-tapped message
+should be sent.
+
+From *Camel 2.16*: support for dynamic *`to`* URIs is as documented in
+http://camel.apache.org/message-endpoint.html[Message Endpoint.]
+
+|`executorServiceRef` |  a|
+Reference ID of a custom link:threading-model.html[Thread Pool] to use
+when processing the wire-tapped messages.
+
+When not set, Camel will use an instance of the default thread pool.
+
+|`processorRef` |  a|
+Reference ID of a custom link:processor.html[Processor] to use for
+creating a new message.
+
+See "*Sending a New Exchange*" below.
+
+|`copy` |`true` |*Camel 2.3*: Whether to copy the
+link:exchange.html[Exchange] before wire-tapping the message.
+
+|`onPrepareRef` |  |*Camel 2.8:* Reference identifier of a custom
+link:processor.html[Processor] to prepare the copy of the
+link:exchange.html[Exchange] to be wire-tapped. This allows you to do
+any custom logic, such as deep-cloning the message payload.
+
+|`cacheSize` |  a|
+*Camel 2.16:* Allows to configure the cache size for
+the **`ProducerCache`** which caches producers for reuse. Will by
+default use the default cache size which is *`1000`*.
+
+Setting the value to *`-1`* allows to turn off the cache all together.
+
+|`ignoreInvalidEndpoint` |`false` a|
+*Camel 2.16:* Whether to ignore an endpoint URI that could not be
+resolved.
+
+When *`false`*, Camel will throw an exception when it identifies an
+invalid endpoint URI.
+
+|=======================================================================
+
+[[WireTap-WireTapThreadpool]]
+WireTap Threadpool
+^^^^^^^^^^^^^^^^^^
+
+The link:wire-tap.html[Wire Tap] uses a thread pool to process the
+tapped messages. This thread pool will by default use the settings
+detailed at link:threading-model.html[Threading Model]. In particular,
+when the pool is exhausted (with all threads utilized), further wiretaps
+will be executed synchronously by the calling thread. To remedy this,
+you can configure an explicit thread pool on the link:wire-tap.html[Wire
+Tap] having either a different rejection policy, a larger worker queue,
+or more worker threads.
+
+[[WireTap-WireTapNode]]
+WireTap Node
+^^^^^^^^^^^^
+
+Camel's Wire Tap node supports two flavors when tapping an
+link:exchange.html[Exchange]:
+
+* With the traditional Wire Tap, Camel will copy the original
+link:exchange.html[Exchange] and set its
+link:exchange-pattern.html[Exchange Pattern] to *`InOnly`*, as we want
+the tapped link:exchange.html[Exchange] to be sent in a fire and forget
+style. The tapped link:exchange.html[Exchange] is then sent in a
+separate thread so it can run in parallel with the original. Beware that
+only the Exchange is copied - Wire Tap won't do a deep clone (unless you
+specify a custom processor via *`onPrepareRef`* which does that). So all
+copies could share objects from the original Exchange.
+* Camel also provides an option of sending a new
+link:exchange.html[Exchange] allowing you to populate it with new
+values.
+
+[[WireTap-SendingaCopy(traditionalwiretap)]]
+Sending a Copy (traditional wiretap)
+++++++++++++++++++++++++++++++++++++
+
+*Using the link:fluent-builders.html[Fluent
+Builders]*\{snippet:id=e1|lang=java|url=camel/trunk/camel-core/src/test/java/org/apache/camel/processor/WireTapTest.java}*Using
+the link:spring-xml-extensions.html[Spring XML
+Extensions]*\{snippet:id=e1|lang=xml|url=camel/trunk/components/camel-spring/src/test/resources/org/apache/camel/spring/processor/SpringWireTapTest.xml}
+
+[[WireTap-SendingaNew]]
+Sending a New link:exchange.html[Exchange]
+++++++++++++++++++++++++++++++++++++++++++
+
+*Using the link:fluent-builders.html[Fluent Builders]* +
+Camel supports either a processor or an link:expression.html[Expression]
+to populate the new link:exchange.html[Exchange]. Using a processor
+gives you full power over how the link:exchange.html[Exchange] is
+populated as you can set properties, headers, etc. An
+link:expression.html[Expression] can only be used to set the *`IN`*
+body.
+
+From *Camel 2.3*: the link:expression.html[Expression] or
+link:processor.html[Processor] is pre-populated with a copy of the
+original link:exchange.html[Exchange], which allows you to access the
+original message when you prepare a new link:exchange.html[Exchange] to
+be sent. You can use the *`copy`* option (enabled by default) to
+indicate whether you want this. If you set *`copy=false`*, then it works
+as in *Camel 2.2* or older where the link:exchange.html[Exchange] will
+be empty.
+
+Below is the processor variation. This example is from *Camel 2.3*,
+where we disable *`copy`* by passing in *`false`* to create a new, empty
+link:exchange.html[Exchange].\{snippet:id=e1|lang=java|url=camel/trunk/camel-core/src/test/java/org/apache/camel/processor/WireTapUsingFireAndForgetTest.java}Here
+is the link:expression.html[Expression] variation. In the following
+example we disable copying by setting *`copy``=false`* which results in
+the creation of a new, empty
+link:exchange.html[Exchange].\{snippet:id=e2|lang=java|url=camel/trunk/camel-core/src/test/java/org/apache/camel/processor/WireTapUsingFireAndForgetTest.java}*Using
+the link:spring-xml-extensions.html[Spring XML Extensions]* +
+The processor variation, which uses a *`processorRef`* attribute to
+refer to a Spring bean by
+ID:\{snippet:id=e2|lang=xml|url=camel/trunk/components/camel-spring/src/test/resources/org/apache/camel/spring/processor/SpringWireTapUsingFireAndForgetTest.xml}Here
+is the link:expression.html[Expression] variation, where the expression
+is defined in the *`body`*
+tag:\{snippet:id=e1|lang=xml|url=camel/trunk/components/camel-spring/src/test/resources/org/apache/camel/spring/processor/SpringWireTapUsingFireAndForgetTest.xml}This
+variation accesses the body of the original message and creates a new
+link:exchange.html[Exchange] based on the
+link:expression.html[Expression]. It will create a new Exchange and have
+the body contain
+`"Bye ORIGINAL BODY MESSAGE HERE"`\{snippet:id=e1|lang=xml|url=camel/trunk/components/camel-spring/src/test/resources/org/apache/camel/spring/processor/SpringWireTapUsingFireAndForgetCopyTest.xml}
+
+[[WireTap-FurtherExample]]
+Further Example
++++++++++++++++
+
+For another example of this pattern, refer to the
+http://svn.apache.org/repos/asf/camel/trunk/camel-core/src/test/java/org/apache/camel/processor/WireTapTest.java[wire
+tap test case].
+
+[[WireTap-UsingDynamicURIs]]
+Using Dynamic URIs
+^^^^^^^^^^^^^^^^^^
+
+*Available as of Camel 2.16:*
+
+For example to wire tap to a dynamic URI, then it supports the same
+dynamic URIs as documented in link:message-endpoint.html[Message
+Endpoint]. For example to wire tap to a JMS queue where the header ID is
+part of the queue name:
+
+from("direct:start") .wireTap("jms:queue:backup-$\{header.id}")
+.to("bean:doSomething");
+
+ 
+
+[[WireTap-SendingaNewandSetHeadersinDSL]]
+Sending a New link:exchange.html[Exchange] and Set Headers in DSL
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available as of Camel 2.8*
+
+If you send a new message using link:wire-tap.html[Wire Tap], then you
+could only set the message body using an
+link:expression.html[Expression] from the DSL. If you also need to set
+headers, you would have to use a link:processor.html[Processor]. From
+*Camel 2.8*: it's possible to set headers as well using the DSL.
+
+The following example sends a new message which has
+
+* *`Bye World`* as message body.
+* A header with key *`id`* with the value *`123`*.
+* A header with key *`date`* which has current date as value.
+
+[[WireTap-JavaDSL]]
+Java DSL
+++++++++
+
+\{snippet:id=e1|lang=java|url=camel/trunk/camel-core/src/test/java/org/apache/camel/processor/WireTapNewExchangeTest.java}
+
+[[WireTap-XMLDSL]]
+XML DSL
++++++++
+
+The XML DSL is slightly different than Java DSL in how you configure the
+message body and headers using *`<body>`* and
+*`<setHeader>`*:\{snippet:id=e1|lang=xml|url=camel/trunk/components/camel-spring/src/test/resources/org/apache/camel/spring/processor/SpringWireTapNewExchangeTest.xml}
+
+[[WireTap-UsingonPreparetoExecuteCustomLogicwhenPreparingMessages]]
+Using `onPrepare` to Execute Custom Logic when Preparing Messages
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Available as of Camel 2.8*
+
+See details at link:multicast.html[Multicast]
+
+link:using-this-pattern.html[Using This Pattern]

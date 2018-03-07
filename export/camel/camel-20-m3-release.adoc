@@ -1,0 +1,200 @@
+[[ConfluenceContent]]
+[[Camel2.0-M3Release-Camel2.0-M3release]]
+Camel 2.0-M3 release
+--------------------
+
+image:http://camel.apache.org/download.data/camel-box-v1.0-150x200.png[image]
+
+[[Camel2.0-M3Release-NewandNoteworthy]]
+New and Noteworthy
+~~~~~~~~~~~~~~~~~~
+
+Welcome to the 2.0-M3 release which approx 109 issues resolved (new
+features, improvements and bug fixes such as...)
+
+* Complete removal of specialized Exchange using generics
+* Performance improvements
+* link:jms.html[JMS] improvements and fixes
+* Fixes for link:camel-maven-archetypes.html[Camel Maven Archetypes]
+* link:xml-configuration.html[Spring DSL] fixes
+* Added SSL support to Camel link:irc.html[IRC]
+* Many fixes in the link:cxf.html[CXF], link:ftp.html[FTP],
+link:log.html[Log], link:mail.html[Mail] and others
+* Major improvements and fixes in link:bindy.html[Bindy]
+* Removed platforms specific encoding from kits
+* Fixed issues related to class loading in OSGi
+* link:bean.html[Bean] also supports lookup in OSGi registry
+* Upgraded to Junit 4.5
+* Error handler improvements
+* Introduced link:spring.html[<pacakgeScan>] in Spring XML that supports
+ANT path style filtering
+* Introduced `PollingConsumerPollStrategy` as pluggable strategy for
+fine grained error handling with link:polling-consumer.html[Polling
+Consumer]
+* link:stream-caching.html[Stream caching] is disabled by default
+* link:jetty.html[Jetty] connector can now be shared among multiple
+CamelContext
+
+[[Camel2.0-M3Release-New]]
+New link:enterprise-integration-patterns.html[Enterprise Integration
+Patterns]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* None
+
+[[Camel2.0-M3Release-New.1]]
+New link:components.html[Components]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* link:servlet.html[camel-servlet]
+
+[[Camel2.0-M3Release-NewDSL]]
+New DSL
+^^^^^^^
+
+* New `pollEnrich()` added for link:content-enricher.html[Content
+Enricher]
+* New link:aop.html[AOP] added
+
+[[Camel2.0-M3Release-NewAnnotations]]
+New Annotations
+^^^^^^^^^^^^^^^
+
+* Added `qualifier` option to many annotations to specify which
+CamelContext it should apply in case multiple CamelContext is used.
+
+[[Camel2.0-M3Release-NewDataFormats]]
+New link:data-format.html[Data Formats]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* None
+
+[[Camel2.0-M3Release-New.2]]
+New link:languages.html[Languages]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* None
+
+[[Camel2.0-M3Release-New.3]]
+New link:examples.html[Examples]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* None
+
+[[Camel2.0-M3Release-APIbreaking]]
+API breaking
+~~~~~~~~~~~~
+
+[[Camel2.0-M3Release-CamelCore]]
+Camel Core
+^^^^^^^^^^
+
+* All specialized link:exchange.html[Exchange] classes have been
+removed. You should use `org.apache.camel.impl.DefaultExchange` instead.
+
+* Renamed DSL in SpringBuilder: bean -> lookup
+
+* Option delay renamed to redeliveryDelay in RedeliveryPolicy.
+
+* link:debugger.html[Debugger] removed
+
+[[Camel2.0-M3Release-Components]]
+Components
+^^^^^^^^^^
+
+[[Camel2.0-M3Release-KnownIssues]]
+Known Issues
+~~~~~~~~~~~~
+
+See known issues from previous releases.
+
+[[Camel2.0-M3Release-Importantchangestoconsiderwhenupgrading]]
+Important changes to consider when upgrading
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If you specialized existing components and used specialized
+`org.apache.camel.Exchange` classes, your code will need updating to use
+`org.apache.camel.impl.DefaultExchange` instead.
+
+[[Camel2.0-M3Release-GettingtheDistributions]]
+Getting the Distributions
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+[[Camel2.0-M3Release-BinaryDistributions]]
+Binary Distributions
+^^^^^^^^^^^^^^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Description |Download Link |PGP Signature file of download
+|Windows Distribution
+|http://www.apache.org/dyn/closer.cgi/activemq/apache-camel/2.0-M3/apache-camel-2.0-M3.zip[apache-camel-2.0-M3.zip]
+|http://www.apache.org/dist/activemq/apache-camel/2.0-M3/apache-camel-2.0-M3.zip.asc[apache-camel-2.0-M3.zip.asc]
+
+|Unix/Linux/Cygwin Distribution
+|http://www.apache.org/dyn/closer.cgi/activemq/apache-camel/2.0-M3/apache-camel-2.0-M3.tar.gz[apache-camel-2.0-M3.tar.gz]
+|http://www.apache.org/dist/activemq/apache-camel/2.0-M3/apache-camel-2.0-M3.tar.gz.asc[apache-camel-2.0-M3.tar.gz.asc]
+|=======================================================================
+
+**The above URLs use redirection**
+
+The above URLs use the Apache Mirror system to redirect you to a
+suitable mirror for your download. Some users have experienced issues
+with some versions of browsers (e.g. some Safari browsers). If the
+download doesn't seem to work for you from the above URL then try using
+http://www.mozilla.com/en-US/firefox/[FireFox]
+
+[[Camel2.0-M3Release-SourceDistributions]]
+Source Distributions
+^^^^^^^^^^^^^^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Description |Download Link |PGP Signature file of download
+|Source for Windows
+|http://www.apache.org/dyn/closer.cgi/activemq/apache-camel/2.0-M3/apache-camel-2.0-M3-src.zip[apache-camel-2.0-M3-src.zip]
+|http://www.apache.org/dist/activemq/apache-camel/2.0-M3/apache-camel-2.0-M3-src.zip.asc[apache-camel-2.0-M3-src.zip.asc]
+|=======================================================================
+
+[width="100%",cols="34%,33%,33%",]
+|=======================================================================
+|Source for Unix/Linux/Cygwin
+|http://www.apache.org/dyn/closer.cgi/activemq/apache-camel/2.0-M3/apache-camel-2.0-M3-src.tar.gz[apache-camel-2.0-M3-src.tar.gz]
+|http://www.apache.org/dist/activemq/apache-camel/2.0-M3/apache-camel-2.0-M3-src.tar.gz.asc[apache-camel-2.0-M3-src.tar.gz.asc]
+|=======================================================================
+
+[[Camel2.0-M3Release-GettingtheBinariesusingMaven2]]
+Getting the Binaries using Maven 2
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To use this release in your maven project, the proper dependency
+configuration that you should use in your
+http://maven.apache.org/guides/introduction/introduction-to-the-pom.html[Maven
+POM] is:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+<dependency>
+  <groupId>org.apache.camel</groupId>
+  <artifactId>camel-core</artifactId>
+  <version>2.0-M3</version>
+</dependency>
+----
+
+[[Camel2.0-M3Release-SVNTagCheckout]]
+SVN Tag Checkout
+^^^^^^^^^^^^^^^^
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+svn co http://svn.apache.org/repos/asf/camel/tags/camel-2.0-M3
+----
+
+[[Camel2.0-M3Release-Changelog]]
+Changelog
+~~~~~~~~~
+
+For a more detailed view of new features and bug fixes, see:
+
+* http://issues.apache.org/jira/secure/ReleaseNote.jspa?projectId=12311211&styleName=Html&version=12315683[JIRA
+Release notes for 2.0-M3]

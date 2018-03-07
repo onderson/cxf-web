@@ -1,0 +1,59 @@
+[[ConfluenceContent]]
+[[Browse-BrowseComponent]]
+Browse Component
+~~~~~~~~~~~~~~~~
+
+The Browse component provides a simple
+link:browsableendpoint.html[BrowsableEndpoint] which can be useful for
+testing, visualisation tools or debugging. The exchanges sent to the
+endpoint are all available to be browsed.
+
+[[Browse-URIformat]]
+URI format
+^^^^^^^^^^
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+browse:someName[?options]
+----
+
+Where *someName* can be any string to uniquely identify the endpoint.
+
+[[Browse-Sample]]
+Sample
+^^^^^^
+
+In the route below, we insert a `browse:` component to be able to browse
+the Exchanges that are passing through:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+  from("activemq:order.in").to("browse:orderReceived").to("bean:processOrder");
+----
+
+We can now inspect the received exchanges from within the Java code:
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+    private CamelContext context;
+
+    public void inspectRecievedOrders() {
+        BrowsableEndpoint browse = context.getEndpoint("browse:orderReceived", BrowsableEndpoint.class);
+        List<Exchange> exchanges = browse.getExchanges();
+        ...
+        // then we can inspect the list of received exchanges from Java
+        for (Exchange exchange : exchanges) {
+            String payload = exchange.getIn().getBody();
+            ...
+        }
+   }
+----
+
+[[Browse-SeeAlso]]
+See Also
+^^^^^^^^
+
+* link:configuring-camel.html[Configuring Camel]
+* link:component.html[Component]
+* link:endpoint.html[Endpoint]
+* link:getting-started.html[Getting Started]

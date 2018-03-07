@@ -1,0 +1,140 @@
+[[ConfluenceContent]]
+[[PDF-PDF]]
+PDF
+~~~
+
+**Available as of Camel 2.16.0**
+
+The *PDF*: components provides the ability to create, modify or extract
+content from PDF documents. This component uses
+https://pdfbox.apache.org/[Apache PDFBox] as underlying library to work
+with PDF documents.
+
+In order to use the PDF component, Maven users will need to add the
+following dependency to their `pom.xml`:
+
+*pom.xml*
+
+[source,brush:,xml;,gutter:,false;,theme:,Default]
+----
+<dependency>
+    <groupId>org.apache.camel</groupId>
+    <artifactId>camel-pdf</artifactId>
+    <version>x.x.x</version>
+    <!-- use the same version as your Camel core version -->
+</dependency>
+----
+
+[[PDF-URIformat]]
+URI format
+^^^^^^^^^^
+
+The PDF component only supports producer endpoints.
+
+[source,brush:,java;,gutter:,false;,theme:,Default]
+----
+pdf:operation[?options]
+----
+
+Where *operation* is the specific action to perform with PDF document.
+
+[[PDF-Operations]]
+Operations
+^^^^^^^^^^
+
+[cols=",",options="header",]
+|=======================================================================
+|Operation |Description
+|`create` |Creates new PDF documents with the given text. With this
+operation message body type should be `String`. The output type of this
+operation is `OutputStream`.
+
+|`append` |Appends text to PDF document. Text will start on the new
+page. With this operation message body type should be `String`.
+Mandatory header with `name` "pdf-document" and  `PDFBox` document as
+`value` expected. The output type of this operation is `OutputStream`.
+
+|`extractText` |Extracts text from PDF document. The output type of this
+operation is `String`.
+|=======================================================================
+
+[[PDF-Options]]
+Options
+^^^^^^^
+
+[width="100%",cols="34%,33%,33%",options="header",]
+|=======================================================================
+|Name |Default Value |Description
+|`marginTop` |20 |Sets the margin size in pixels between text and top
+edge of the page. 
+
+|`marginBottom` |20 |Sets the margin size in pixels between text and
+bottom edge of the page.
+
+|`marginLeft` |20 |Sets the margin size in pixels between text and left
+edge of the page.
+
+|`marginRight` |40 |Sets the margin size in pixels between text and
+right edge of the page. This option is ignored when
+_textProcessingFactory_ option is _lineTermination_.
+
+|`fontSize` |14 |Sets the font size in pixels.
+
+|`pageSize` |`PAGE_SIZE_A4` a|
+Sets the size of a page. Possible values
+
+* `PAGE_SIZE_A0`
+* `PAGE_SIZE_A1`
+* `PAGE_SIZE_A2`
+* `PAGE_SIZE_A3`
+* `PAGE_SIZE_A4`
+* `PAGE_SIZE_A5`
+* `PAGE_SIZE_A6`
+* `PAGE_SIZE_LETTER`
+
+|`font` |Helvetica |One of the base fonts in
+https://pdfbox.apache.org/1.8/cookbook/workingwithfonts.html[PDFBox].
+
+|`textProcessingFactory` |`lineTermination` |Sets the text processing
+factory.  `lineTermination` - builds set of classes for line-termination
+writing strategy. Text getting sliced by line termination symbol and
+then it will be written regardless it fits in the line or not.
+`autoFormatting` - Text is getting sliced by words, then maximum amount
+of words that fits in the line will be written into PDF document. With
+this strategy all words that doesn't fit in the line will be moved to
+the new line.
+|=======================================================================
+
+[[PDF-Headers]]
+Headers
+^^^^^^^
+
+[width="100%",cols="50%,50%",options="header",]
+|=======================================================================
+|Header | 
+|`pdf-document` |*Mandatory* header for `append` operation and ignored
+in all other operations. Expected type is
+https://pdfbox.apache.org/docs/1.8.9/javadocs/org/apache/pdfbox/pdmodel/PDDocument.html[PDDocument].
+Stores PDF document which will be used for append operation.
+
+|`protection-policy` |Expected type
+ishttps://pdfbox.apache.org/docs/1.8.9/javadocs/org/apache/pdfbox/pdmodel/encryption/ProtectionPolicy.html[ProtectionPolicy].
+If specified then PDF document will be encrypted with it.
+
+|`decryption-material` |Expected type
+ishttps://pdfbox.apache.org/docs/1.8.9/javadocs/org/apache/pdfbox/pdmodel/encryption/DecryptionMaterial.html[DecryptionMaterial].
+*Mandatory* header if PDF document is encrypted.
+|=======================================================================
+
+[[PDF-SeeAlso]]
+See Also
+^^^^^^^^
+
+* link:configuring-camel.html[Configuring Camel]
+* link:component.html[Component]
+* link:endpoint.html[Endpoint]
+* link:getting-started.html[Getting Started]
+
+....
+ 
+....
